@@ -1,0 +1,8 @@
+rdkit
+pandas
+numpy
+matplotlib
+seaborn
+scikit-learn
+umap-learn
+requests

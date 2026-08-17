@@ -1,0 +1,1 @@
+[{"molecule_chembl_id": "CHEMBL4871671", "canonical_smiles": "CNC(=O)CN(Cc1ccc(-n2cncn2)cc1)C(=O)CSc1ccccc1Cl", "pchembl_value": 4.301029995663981, "standard_type": "IC50", "standard_value": "50000.0", "target_chembl_id": "CHEMBL4879550", "organism": "E. coli LpxA"}]

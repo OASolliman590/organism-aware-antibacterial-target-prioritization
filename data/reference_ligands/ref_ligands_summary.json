@@ -1,0 +1,126 @@
+[
+ {
+  "class": "FabI",
+  "n_ligands": 331,
+  "targets": [
+   "CHEMBL3994",
+   "CHEMBL1857",
+   "CHEMBL1075044"
+  ]
+ },
+ {
+  "class": "DHFR",
+  "n_ligands": 232,
+  "targets": [
+   "CHEMBL2627",
+   "CHEMBL2329"
+  ]
+ },
+ {
+  "class": "MurA",
+  "n_ligands": 1,
+  "targets": [
+   "CHEMBL1984",
+   "CHEMBL1075208",
+   "CHEMBL4541"
+  ]
+ },
+ {
+  "class": "MurC",
+  "n_ligands": 1,
+  "targets": [
+   "CHEMBL4732",
+   "CHEMBL4841"
+  ]
+ },
+ {
+  "class": "GyrB",
+  "n_ligands": 253,
+  "targets": [
+   "CHEMBL1921666",
+   "CHEMBL1826",
+   "CHEMBL1075021"
+  ]
+ },
+ {
+  "class": "Gyr",
+  "n_ligands": 600,
+  "targets": [
+   "CHEMBL2094139",
+   "CHEMBL3038482",
+   "CHEMBL4524002"
+  ]
+ },
+ {
+  "class": "FtsZ",
+  "n_ligands": 9,
+  "targets": [
+   "CHEMBL3999",
+   "CHEMBL5096",
+   "CHEMBL5690",
+   "CHEMBL4213"
+  ]
+ },
+ {
+  "class": "LpxC",
+  "n_ligands": 600,
+  "targets": [
+   "CHEMBL5244",
+   "CHEMBL3855"
+  ]
+ },
+ {
+  "class": "LpxA",
+  "n_ligands": 0,
+  "targets": [
+   "CHEMBL4879550"
+  ]
+ },
+ {
+  "class": "LpxH",
+  "n_ligands": 252,
+  "targets": [
+   "CHEMBL5855"
+  ]
+ },
+ {
+  "class": "TopoIV",
+  "n_ligands": 129,
+  "targets": [
+   "CHEMBL3038508",
+   "CHEMBL2363076"
+  ]
+ },
+ {
+  "class": "PBP2a",
+  "n_ligands": 0,
+  "targets": [
+   "CHEMBL3512"
+  ]
+ },
+ {
+  "class": "FabH",
+  "n_ligands": 6,
+  "targets": [
+   "CHEMBL4914",
+   "CHEMBL3673",
+   "CHEMBL3822"
+  ]
+ },
+ {
+  "class": "DHPS",
+  "n_ligands": 22,
+  "targets": [
+   "CHEMBL4032",
+   "CHEMBL2364668",
+   "CHEMBL1075045"
+  ]
+ },
+ {
+  "class": "MurE",
+  "n_ligands": 0,
+  "targets": [
+   "CHEMBL2540"
+  ]
+ }
+]

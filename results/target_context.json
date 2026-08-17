@@ -1,0 +1,91 @@
+{
+  "target_rationale": {
+    "DHFR": "FolA/DHFR is an essential folate-cycle enzyme; evidence is strongest when diaminopyrimidine-like or folate-mimetic chemistry is present and the nearest active reference ligands are similar.",
+    "DHPS": "Sulfonamide-aniline/PABA mimicry is mechanistically relevant to DHPS, so this class is an important orthogonal rescue candidate for sulfonamide-bearing X1V compounds.",
+    "FabI": "FabI/FabL is the enoyl-ACP reductase of type-II fatty-acid synthesis; ranking is ligand-similarity based because the series lacks a canonical triclosan-like motif.",
+    "FtsZ": "FtsZ is an essential cytokinetic GTPase; prioritization is credible only when similarity to known FtsZ ligands is accompanied by a compatible heteroaromatic pharmacophore.",
+    "GyrB": "GyrB is the ATPase subunit of DNA gyrase; target evidence is based on similarity to GyrB reference ligands and should be distinguished from whole-gyrase/topoisomerase-IV predictions.",
+    "Gyr": "Whole DNA gyrase reference data provide a broader quinolone/topoisomerase control space; agreement with GyrB strengthens, but does not prove, a gyrase hypothesis.",
+    "TopoIV": "Topoisomerase IV is a DNA-decatenation complex; because reference chemistry is often quinolone-like, low similarity should be treated as weak evidence.",
+    "MurA": "MurA catalyzes the first committed enolpyruvyl-transfer step of peptidoglycan synthesis; the best-established covalent benchmark is fosfomycin, so non-electrophilic similarity is provisional.",
+    "MurC": "MurC and related Mur ligases are ATP-dependent peptidoglycan precursor enzymes; the reference set includes related Mur-ligase chemistry and is lower-confidence than FabI/GyrB.",
+    "LpxC": "LpxC is a Zn-dependent deacetylase in lipid-A biosynthesis; hydroxamate-like chelation is a strong mechanistic flag, while similarity alone is insufficient.",
+    "LpxH": "LpxH is a metal-dependent phosphodiesterase in lipid-A biosynthesis; target ranking is exploratory because the reference set is structurally heterogeneous.",
+    "LpxA": "LpxA is the acyltransferase initiating lipid-A biosynthesis; very sparse public ligand data make this a low-confidence computational control.",
+    "PBP2a": "PBP2a/MecA is a validated MRSA resistance determinant, but it is not an appropriate organism-specific target for A. baumannii; the A. baumannii panel entry is therefore flagged as biologically mismatched.",
+    "FabH": "FabH is a beta-ketoacyl-ACP synthase; sparse reference data make this a family-level exploratory target rather than a primary assignment."
+  },
+  "target_panels": {
+    "Klebsiella pneumoniae": [
+      "DHFR",
+      "FabI",
+      "TopoIV",
+      "MurA",
+      "LpxH"
+    ],
+    "Bacillus cereus": [
+      "FabI",
+      "DHFR",
+      "FtsZ",
+      "GyrB",
+      "MurA"
+    ],
+    "Escherichia coli": [
+      "MurA",
+      "DHFR",
+      "FabI",
+      "GyrB",
+      "LpxC"
+    ],
+    "Proteus mirabilis": [
+      "MurA",
+      "DHFR",
+      "FabI",
+      "GyrB",
+      "LpxC"
+    ],
+    "Acinetobacter baumannii": [
+      "PBP2a",
+      "FabI",
+      "GyrB",
+      "LpxA",
+      "MurC"
+    ],
+    "MRSA / Staphylococcus aureus": [
+      "PBP2a",
+      "DHFR",
+      "FabI",
+      "FtsZ",
+      "GyrB"
+    ]
+  },
+  "prior_assignments": {
+    "Klebsiella pneumoniae": [
+      "KPC-2 beta-lactamase",
+      "KPC-2 beta-lactamase-avibactam",
+      "FtsZ"
+    ],
+    "Bacillus cereus": [
+      "Metallo-beta-lactamase / beta-lactamase",
+      "FtsZ"
+    ],
+    "Escherichia coli": [
+      "FtsZ",
+      "MurA",
+      "AmpC beta-lactamase"
+    ],
+    "Proteus mirabilis": [
+      "Beta-lactamase class-C family",
+      "MurA"
+    ],
+    "Acinetobacter baumannii": [
+      "OXA-23 beta-lactamase",
+      "LeuRS",
+      "FabH / 3-oxoacyl-ACP synthase III"
+    ],
+    "MRSA / Staphylococcus aureus": [
+      "BlaZ beta-lactamase",
+      "DNA gyrase"
+    ]
+  }
+}

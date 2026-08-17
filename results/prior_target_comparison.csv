@@ -1,0 +1,16 @@
+source_bacterium,compound_scope,prior_target,recommended_pdb,match_status,priority,mapped_scored_class,in_scored_ligand_universe,in_original_organism_panel,validation_interpretation
+Bacillus cereus,BI-1; BI-6; T2Z5; T2Z9,Metallo-beta-lactamase / beta-lactamase,1BVT,exact,primary,Beta-lactamase (unscored),0,0,not scored; retain as orthogonal docking/MD hypothesis
+Bacillus cereus,BI-1; BI-6; T2Z5; T2Z9,FtsZ,4U39,proxy,secondary,FtsZ,1,1,direct scored overlap
+Klebsiella pneumoniae,OX-11; T2Z14,KPC-2 beta-lactamase,2OV5,exact,primary,Beta-lactamase (unscored),0,0,not scored; retain as orthogonal docking/MD hypothesis
+Klebsiella pneumoniae,OX-11; T2Z14,KPC-2 beta-lactamase-avibactam,4ZBE,exact,primary-companion,Beta-lactamase (unscored),0,0,not scored; retain as orthogonal docking/MD hypothesis
+Klebsiella pneumoniae,OX-11; T2Z14,FtsZ,6LL5,exact,secondary,FtsZ,1,0,scored family but outside original panel
+Escherichia coli,T2Z6,FtsZ,6LL6,exact,primary-control,FtsZ,1,0,scored family but outside original panel
+Escherichia coli,T2Z6,MurA,1UAE,exact,secondary-control,MurA,1,1,direct scored overlap
+Escherichia coli,BI-6; X1V9,AmpC beta-lactamase,1C3B,exact,family-reference,Beta-lactamase (unscored),0,0,not scored; retain as orthogonal docking/MD hypothesis
+Proteus mirabilis,X1V9,Beta-lactamase class-C family,6K8X,proxy,primary-provisional,Beta-lactamase (unscored),0,0,not scored; retain as orthogonal docking/MD hypothesis
+Proteus mirabilis,X1V9,MurA,1UAE,proxy,secondary-control,MurA,1,1,direct scored overlap
+Acinetobacter baumannii,X1V20,OXA-23 beta-lactamase,4JF5,exact,primary,Beta-lactamase (unscored),0,0,not scored; retain as orthogonal docking/MD hypothesis
+Acinetobacter baumannii,X1V11,LeuRS,5AGR,proxy,high-priority-family,LeuRS (unscored),0,0,not scored; retain as orthogonal docking/MD hypothesis
+Acinetobacter baumannii,X1V26,FabH / 3-oxoacyl-ACP synthase III,5BNM,proxy,secondary-family,FabH,1,0,scored family but outside original panel
+MRSA / Staphylococcus aureus,X1V19,BlaZ beta-lactamase,6WGR,exact,primary,Beta-lactamase (unscored),0,0,not scored; retain as orthogonal docking/MD hypothesis
+MRSA / Staphylococcus aureus,X1V19,DNA gyrase,6Z1A,exact,secondary-control,GyrB,1,1,direct scored overlap

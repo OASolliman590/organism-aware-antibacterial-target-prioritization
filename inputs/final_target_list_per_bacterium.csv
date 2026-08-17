@@ -1,0 +1,16 @@
+source_bacterium,compound_scope,final_target,recommended_pdb,pdb_organism,match_status,priority,notes
+Bacillus cereus,BI-1; BI-6; T2Z5; T2Z9,Metallo-beta-lactamase / beta-lactamase,1BVT,Bacillus cereus,exact,primary,1.85 A X-ray; Zn-containing active site; practical resistance-modulation hypothesis
+Bacillus cereus,BI-1; BI-6; T2Z5; T2Z9,FtsZ,4U39,Bacillus subtilis,proxy,secondary,Vecura control; weak similarity evidence; use after sequence alignment
+Klebsiella pneumoniae,OX-11; T2Z14,KPC-2 beta-lactamase,2OV5,Klebsiella pneumoniae,exact,primary,1.85 A X-ray; BCN-bound catalytic-site reference
+Klebsiella pneumoniae,OX-11; T2Z14,KPC-2 beta-lactamase-avibactam,4ZBE,Klebsiella pneumoniae,exact,primary-companion,1.80 A X-ray; covalent avibactam at catalytic Ser70
+Klebsiella pneumoniae,OX-11; T2Z14,FtsZ,6LL5,Klebsiella pneumoniae,exact,secondary,Vecura control; alternative 8GZV provides a polymeric cryo-EM state
+Escherichia coli,T2Z6,FtsZ,6LL6,Escherichia coli K-12,exact,primary-control,GDP-bound X-ray structure; Vecura-leading control
+Escherichia coli,T2Z6,MurA,1UAE,Escherichia coli,exact,secondary-control,1.80 A X-ray; UDP-GlcNAc plus covalent fosfomycin; Cys115 active site
+Escherichia coli,BI-6; X1V9,AmpC beta-lactamase,1C3B,Escherichia coli K-12,exact,family-reference,2.25 A inhibitor-bound AmpC; do not assign to T2Z6 without new evidence
+Proteus mirabilis,X1V9,Beta-lactamase class-C family,6K8X,Klebsiella pneumoniae,proxy,primary-provisional,1.59 A ACC-1; not a P. mirabilis structure; organism transfer remains uncertain
+Proteus mirabilis,X1V9,MurA,1UAE,Escherichia coli,proxy,secondary-control,Use only as a family-level cell-wall target control
+Acinetobacter baumannii,X1V20,OXA-23 beta-lactamase,4JF5,Acinetobacter baumannii,exact,primary,1.15 A X-ray; meropenem-related OXA-23 site
+Acinetobacter baumannii,X1V11,LeuRS,5AGR,Mycobacterium tuberculosis H37Rv,proxy,high-priority-family,1.30 A ligand-bound editing-domain structure; not same-organism
+Acinetobacter baumannii,X1V26,FabH / 3-oxoacyl-ACP synthase III,5BNM,Escherichia coli K-12,proxy,secondary-family,1.70 A inhibitor-bound FabH; preferred over taxonomically mismatched streptokinase
+MRSA / Staphylococcus aureus,X1V19,BlaZ beta-lactamase,6WGR,Staphylococcus aureus USA300_TCH1516,exact,primary,1.88 A X-ray; EPE-bound active-site reference
+MRSA / Staphylococcus aureus,X1V19,DNA gyrase,6Z1A,Staphylococcus aureus,exact,secondary-control,Vecura control; inhibitor/DNA ternary complex
