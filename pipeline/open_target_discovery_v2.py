@@ -160,6 +160,23 @@ def score_query(q,refs,quality,compat,ontology,exclude_close=False,cutoff=.85):
                      'query_target_label':q.get('target_class',''),'query_mechanism_class':q.get('mechanism_class',''),'query_organisms':q.get('organisms','')})
     return pd.DataFrame(rows)
 
+def add_unscored_classes(scored,q,ontology):
+    """Keep the broad ontology visible: missing references are explicit, not absent targets."""
+    present=set(scored.target_class) if not scored.empty else set()
+    missing=[]
+    for cls in ontology.target_class.astype(str):
+        if cls in present: continue
+        missing.append({'query_id':q['query_id'],'source':q['source'],'target_class':cls,
+            'ecfp4_max':0.0,'ecfp4_top5_mean':0.0,'maccs_max':0.0,
+            'cross_target_decoy_max':0.0,'target_specificity_margin':0.0,'target_specificity_score':0.0,
+            'chemical_evidence_score':0.0,'reference_quality_score':0.0,'chemical_quality_adjusted_score':0.0,
+            'reference_quality_grade':'insufficient','n_references_after_exclusion':0,'n_close_references_excluded':0,
+            'n_unique_scaffolds':0,'best_reference_molecule':'','best_reference_organism':'',
+            'query_target_label':q.get('target_class',''),'query_mechanism_class':q.get('mechanism_class',''),
+            'query_organisms':q.get('organisms','')})
+    return pd.concat([scored,pd.DataFrame(missing)],ignore_index=True) if missing else scored
+
+
 def apply_biology(raw,ontology,compat,card_summary=None,snp_summary=None,snp_org=None,struct_summary=None):
     if raw.empty: return raw
     ann=ontology.set_index('target_class'); rows=[]
@@ -244,12 +261,13 @@ def main():
     private_scores=[]
     for q in private:
         s=score_query(q,refs,quality,compat,ontology,exclude_close=False)
+        s=add_unscored_classes(s,q,ontology)
         if not s.empty: private_scores.append(s)
     if private_scores:
         raw=pd.concat(private_scores,ignore_index=True); raw.to_csv(RES/'v2_open_target_scores_private.csv',index=False)
         ranked=apply_biology(raw,ontology,compat,card_summary,snp_summary,snp_org,struct_summary); ranked.to_csv(RES/'v2_open_target_predictions_by_organism.csv',index=False)
         ranked.sort_values(['organism','query_id','overall_priority_score'],ascending=[True,True,False]).groupby(['organism','query_id']).head(10).to_csv(RES/'v2_open_target_shortlist_by_organism.csv',index=False)
-        ranked.sort_values(['organism','query_id','clinical_translation_score'],ascending=[True,True,False]).groupby(['organism','query_id']).head(10).to_csv(RES/'v21_clinical_translation_shortlist_by_organism.csv',index=False)
+        ranked[ranked.chemical_hypothesis_score>0].sort_values(['organism','query_id','clinical_translation_score'],ascending=[True,True,False]).groupby(['organism','query_id']).head(10).to_csv(RES/'v21_clinical_translation_shortlist_by_organism.csv',index=False)
         ranked[ranked.confidence_class.isin(['High','Moderate'])].sort_values('overall_priority_score',ascending=False).to_csv(RES/'v2_validation_priority_candidates.csv',index=False)
         print('private queries',len(private),'raw rows',len(raw),'ranked rows',len(ranked))
     else: print('No protected private structures available; public-only run completed.')

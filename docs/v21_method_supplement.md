@@ -2,9 +2,9 @@
 
 ## Scope
 
-Version 2.1 extends the v2 open-target-discovery workflow with a mechanism- and binding-site-aware reference layer for clinically important antibacterial targets that were previously absent or too broad in the public ChEMBL reference universe. The expansion is deliberately conservative: a target subtype is added to the molecular reference set only when ChEMBL target metadata, assay metadata, and a valid molecular structure support the assignment.
+Version 2.1 extends the v2 open-target-discovery workflow with a mechanism- and binding-site-aware reference layer for clinically important antibacterial targets that were previously absent or too broad in the public ChEMBL reference universe. The expansion is deliberately conservative: a target subtype is added to the molecular reference set only when ChEMBL target metadata, assay metadata, and a valid molecular structure support the assignment. This is a **broad candidate universe shared by all six organisms**, not a PBP panel and not a replacement for open target discovery.
 
-The expanded ontology separates PBPs, Ambler beta-lactamase classes, and selected 30S/50S ribosomal binding-site classes. Parent-family labels remain available for reporting and benchmark acceptance, but chemical similarity is calculated at the narrowest supported subtype. Beta-lactamases are annotated as resistance-modifying hypotheses rather than assumed direct bactericidal targets.
+The expanded ontology separates PBPs, Ambler beta-lactamase classes, and selected 30S/50S ribosomal binding-site classes while retaining the full v2 parent universe. These are additive target families; no family is assigned a hard-coded chemical-ranking bonus. Parent-family labels remain available for reporting and benchmark acceptance, but chemical similarity is calculated at the narrowest supported subtype. Beta-lactamases are annotated as resistance-modifying hypotheses rather than assumed direct bactericidal targets.
 
 ## ChEMBL retrieval and provenance
 
@@ -31,7 +31,7 @@ RDKit removes explicit hydrogens and selects a parent fragment while preserving 
 
 ## Species transfer
 
-The UniProt mapper now includes PBP orthologue queries where canonical gene symbols are available, including `mrcA`, `mrcB`, `pbpA`, `pbp2b`, `pbp2x`, `ftsI`, and `dacB`. If a subtype has no organism-specific mapping but its parent class has a mapping, the scorer uses the parent mapping and records `organism_transfer_source=parent_class`. This is a transfer prior, not evidence that the compound binds the organism protein.
+The UniProt mapper applies the same organism-by-target mapping workflow to every supported target class. v2.1 adds PBP orthologue queries where canonical gene symbols are available, including `mrcA`, `mrcB`, `pbpA`, `pbp2b`, `pbp2x`, `ftsI`, and `dacB`; this is an additional mapping family, not a special ranking route. If a subtype has no organism-specific mapping but its parent class has a mapping, the scorer uses the parent mapping and records `organism_transfer_source=parent_class`. This is a transfer prior, not evidence that the compound binds the organism protein.
 
 ## Parallel scoring outputs
 
