@@ -14,5 +14,15 @@ data/compounds/*
 results/*
 !results/.gitkeep
 
+# Large raw CARD release archives and extracted source files.
+# Regenerate them with pipeline/fetch_card_data.py when needed.
+data/card/*.tar.bz2
+data/card/data/*
+data/card/ontology/*
+!data/card/.gitkeep
+
 # Temporary logs and benchmark cache files.
 *.log
+
+# Development-only diagnostics.
+pipeline/probe_*.py

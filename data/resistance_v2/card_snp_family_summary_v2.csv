@@ -1,0 +1,10 @@
+resistance_family,n_snp_rows,n_models,n_organism_descriptions
+D-Ala-D-Ala resistance,6,2,2
+DHFR/DHPS resistance,37,6,6
+GyrB/TopoIV resistance,275,52,52
+Lipid-A/envelope resistance,11,7,7
+MurA-pathway resistance,30,10,10
+Other resistance determinant,2701,168,168
+Porin/Efflux resistance,45,9,9
+Ribosome resistance,197,60,60
+RpoB resistance,434,14,14

@@ -1,0 +1,31 @@
+organism,resistance_family,n_snp_rows,n_models
+Acinetobacter baumannii,GyrB/TopoIV resistance,5,2
+Bacillus subtilis,Other resistance determinant,1,1
+Bacillus subtilis,Ribosome resistance,11,1
+Bacillus subtilis,RpoB resistance,5,1
+Escherichia coli,DHFR/DHPS resistance,5,1
+Escherichia coli,GyrB/TopoIV resistance,26,5
+Escherichia coli,MurA-pathway resistance,9,5
+Escherichia coli,Other resistance determinant,71,13
+Escherichia coli,Porin/Efflux resistance,5,2
+Escherichia coli,Ribosome resistance,41,17
+Escherichia coli,RpoB resistance,12,1
+Klebsiella pneumoniae,Lipid-A/envelope resistance,1,1
+Klebsiella pneumoniae,Other resistance determinant,12,3
+Klebsiella pneumoniae,Porin/Efflux resistance,3,1
+Pseudomonas aeruginosa,GyrB/TopoIV resistance,8,2
+Pseudomonas aeruginosa,Other resistance determinant,3,2
+Staphylococcus aureus,GyrB/TopoIV resistance,19,5
+Staphylococcus aureus,MurA-pathway resistance,19,3
+Staphylococcus aureus,Other resistance determinant,65,10
+Staphylococcus aureus,Ribosome resistance,2,1
+Staphylococcus aureus,RpoB resistance,11,3
+unresolved,D-Ala-D-Ala resistance,6,2
+unresolved,DHFR/DHPS resistance,32,5
+unresolved,GyrB/TopoIV resistance,217,38
+unresolved,Lipid-A/envelope resistance,10,6
+unresolved,MurA-pathway resistance,2,2
+unresolved,Other resistance determinant,2549,139
+unresolved,Porin/Efflux resistance,37,6
+unresolved,Ribosome resistance,143,41
+unresolved,RpoB resistance,406,9

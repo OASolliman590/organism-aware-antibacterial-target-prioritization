@@ -1,0 +1,8 @@
+target_resistance_family,n_models,n_aro_terms,n_with_snp_data
+Beta-lactamase,6413,6413,0
+D-Ala-D-Ala resistance,13,13,0
+DHFR resistance,1,1,0
+GyrB/TopoIV resistance,12,12,0
+PBP2a,5,5,0
+Porin resistance,6,6,0
+Ribosome resistance,1,1,0

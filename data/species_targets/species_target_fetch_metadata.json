@@ -1,0 +1,83 @@
+{
+  "organisms": {
+    "Bacillus cereus": 1396,
+    "Klebsiella pneumoniae": 573,
+    "Escherichia coli": 562,
+    "Proteus mirabilis": 584,
+    "Acinetobacter baumannii": 470,
+    "Staphylococcus aureus": 1280
+  },
+  "target_genes": {
+    "DHFR": "folA",
+    "FabI": "fabI",
+    "FabH": "fabH",
+    "FtsZ": "ftsZ",
+    "GyrB": "gyrB",
+    "TopoIV": "parE",
+    "RpoB": "rpoB",
+    "LeuRS": "leuS",
+    "MurA": "murA",
+    "MurC": "murC",
+    "MurE": "murE",
+    "LpxA": "lpxA",
+    "LpxC": "lpxC",
+    "LpxH": "lpxH",
+    "PBP2a": "mecA"
+  },
+  "protein_name_terms": {
+    "DHFR": [
+      "dihydrofolate reductase"
+    ],
+    "FabI": [
+      "enoyl-ACP reductase",
+      "enoyl-[acyl-carrier-protein] reductase"
+    ],
+    "FabH": [
+      "3-oxoacyl-ACP synthase III",
+      "beta-ketoacyl-ACP synthase III"
+    ],
+    "FtsZ": [
+      "cell division protein FtsZ"
+    ],
+    "GyrB": [
+      "DNA gyrase subunit B"
+    ],
+    "TopoIV": [
+      "DNA topoisomerase IV subunit B"
+    ],
+    "RpoB": [
+      "DNA-directed RNA polymerase subunit beta",
+      "RNA polymerase beta subunit"
+    ],
+    "LeuRS": [
+      "leucine--tRNA ligase",
+      "leucyl-tRNA synthetase"
+    ],
+    "MurA": [
+      "UDP-N-acetylglucosamine enolpyruvyl transferase",
+      "UDP-N-acetylglucosamine 1-carboxyvinyltransferase"
+    ],
+    "MurC": [
+      "UDP-N-acetylmuramate--L-alanine ligase"
+    ],
+    "MurE": [
+      "UDP-N-acetylmuramoyl-L-alanine--D-glutamate ligase"
+    ],
+    "LpxA": [
+      "UDP-N-acetylglucosamine acyltransferase"
+    ],
+    "LpxC": [
+      "UDP-3-O-[3-hydroxymyristoyl]glucosamine N-acyltransferase"
+    ],
+    "LpxH": [
+      "UDP-2,3-diacylglucosamine hydrolase"
+    ],
+    "PBP2a": [
+      "penicillin-binding protein 2a",
+      "PBP2a"
+    ]
+  },
+  "n_rows": 90,
+  "n_mapped": 44,
+  "source": "UniProt REST API"
+}

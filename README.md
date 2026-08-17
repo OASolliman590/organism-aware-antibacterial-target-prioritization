@@ -1,77 +1,111 @@
-# Open organism-aware antibacterial target prediction
+# Organism-Aware Antibacterial Open Target Discovery (v2)
 
-This repository contains a reproducible cheminformatics framework for **open target discovery** from small-molecule structures, followed by organism-specific biological and clinical filtering. It is designed for antibacterial research involving ESKAPE organisms and related pathogens.
+This repository contains a reproducible cheminformatics framework for **open target discovery** from small molecules, followed by organism-specific biological and clinical annotation. It is designed for antibacterial research involving the ESKAPE pathogens and related organisms.
 
-> **Data-protection policy:** unpublished compound structures, compound names, docking/MD outputs, and compound-specific predictions are intentionally excluded from this GitHub repository. Place authorized local inputs in `inputs/`; that directory is ignored by Git.
+> **Data-protection policy:** unpublished compound structures, compound names, docking/MD outputs, and compound-specific predictions are intentionally excluded from this GitHub repository. Authorized local inputs belong in `inputs/`, which is ignored by Git. The public repository contains code, public benchmark data, public reference data, and documentation only.
 
 ## Scientific objective
 
-The pipeline does not force a compound into a preselected target panel. It first generates chemically plausible target hypotheses from a broad reference universe, then applies organism-specific filters based on target family, bacterial essentiality, cellular localization, clinical precedent, resistance biology, and target availability. The output is a ranked hypothesis set for docking, molecular dynamics, biochemical assays, and cellular validation—not proof of target engagement.
+The pipeline does not force a compound into a preselected target panel. It first searches a broad public target universe using chemical evidence, then annotates each chemically plausible target with species-specific protein mapping, sequence transfer, clinical and essentiality context, cellular accessibility, resistance biology, structure-pocket precedent, anti-target risk, and uncertainty. The output is a ranked set of **testable target hypotheses**, not proof of binding or target engagement.
 
-The framework uses RDKit ECFP4/Morgan and MACCS fingerprints, nearest-neighbour reference-ligand evidence, target-family aggregation, structural/SAR flags, chemical-space visualization, and leakage-aware validation on known antibacterial drugs. Target scores report their evidence components separately so that target ranking is auditable rather than presented as a calibrated probability.
+The v2 workflow separates the following evidence layers:
+
+| Layer | Examples | Scientific interpretation |
+|---|---|---|
+| Chemical | ECFP4/Morgan, MACCS, nearest-neighbour consistency | Ligand-space support |
+| Specificity | Cross-target decoys, target-specificity margin | Whether the signal is target-specific |
+| Reference quality | Reference count, scaffold diversity, evidence grade | Stability of public support |
+| Species transfer | UniProt accession, mapping status, sequence similarity/coverage | Transferability to the organism protein |
+| Biology | Essentiality/fitness, clinical status, accessibility | Biological prioritization, not binding proof |
+| Resistance | CARD models, CARD SNP rows, organism-linked mutation counts | Resistance context and target-variation risk |
+| Structure | RCSB candidates, co-crystallized ligand flag | Future docking/pocket precedent; no docking performed |
+| Safety | Human-homologue/mitochondrial annotations | Early selectivity warning |
+| Uncertainty | Bootstrap stability, decoy calibration, reference coverage | Reliability of each hypothesis |
 
 ## Repository layout
 
 | Path | Purpose |
 |---|---|
-| `pipeline/` | Compound preparation, reference-ligand scoring, open target discovery, organism filtering, benchmarking, figures, and report generation |
-| `data/reference_ligands/` | Public reference-ligand records used by the current target-family modules |
-| `inputs/` | Local-only research inputs; ignored by Git and represented only by `.gitkeep` |
+| `pipeline/` | Public workflow modules for preparation, open target scoring, benchmarking, calibration, sequence mapping, resistance parsing, structure cataloguing, figures, and reporting |
+| `data/reference_ligands/` | Public ChEMBL-derived reference-ligand records used by the target classes |
+| `data/benchmark/` | Public ESKAPE-active antibacterial benchmark metadata and structures |
+| `data/target_ontology_v2.csv` | Auditable target ontology separating direct targets, complexes, pathways, resistance determinants, and phenotypic mechanisms |
+| `data/species_targets/` | Public species-target mapping and sequence-transfer metadata when present in the repository release |
+| `data/resistance_v2/` | CARD-derived public resistance-family and SNP summaries when present in the repository release |
+| `data/structures_v2/` | Bounded RCSB structure/pocket metadata; no docking inputs or private structures |
+| `inputs/` | Local-only research inputs; ignored by Git and represented publicly only by `.gitkeep` |
 | `data/compounds/` | Local-only normalized compound structures; ignored by Git |
-| `results/` | Local-only compound-specific outputs; ignored by Git |
+| `results/` | Local-only private prediction tables, figures, and reports; ignored by Git |
 | `run_pipeline.py` | Local end-to-end runner |
 | `requirements.txt` | Python dependencies |
 
 ## Local execution with authorized unpublished inputs
 
-Copy authorized input files into `inputs/`, including the structure files and any private target metadata. The input directory is not committed or uploaded by the standard Git workflow.
+Copy authorized input structures into the local `inputs/` directory. Do not commit them. Install dependencies and run:
 
 ```bash
 python -m pip install -r requirements.txt
-python run_pipeline.py
+PROJECT_ROOT=/path/to/clone python run_pipeline.py
 ```
 
-Set `PROJECT_ROOT` and `INPUT_DIR` when running from another location. The pipeline writes compound-specific structures, tables, figures, and reports to ignored local directories.
+The private workflow writes normalized structures and compound-specific outputs to ignored directories. Public-only benchmark and annotation modules can be run without private inputs when their public data are present.
 
-## Open target-discovery design
+## V2 target-discovery workflow
 
-The revised workflow is intentionally two-stage. **Stage A: chemically valid target discovery.** Compounds are compared against a broad target-family reference universe, including clinically relevant antibacterial target families such as beta-lactamases, DNA gyrase/topoisomerase IV, FabI/FabH, Mur enzymes, FtsZ, DHFR/DHPS, Lpx enzymes, aminoacyl-tRNA synthetases, and other families when reference coverage is adequate. Candidates are retained only when similarity, nearest-neighbour consistency, fingerprint agreement, and structural plausibility meet transparent criteria.
+The method has six conceptual stages:
 
-**Stage B: organism-specific clinical filtering.** Each chemically plausible target is annotated for organism relevance, essentiality or fitness impact, subcellular accessibility, clinical validation, resistance relevance, and evidence quality. This stage ranks target hypotheses for a specific organism without pretending that the organism itself determines ligand binding.
+1. **Structure standardization.** Molecules are sanitized, canonicalized, and represented using ECFP4/Morgan and MACCS fingerprints. Explicit hydrogens are removed for fingerprint comparison.
+2. **Open chemical discovery.** Each query is compared against all target classes with public reference support rather than a user-defined target panel.
+3. **Specificity and quality correction.** Cross-target decoys, target-specificity margins, reference count, scaffold diversity, and evidence grade are retained as separate fields.
+4. **Species and biological annotation.** Organism-specific UniProt mapping, sequence transfer, clinical status, essentiality/fitness, localization/accessibility, and resistance relevance are attached after chemical scoring.
+5. **Resistance and structure context.** CARD model/SNP context and bounded RCSB structure/co-crystal metadata are added without treating them as direct binding evidence.
+6. **Uncertainty and validation planning.** Bootstrap stability, decoy calibration, mapping status, and evidence coverage generate confidence classes and assay recommendations.
 
-The general score is:
+A simplified priority summary is:
 
 ```text
-chemical_target_evidence =
-    weighted ECFP4 nearest-neighbour evidence
-  + MACCS agreement
-  + reference-consistency evidence
-  + target-family SAR plausibility
+chemical_quality_adjusted_evidence
+    = chemical_similarity × target_specificity × reference_quality
 
-organism_clinical_priority =
-    chemical_target_evidence
-  × organism relevance
-  × essentiality/fitness evidence
-  × accessibility/clinical evidence
+organism_aware_priority
+    = chemical_quality_adjusted_evidence
+    × species_transfer
+    × pocket_evidence
+    × biological_priority
+    × anti_target_adjustment
 ```
 
-The factors are reported separately. They are not calibrated probabilities, and a high clinical priority cannot rescue chemically implausible ligand evidence.
+These are decision-support scores, not calibrated binding probabilities. A prediction with unresolved sequence mapping or poor target specificity is explicitly downgraded or classified as insufficient.
 
 ## Benchmarking
 
-The repository includes an evaluation framework for known antibacterial drugs with curated target labels. Benchmarking is leakage-aware: a drug or near-duplicate analogue must not be allowed to contribute its own target evidence to the reference set used to predict it. Performance is reported with top-1/top-3/top-5 recall, mean reciprocal rank, mean percentile rank, enrichment over random target ranking, and per-target-family confusion or retrieval plots.
+The benchmark uses public antibacterial drugs with mechanism-level target labels. Query molecules and close analogues are excluded from the reference set at ECFP4 similarity ≥0.85, and exact Bemis–Murcko scaffold exclusion is evaluated separately. Results report coverage, top-1/top-3/top-5 retrieval, MRR, enrichment over random, prevalence baselines, split status, and per-query ranks.
 
-Benchmark drugs should be sourced from public, citable resources such as ChEMBL, DrugBank records where available, FDA labels, and primary literature. Their target labels must distinguish direct molecular targets from resistance mechanisms, phenotypic mechanisms, and broad target-family annotations.
+The benchmark currently supports close-analogue and scaffold diagnostics. The scaffold result is reported transparently; if the available benchmark contains no additional same-scaffold exclusions, identical summary values are not interpreted as proof of scaffold-level generalization. Target-family holdout, temporal, and species-holdout results are reported as unavailable or partial when the public metadata do not support a valid evaluation.
 
-## Reproducibility and limitations
+## Resistance and structure annotations
 
-Reference-ligand data are heterogeneous and target-family coverage is uneven. Fingerprint similarity is a ligand-space hypothesis generator, not a binding assay. Cross-organism target records, whole-complex measurements, resistance determinants, efflux, permeability, expression, and target-site sequence variation require separate annotation or experimental validation. Sparse target classes should be marked low confidence rather than hidden.
+CARD-derived annotations describe resistance determinants and mutations associated with target families. They are not treated as evidence that a private compound binds a target. RCSB PDB metadata identify structure candidates and whether non-solvent co-crystallized ligands are present. Co-crystallized ligands are used to identify a defensible future docking site; PDBQT preparation, docking, and molecular dynamics remain downstream user-controlled steps.
 
-All unpublished inputs and compound-specific outputs remain local until the compounds are publicly released and the author explicitly approves a new repository release.
+## Limitations
 
-## References
+Reference-ligand assays are heterogeneous, target-family coverage is uneven, and whole-cell antibacterial activity depends on permeability, efflux, expression, metabolism, and target accessibility. UniProt mapping is also strain-dependent; unresolved mapping is uncertainty, not evidence of target absence. CARD record counts reflect curation and database density rather than resistance prevalence in a user’s isolates. Anti-target fields are early alerts rather than toxicity predictions.
 
-1. [RDKit documentation](https://www.rdkit.org/)
-2. [ChEMBL database and API](https://www.ebi.ac.uk/chembl/)
-3. [UMAP documentation](https://umap-learn.readthedocs.io/)
-4. [WHO bacterial priority pathogens](https://www.who.int/publications/i/item/9789240093461)
+The strongest next validation is a staged experiment: purified target or target-complex assay, species-orthologue comparison, MIC/time-kill with permeability and efflux controls, resistant-mutant selection, and complementation or target rescue. Docking and MD should be performed only for targets that survive chemical, species, and assay-level review.
+
+## Public sources
+
+- [WHO bacterial priority pathogens list, 2024](https://www.who.int/publications/i/item/9789240093461)
+- [ESKAPE antimicrobial-resistance review](https://pmc.ncbi.nlm.nih.gov/articles/PMC7227449/)
+- [ChEMBL](https://www.ebi.ac.uk/chembl/)
+- [RDKit](https://www.rdkit.org/)
+- [UniProt API documentation](https://www.uniprot.org/api-documentation/proteomes)
+- [CARD downloads and ontology](https://card.mcmaster.ca/download)
+- [RCSB PDB Search API](https://search.rcsb.org/)
+- [RCSB PDB Data API](https://data.rcsb.org/)
+
+## Reproducibility
+
+The main v2 modules are `pipeline/open_target_discovery_v2.py`, `pipeline/benchmark_v2.py`, `pipeline/calibrate_uncertainty_v2.py`, `pipeline/fetch_species_targets.py`, `pipeline/sequence_compatibility.py`, `pipeline/build_reference_quality.py`, `pipeline/build_card_resistance_annotations.py`, `pipeline/parse_card_snps_v2.py`, `pipeline/fetch_structure_catalog_v2.py`, `pipeline/v2_figures.py`, `pipeline/build_validation_plan_v2.py`, and `pipeline/summarize_v2.py`.
+
+All unpublished inputs and compound-specific outputs remain local until the compounds are published and the author explicitly approves a new repository release.

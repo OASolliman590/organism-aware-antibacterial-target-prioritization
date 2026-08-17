@@ -1,0 +1,42 @@
+target_class,search_term,pdb_id,source_url,search_status,search_error,experimental_method,resolution_A,nonpolymer_ligands,co_crystal_ligand_present,active_site_evidence,structure_metadata_status
+DHFR,dihydrofolate reductase bacterial,5XV5,https://www.rcsb.org/structure/5XV5,text_search_candidate,,X-RAY DIFFRACTION,2.5,,False,no non-solvent ligand reported in entry metadata,retrieved
+DHFR,dihydrofolate reductase bacterial,5XUX,https://www.rcsb.org/structure/5XUX,text_search_candidate,,X-RAY DIFFRACTION,2.27,,False,no non-solvent ligand reported in entry metadata,retrieved
+DHPS,dihydropteroate synthase bacterial,1AJZ,https://www.rcsb.org/structure/1AJZ,text_search_candidate,,X-RAY DIFFRACTION,2.0,,False,no non-solvent ligand reported in entry metadata,retrieved
+DHPS,dihydropteroate synthase bacterial,1AJ2,https://www.rcsb.org/structure/1AJ2,text_search_candidate,,X-RAY DIFFRACTION,2.0,,False,no non-solvent ligand reported in entry metadata,retrieved
+FabI,enoyl ACP reductase FabI bacterial,1LX6,https://www.rcsb.org/structure/1LX6,text_search_candidate,,X-RAY DIFFRACTION,2.4,,False,no non-solvent ligand reported in entry metadata,retrieved
+FabI,enoyl ACP reductase FabI bacterial,1LXC,https://www.rcsb.org/structure/1LXC,text_search_candidate,,X-RAY DIFFRACTION,2.4,,False,no non-solvent ligand reported in entry metadata,retrieved
+FabH,beta-ketoacyl ACP synthase III FabH,9KA2,https://www.rcsb.org/structure/9KA2,text_search_candidate,,X-RAY DIFFRACTION,1.5,,False,no non-solvent ligand reported in entry metadata,retrieved
+FabH,beta-ketoacyl ACP synthase III FabH,9KA5,https://www.rcsb.org/structure/9KA5,text_search_candidate,,X-RAY DIFFRACTION,1.42,,False,no non-solvent ligand reported in entry metadata,retrieved
+FtsZ,FtsZ bacterial,1OFU,https://www.rcsb.org/structure/1OFU,text_search_candidate,,X-RAY DIFFRACTION,2.1,,False,no non-solvent ligand reported in entry metadata,retrieved
+FtsZ,FtsZ bacterial,5ZUE,https://www.rcsb.org/structure/5ZUE,text_search_candidate,,X-RAY DIFFRACTION,2.7,,False,no non-solvent ligand reported in entry metadata,retrieved
+GyrB,DNA gyrase B bacterial ATPase,3G7E,https://www.rcsb.org/structure/3G7E,text_search_candidate,,X-RAY DIFFRACTION,2.2,,False,no non-solvent ligand reported in entry metadata,retrieved
+GyrB,DNA gyrase B bacterial ATPase,3G75,https://www.rcsb.org/structure/3G75,text_search_candidate,,X-RAY DIFFRACTION,2.3,,False,no non-solvent ligand reported in entry metadata,retrieved
+TopoIV,topoisomerase IV ParE ParC bacterial,9KGT,https://www.rcsb.org/structure/9KGT,text_search_candidate,,X-RAY DIFFRACTION,3.05,,False,no non-solvent ligand reported in entry metadata,retrieved
+RpoB,RNA polymerase beta subunit RpoB bacterial,9A7S,https://www.rcsb.org/structure/9A7S,text_search_candidate,,,,,False,no non-solvent ligand reported in entry metadata,retrieved
+RpoB,RNA polymerase beta subunit RpoB bacterial,9A6P,https://www.rcsb.org/structure/9A6P,text_search_candidate,,,,,False,no non-solvent ligand reported in entry metadata,retrieved
+LeuRS,leucyl tRNA synthetase bacterial,9TJW,https://www.rcsb.org/structure/9TJW,text_search_candidate,,X-RAY DIFFRACTION,2.235,,False,no non-solvent ligand reported in entry metadata,retrieved
+LeuRS,leucyl tRNA synthetase bacterial,9TJV,https://www.rcsb.org/structure/9TJV,text_search_candidate,,X-RAY DIFFRACTION,2.277,,False,no non-solvent ligand reported in entry metadata,retrieved
+MurA,UDP-N-acetylglucosamine enolpyruvyl transferase MurA,1Q3G,https://www.rcsb.org/structure/1Q3G,text_search_candidate,,X-RAY DIFFRACTION,2.65,,False,no non-solvent ligand reported in entry metadata,retrieved
+MurA,UDP-N-acetylglucosamine enolpyruvyl transferase MurA,1RYW,https://www.rcsb.org/structure/1RYW,text_search_candidate,,X-RAY DIFFRACTION,2.3,,False,no non-solvent ligand reported in entry metadata,retrieved
+MurE,UDP-N-acetylmuramoyl tripeptide synthetase MurE,1E8C,https://www.rcsb.org/structure/1E8C,text_search_candidate,,X-RAY DIFFRACTION,2.0,API;UAG,True,co-crystallized non-solvent ligand reported by RCSB entry,retrieved
+MurE,UDP-N-acetylmuramoyl tripeptide synthetase MurE,7D27,https://www.rcsb.org/structure/7D27,text_search_candidate,,X-RAY DIFFRACTION,2.48,,False,no non-solvent ligand reported in entry metadata,retrieved
+LpxA,UDP-3-O-acyl-glucosamine N-acyltransferase LpxA,4IHF,https://www.rcsb.org/structure/4IHF,text_search_candidate,,X-RAY DIFFRACTION,2.1,1F7,True,co-crystallized non-solvent ligand reported by RCSB entry,retrieved
+LpxA,UDP-3-O-acyl-glucosamine N-acyltransferase LpxA,3I3X,https://www.rcsb.org/structure/3I3X,text_search_candidate,,X-RAY DIFFRACTION,2.1,,False,no non-solvent ligand reported in entry metadata,retrieved
+LpxC,UDP-3-O-acyl-N-acetylglucosamine deacetylase LpxC,2GO4,https://www.rcsb.org/structure/2GO4,text_search_candidate,,X-RAY DIFFRACTION,2.7,TUX;ZN,True,co-crystallized non-solvent ligand reported by RCSB entry,retrieved
+LpxC,UDP-3-O-acyl-N-acetylglucosamine deacetylase LpxC,1YH8,https://www.rcsb.org/structure/1YH8,text_search_candidate,,X-RAY DIFFRACTION,2.7,PAM;ZN,True,co-crystallized non-solvent ligand reported by RCSB entry,retrieved
+LpxH,"UDP-2,3-diacylglucosamine hydrolase LpxH",5B4D,https://www.rcsb.org/structure/5B4D,text_search_candidate,,X-RAY DIFFRACTION,1.75,,False,no non-solvent ligand reported in entry metadata,retrieved
+LpxH,"UDP-2,3-diacylglucosamine hydrolase LpxH",5B4A,https://www.rcsb.org/structure/5B4A,text_search_candidate,,X-RAY DIFFRACTION,1.72,,False,no non-solvent ligand reported in entry metadata,retrieved
+PBP2a,penicillin binding protein 2a PBP2a,1MWT,https://www.rcsb.org/structure/1MWT,text_search_candidate,,X-RAY DIFFRACTION,2.45,CD;PNM,True,co-crystallized non-solvent ligand reported by RCSB entry,retrieved
+PBP2a,penicillin binding protein 2a PBP2a,1VQQ,https://www.rcsb.org/structure/1VQQ,text_search_candidate,,X-RAY DIFFRACTION,1.8,CD,True,co-crystallized non-solvent ligand reported by RCSB entry,retrieved
+PBP,penicillin binding protein bacterial,4WKT,https://www.rcsb.org/structure/4WKT,text_search_candidate,,X-RAY DIFFRACTION,1.782,BUB,True,co-crystallized non-solvent ligand reported by RCSB entry,retrieved
+PBP,penicillin binding protein bacterial,4K2F,https://www.rcsb.org/structure/4K2F,text_search_candidate,,X-RAY DIFFRACTION,1.99,,False,no non-solvent ligand reported in entry metadata,retrieved
+70S_ribosome,bacterial 70S ribosome antibiotic,1LS2,https://www.rcsb.org/structure/1LS2,text_search_candidate,,ELECTRON MICROSCOPY,16.8,,False,no non-solvent ligand reported in entry metadata,retrieved
+70S_ribosome,bacterial 70S ribosome antibiotic,1QZD,https://www.rcsb.org/structure/1QZD,text_search_candidate,,ELECTRON MICROSCOPY,10.0,,False,no non-solvent ligand reported in entry metadata,retrieved
+D-Ala-D-Ala,D-Ala-D-Ala ligase bacterial,8F5D,https://www.rcsb.org/structure/8F5D,text_search_candidate,,X-RAY DIFFRACTION,2.56,,False,no non-solvent ligand reported in entry metadata,retrieved
+D-Ala-D-Ala,D-Ala-D-Ala ligase bacterial,2Y67,https://www.rcsb.org/structure/2Y67,text_search_candidate,,X-RAY DIFFRACTION,1.85,,False,no non-solvent ligand reported in entry metadata,retrieved
+Beta-lactamase,bacterial beta lactamase,5ZUG,https://www.rcsb.org/structure/5ZUG,text_search_candidate,,X-RAY DIFFRACTION,2.802,,False,no non-solvent ligand reported in entry metadata,retrieved
+Beta-lactamase,bacterial beta lactamase,9C5P,https://www.rcsb.org/structure/9C5P,text_search_candidate,,X-RAY DIFFRACTION,1.15,A1AUQ;ZN,True,co-crystallized non-solvent ligand reported by RCSB entry,retrieved
+30S_ribosome,bacterial 30S ribosome antibiotic,1O9M,https://www.rcsb.org/structure/1O9M,text_search_candidate,,X-RAY DIFFRACTION,2.4,42B;BDG;P24;PA2,True,co-crystallized non-solvent ligand reported by RCSB entry,retrieved
+30S_ribosome,bacterial 30S ribosome antibiotic,4V8A,https://www.rcsb.org/structure/4V8A,text_search_candidate,,X-RAY DIFFRACTION,3.2,T8B,True,co-crystallized non-solvent ligand reported by RCSB entry,retrieved
+50S_ribosome,bacterial 50S ribosome antibiotic,1OND,https://www.rcsb.org/structure/1OND,text_search_candidate,,X-RAY DIFFRACTION,3.4,,False,no non-solvent ligand reported in entry metadata,retrieved
+50S_ribosome,bacterial 50S ribosome antibiotic,4V9M,https://www.rcsb.org/structure/4V9M,text_search_candidate,,X-RAY DIFFRACTION,4.0,,False,no non-solvent ligand reported in entry metadata,retrieved
