@@ -1,8 +1,18 @@
 __pycache__/
 *.py[cod]
 .ipynb_checkpoints/
-results/*.log
-results/*_console.txt
 *.egg-info/
 .DS_Store
 .env
+
+# Unpublished research inputs and compound-specific generated outputs.
+# These remain available locally but are not committed to GitHub.
+inputs/*
+!inputs/.gitkeep
+data/compounds/*
+!data/compounds/.gitkeep
+results/*
+!results/.gitkeep
+
+# Temporary logs and benchmark cache files.
+*.log

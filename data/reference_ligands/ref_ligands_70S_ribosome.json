@@ -1,0 +1,1397 @@
+[
+  {
+    "molecule_chembl_id": "CHEMBL1232510",
+    "canonical_smiles": "CC[C@H]1OC(=O)[C@@](C)(F)C(=O)[C@H](C)[C@@H](O[C@@H]2O[C@H](C)C[C@H](N(C)C)[C@H]2O)[C@](C)(OC)C[C@@H](C)C(=O)[C@H](C)[C@H]2N(CCCCn3cc(-c4cccc(N)c4)nn3)C(=O)O[C@]12C",
+    "pchembl_value": 9.22,
+    "standard_type": "Kd",
+    "standard_value": "0.6",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4463502",
+    "canonical_smiles": "CC[C@H]1OC(=O)[C@@](C)(F)C(=O)[C@H](C)[C@@H](O[C@@H]2O[C@H](C)C[C@H](N(C)C)[C@H]2O)[C@](C)(OC)C[C@@H](C)C(=O)[C@H](C)[C@H]2N(CCCCn3cc(-c4cccc(N(C)C)c4)nn3)C(=O)O[C@]12C",
+    "pchembl_value": 8.85,
+    "standard_type": "Kd",
+    "standard_value": "1.4",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4203781",
+    "canonical_smiles": "CC[C@H]1OC(=O)[C@@](C)(F)C(=O)[C@H](C)[C@@H](O[C@@H]2O[C@H](C)C[C@H](N(C)C)[C@H]2O)[C@](C)(OC)C[C@@H](C)C(=O)[C@H](C)[C@H]2N(CCCCN=[N+]=[N-])C(=O)O[C@]12C",
+    "pchembl_value": 8.68,
+    "standard_type": "Kd",
+    "standard_value": "2.1",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL532",
+    "canonical_smiles": "CC[C@H]1OC(=O)[C@H](C)[C@@H](O[C@H]2C[C@@](C)(OC)[C@@H](O)[C@H](C)O2)[C@H](C)[C@@H](O[C@@H]2O[C@H](C)C[C@H](N(C)C)[C@H]2O)[C@](C)(O)C[C@@H](C)C(=O)[C@H](C)[C@@H](O)[C@]1(C)O",
+    "pchembl_value": 8.678,
+    "standard_type": "Kd",
+    "standard_value": "2100.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4128170",
+    "canonical_smiles": "CO[C@H]1/C=C/[C@@](C)(O)/C=C/C(=O)O[C@H](C)[C@@H](C)CC/C=C/1C",
+    "pchembl_value": 8.62,
+    "standard_type": "Kd",
+    "standard_value": "2.4",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3335485",
+    "canonical_smiles": "CC[C@H]1OC(=O)[C@H](C)C(=O)C[C@@H](O[C@@H]2O[C@H](C)C[C@H](N(C)C)[C@H]2O)[C@](C)(OC)C[C@@H](C)C(=O)[C@H](C)[C@H]2N(CCCCn3cnc(-c4cccnc4)c3)C(=O)O[C@]12C",
+    "pchembl_value": 8.19,
+    "standard_type": "Kd",
+    "standard_value": "6.4",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL1136",
+    "canonical_smiles": "CC[C@H]1OC(=O)[C@H](C)C(=O)[C@H](C)[C@@H](O[C@@H]2O[C@H](C)C[C@H](N(C)C)[C@H]2O)[C@](C)(OC)C[C@@H](C)C(=O)[C@H](C)[C@H]2N(CCCCn3cnc(-c4cccnc4)c3)C(=O)O[C@]12C",
+    "pchembl_value": 8.19,
+    "standard_type": "Kd",
+    "standard_value": "6.4",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL1688546",
+    "canonical_smiles": "C[C@H]1C(=O)O[C@H](CCNC(=O)Cc2cccc(-c3ccco3)c2)[C@@]2(C)OC(=O)N[C@@H]2[C@@H](C)C(=O)[C@H](C)C[C@@](C)(O)[C@H](O[C@@H]2O[C@H](C)C[C@H](N(C)C)C2O)[C@@H](C)C1=O",
+    "pchembl_value": 8.12,
+    "standard_type": "Kd",
+    "standard_value": "7.5",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL215226",
+    "canonical_smiles": "CN[C@@H]1[C@@H](O)[C@@H](O[C@@H]2[C@@H](O)[C@H](O[C@H]3O[C@H]([C@@H](C)O)[C@@H](O)[C@H](O)[C@H]3N)[C@@H](N)C[C@H]2N)OC[C@]1(C)O",
+    "pchembl_value": 8.05,
+    "standard_type": "IC50",
+    "standard_value": "8.9",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL1572",
+    "canonical_smiles": "CCN[C@@H]1C[C@H](N)[C@@H](O[C@H]2OC(CN)=CC[C@H]2N)[C@H](O)[C@H]1O[C@H]1OC[C@](C)(O)[C@H](NC)[C@H]1O",
+    "pchembl_value": 7.7,
+    "standard_type": "IC50",
+    "standard_value": "20.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL5209318",
+    "canonical_smiles": "CCCCCCCCCCCC(=O)N1CCC[C@H]1C(=O)N[C@@H](CCCNC(=N)N)C(=O)N1CCC[C@H]1C(=O)N[C@@H](CCCNC(=N)N)C(=O)N1CCC[C@H]1C(=O)N1CCC[C@H]1C(=O)N[C@@H](CCCNC(=N)N)C(=O)NCCCNCCCCNCCCN",
+    "pchembl_value": 7.66,
+    "standard_type": "Ki",
+    "standard_value": "21.7",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4538701",
+    "canonical_smiles": "CCC[C@H]1[C@H](O)[C@@H](N)[C@@H](O[C@H]2[C@H](O[C@@H]3O[C@H](CO)[C@@H](O[C@H]4O[C@@H](CN)[C@@H](O)[C@H](O)[C@H]4N)[C@H]3O)[C@@H](O)[C@H](N)C[C@@H]2N)O[C@@H]1CO",
+    "pchembl_value": 7.51,
+    "standard_type": "IC50",
+    "standard_value": "31.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL184618",
+    "canonical_smiles": "NC[C@@H]1O[C@H](O[C@H]2[C@@H](O)[C@H](O[C@@H]3[C@@H](O)[C@H](N)C[C@H](N)[C@H]3O[C@H]3O[C@H](CN)[C@@H](O)[C@H](O)[C@H]3N)O[C@@H]2CO)[C@H](N)[C@@H](O)[C@@H]1O",
+    "pchembl_value": 7.5,
+    "standard_type": "IC50",
+    "standard_value": "32.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL5185367",
+    "canonical_smiles": "CCCCCCCCCC(=O)N1CCC[C@H]1C(=O)N[C@@H](CCCNC(=N)N)C(=O)N1CCC[C@H]1C(=O)N[C@@H](CCCNC(=N)N)C(=O)N1CCC[C@H]1C(=O)N1CCC[C@H]1C(=O)N[C@@H](CCCNC(=N)N)C(=O)NCCCNCCCCNCCCN",
+    "pchembl_value": 7.47,
+    "standard_type": "Ki",
+    "standard_value": "33.8",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL5428248",
+    "canonical_smiles": "CS[C@H]1O[C@H]([C@H](NC(=O)[C@H]2NC[C@@H]3C[C@H](CC(C)C)CCO[C@H]32)[C@H](C)Cl)[C@H](O)[C@H](O)[C@H]1O.O=CO",
+    "pchembl_value": 7.47,
+    "standard_type": "Kd",
+    "standard_value": "34.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL1234521",
+    "canonical_smiles": "C=C[C@]1(C)C[C@@H](OC(=O)CSCCN(CC)CC)[C@]2(C)[C@H](C)CC[C@]3(CCC(=O)[C@H]32)[C@@H](C)[C@@H]1O",
+    "pchembl_value": 7.44,
+    "standard_type": "Kd",
+    "standard_value": "36.3",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL370143",
+    "canonical_smiles": "NC[C@@H]1O[C@H](O[C@H]2[C@@H](O)[C@H](O[C@@H]3[C@@H](O)[C@H](N)C[C@H](N)[C@H]3O[C@H]3O[C@H](CO)[C@@H](O)[C@H](O)[C@H]3N)O[C@@H]2CO)[C@H](N)[C@@H](O)[C@@H]1O",
+    "pchembl_value": 7.42,
+    "standard_type": "IC50",
+    "standard_value": "38.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4750017",
+    "canonical_smiles": "C[C@H](NC(=O)[C@@H](NC(=O)[C@@H](N)CCCCN)[C@H](C)O)C(=O)NCC(=O)N[C@H](CCCN)C(=O)N1CCC[C@H]1C(=O)N[C@@H](Cc1c[nH]cn1)C(=O)N[C@@H](CCCCN)C(=O)N/C(=C\\CCNC(=N)N)C(=O)O",
+    "pchembl_value": 7.398,
+    "standard_type": "IC50",
+    "standard_value": "40000.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4750287",
+    "canonical_smiles": "C[C@H](NC(=O)[C@H](CO)NC(=O)[C@@H](N)CCCCN)C(=O)NCC(=O)N[C@H](CCCN)C(=O)N1CCC[C@H]1C(=O)N[C@@H](Cc1c[nH]cn1)C(=O)N[C@@H](CCCCN)C(=O)N/C(=C\\CCNC(=N)N)C(=O)O",
+    "pchembl_value": 7.398,
+    "standard_type": "IC50",
+    "standard_value": "40000.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4756487",
+    "canonical_smiles": "CO[C@@H](CN)[C@H](NC(=O)[C@@H](N)CCCCN)C(=O)N[C@@H](C)C(=O)NCC(=O)N[C@H](CCCN)C(=O)N1CCC[C@H]1C(=O)N[C@@H](Cc1c[nH]cn1)C(=O)N[C@@H](CCCCN)C(=O)N/C(=C\\CCNC(=N)N)C(=O)O",
+    "pchembl_value": 7.398,
+    "standard_type": "IC50",
+    "standard_value": "40000.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4740047",
+    "canonical_smiles": "C[C@H](NC(=O)[C@@H](NC(=O)[C@@H](N)CCCCN)[C@H](O)CN)C(=O)NCC(=O)N[C@H](CCCN)C(=O)N1CCC[C@H]1C(=O)N[C@@H](Cc1c[nH]cn1)C(=O)N[C@@H](CCCCN)C(=O)N/C(=C\\CCNC(=N)N)C(=O)O",
+    "pchembl_value": 7.398,
+    "standard_type": "IC50",
+    "standard_value": "40000.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4754782",
+    "canonical_smiles": "C[C@H](NC(=O)[C@@H](NC(=O)[C@@H](N)CCCCN)[C@@H](O)[C@H](C)N)C(=O)NCC(=O)N[C@H](CCCN)C(=O)N1CCC[C@H]1C(=O)N[C@@H](Cc1c[nH]cn1)C(=O)N[C@@H](CCCCN)C(=O)N/C(=C\\CCNC(=N)N)C(=O)O",
+    "pchembl_value": 7.398,
+    "standard_type": "IC50",
+    "standard_value": "40000.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4744033",
+    "canonical_smiles": "C[C@H](NC(=O)[C@@H](NC(=O)[C@@H](N)CCCCN)[C@@H](O)C(C)(C)N)C(=O)NCC(=O)N[C@H](CCCN)C(=O)N1CCC[C@H]1C(=O)N[C@@H](Cc1c[nH]cn1)C(=O)N[C@@H](CCCCN)C(=O)N/C(=C\\CCNC(=N)N)C(=O)O",
+    "pchembl_value": 7.398,
+    "standard_type": "IC50",
+    "standard_value": "40000.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4786763",
+    "canonical_smiles": "C[C@H](NC(=O)[C@@H](NC(=O)[C@@H](N)CCCCN)[C@@H](O)CN)C(=O)NCC(=O)N[C@H](CCCCN)C(=O)N1CCC[C@H]1C(=O)N[C@@H](Cc1c[nH]cn1)C(=O)N[C@@H](CCCCN)C(=O)N/C(=C\\CCNC(=N)N)C(=O)O",
+    "pchembl_value": 7.398,
+    "standard_type": "IC50",
+    "standard_value": "40000.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4745557",
+    "canonical_smiles": "CCCC[C@@H](NC(=O)CNC(=O)[C@H](C)NC(=O)[C@@H](NC(=O)[C@@H](N)CCCCN)[C@@H](O)CN)C(=O)N1CCC[C@H]1C(=O)N[C@@H](Cc1c[nH]cn1)C(=O)N[C@@H](CCCCN)C(=O)N/C(=C\\CCNC(=N)N)C(=O)O",
+    "pchembl_value": 7.398,
+    "standard_type": "IC50",
+    "standard_value": "40000.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4764251",
+    "canonical_smiles": "CNCCC[C@@H](NC(=O)CNC(=O)[C@H](C)NC(=O)[C@@H](NC(=O)[C@@H](N)CCCCN)[C@@H](O)CN)C(=O)N1CCC[C@H]1C(=O)N[C@@H](Cc1c[nH]cn1)C(=O)N[C@@H](CCCCN)C(=O)N/C(=C\\CCNC(=N)N)C(=O)O",
+    "pchembl_value": 7.398,
+    "standard_type": "IC50",
+    "standard_value": "40000.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4790510",
+    "canonical_smiles": "CC(=O)NCCC[C@@H](NC(=O)CNC(=O)[C@H](C)NC(=O)[C@@H](NC(=O)[C@@H](N)CCCCN)[C@@H](O)CN)C(=O)N1CCC[C@H]1C(=O)N[C@@H](Cc1c[nH]cn1)C(=O)N[C@@H](CCCCN)C(=O)N/C(=C\\CCNC(=N)N)C(=O)O",
+    "pchembl_value": 7.398,
+    "standard_type": "IC50",
+    "standard_value": "40000.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4786196",
+    "canonical_smiles": "C[C@H](NC(=O)[C@@H](NC(=O)[C@@H](N)CCCCN)[C@@H](O)CN)C(=O)NCC(=O)N[C@H](CC[C@@H](C)N)C(=O)N1CCC[C@H]1C(=O)N[C@@H](Cc1c[nH]cn1)C(=O)N[C@@H](CCCCN)C(=O)N/C(=C\\CCNC(=N)N)C(=O)O",
+    "pchembl_value": 7.398,
+    "standard_type": "IC50",
+    "standard_value": "40000.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4540738",
+    "canonical_smiles": "CC1=C\\[C@@H](O)C[C@@H](O)Cc2nc(co2)C(=O)N2CCC[C@@H]2C(=O)O[C@H](C(C)C)[C@H](C)/C=C/C(=O)NC\\C=C\\1",
+    "pchembl_value": 7.3,
+    "standard_type": "IC50",
+    "standard_value": "50.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4453596",
+    "canonical_smiles": "CCS[C@H]1[C@H](O)[C@@H](N)[C@@H](O[C@H]2[C@H](O[C@@H]3O[C@H](CO)[C@@H](O[C@H]4O[C@@H](CN)[C@@H](O)[C@H](O)[C@H]4N)[C@H]3O)[C@@H](O)[C@H](N)C[C@@H]2N)O[C@@H]1CO",
+    "pchembl_value": 7.28,
+    "standard_type": "IC50",
+    "standard_value": "53.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4455473",
+    "canonical_smiles": "CC1=C\\[C@@H](O)C[C@@H](F)Cc2nc(co2)C(=O)N2CCC[C@@H]2C(=O)O[C@H](C(C)C)[C@H](C)/C=C/C(=O)NC\\C=C\\1",
+    "pchembl_value": 7.22,
+    "standard_type": "IC50",
+    "standard_value": "60.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL5209331",
+    "canonical_smiles": "C[C@@H]1C[C@H](O)[C@H]2O[C@H](O[C@H]3[C@H](O[C@@H]4O[C@H](CO)[C@@H](O[C@H]5O[C@@H](CN)[C@@H](O)[C@H](O)[C@H]5N)[C@H]4O)[C@@H](O)[C@H](N)C[C@@H]3N)[C@H](N)[C@@H](O)[C@@H]2O1",
+    "pchembl_value": 7.2,
+    "standard_type": "IC50",
+    "standard_value": "63.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL5169637",
+    "canonical_smiles": "NC[C@@H]1O[C@H](O[C@H]2[C@@H](O)[C@H](O[C@@H]3[C@@H](O)[C@H](N)C[C@H](N)[C@H]3O[C@H]3O[C@H]4[C@@H](OCCC[C@@H]4O)[C@H](O)[C@H]3N)O[C@@H]2CO)[C@H](N)[C@@H](O)[C@@H]1O",
+    "pchembl_value": 7.15,
+    "standard_type": "IC50",
+    "standard_value": "71.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL263367",
+    "canonical_smiles": "COC[C@H]1O[C@@H](O[C@@H]2OC[C@@H]3O[C@@]4(OC[C@@H](OC(=O)c5c(C)cc(O)cc5O)[C@@H]5OCO[C@H]54)O[C@H]3[C@H]2O)[C@@H](OC)[C@@H](O)[C@@H]1O[C@@H]1O[C@H](C)[C@H](OC)[C@H](O[C@@H]2O[C@H](C)[C@H]3O[C@]4(C[C@@H](O)[C@H](O[C@H]5C[C@@H](O[C@H]6C[C@](C)([N+](=O)[O-])[C@@H](OC)[C@H](C)O6)[C@H](OC(=O)c6c(C)c(Cl)c(O)c(Cl)c6OC)[C@@H](C)O5)[C@@H](C)O4)O[C@]3(C)[C@@H]2O)[C@H]1O",
+    "pchembl_value": 7.08,
+    "standard_type": "Kd",
+    "standard_value": "84.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL553222",
+    "canonical_smiles": "CC[C@H]1OC(=O)[C@H](C)[C@@H](O[C@H]2C[C@@](C)(OC)[C@@H](O)[C@H](C)O2)[C@H](C)[C@@H](O[C@@H]2O[C@H](C)C[C@H](N(C)C)[C@H]2O)[C@](C)(OC)C[C@@H](C)NC(=O)[C@H](C)[C@@H](O)[C@]1(C)O",
+    "pchembl_value": 7.0,
+    "standard_type": "IC50",
+    "standard_value": "100.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL553223",
+    "canonical_smiles": "CC[C@H]1OC(=O)[C@H](C)[C@@H](O)[C@H](C)[C@@H](O[C@@H]2O[C@H](C)C[C@H](N(C)C)[C@H]2O)[C@](C)(OC)C[C@@H](C)C(=O)N[C@H](C)[C@@H](O)[C@]1(C)O",
+    "pchembl_value": 7.0,
+    "standard_type": "IC50",
+    "standard_value": "100000.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL539388",
+    "canonical_smiles": "CC[C@H]1OC(=O)[C@H](C)[C@@H](O)[C@H](C)[C@@H](O[C@@H]2O[C@H](C)C[C@H](N(C)C)[C@H]2O)[C@](C)(OC)C[C@@H](C)NC(=O)[C@H](C)[C@@H](O)[C@]1(C)O",
+    "pchembl_value": 7.0,
+    "standard_type": "IC50",
+    "standard_value": "100000.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3251871",
+    "canonical_smiles": "CCC(=O)O[C@H]1[C@H](O[C@H]2[C@@H](CC=O)C[C@@H](C)[C@@H](OC(=O)CC)/C=C/C=C/C[C@@H](C)OC(=O)C[C@@H](OC(C)=O)[C@@H]2OC)O[C@H](C)[C@@H](O[C@H]2C[C@@](C)(O)[C@@H](OC(=O)CC(C)C)[C@H](C)O2)[C@@H]1N(C)C",
+    "pchembl_value": 7.0,
+    "standard_type": "IC50",
+    "standard_value": "100000.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL2105600",
+    "canonical_smiles": "CC1=C\\[C@@H](O)CC(=O)Cc2nc(co2)C(=O)N2CCC[C@@H]2C(=O)O[C@H](C(C)C)[C@H](C)/C=C/C(=O)NC\\C=C\\1",
+    "pchembl_value": 7.0,
+    "standard_type": "IC50",
+    "standard_value": "100.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4531998",
+    "canonical_smiles": "CCN[C@@H]1C[C@H](N)[C@@H](O[C@H]2OC(CN)=C(Cl)C[C@H]2N)[C@H](O)[C@H]1O[C@H]1OC[C@](C)(O)[C@H](NC)[C@H]1O",
+    "pchembl_value": 7.0,
+    "standard_type": "IC50",
+    "standard_value": "100.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4439463",
+    "canonical_smiles": "CCN[C@@H]1C[C@H](N)[C@@H](O[C@H]2OC(CN)=C(Br)C[C@H]2N)[C@H](O)[C@H]1O[C@H]1OC[C@](C)(O)[C@H](NC)[C@H]1O",
+    "pchembl_value": 7.0,
+    "standard_type": "IC50",
+    "standard_value": "100.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4543487",
+    "canonical_smiles": "CCN[C@@H]1C[C@H](N)[C@@H](O[C@H]2OC(CN)=C(I)C[C@H]2N)[C@H](O)[C@H]1O[C@H]1OC[C@](C)(O)[C@H](NC)[C@H]1O",
+    "pchembl_value": 7.0,
+    "standard_type": "IC50",
+    "standard_value": "100.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL1631492",
+    "canonical_smiles": "N[C@@H]1C[C@H](N)[C@@]2(CC[C@H](O)[C@H](O)CO2)[C@H](O)[C@H]1O",
+    "pchembl_value": 6.928,
+    "standard_type": "IC50",
+    "standard_value": "118000.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL5199733",
+    "canonical_smiles": "NC[C@@H]1O[C@H](O[C@H]2[C@@H](O)[C@H](O[C@@H]3[C@@H](O)[C@H](N)C[C@H](N)[C@H]3O[C@H]3O[C@H]4[C@@H](OCC[C@@H]4O)[C@H](O)[C@H]3N)O[C@@H]2CO)[C@H](N)[C@@H](O)[C@@H]1O",
+    "pchembl_value": 6.92,
+    "standard_type": "IC50",
+    "standard_value": "120.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL5180563",
+    "canonical_smiles": "C=C[C@]1(C)C[C@@H](OC(=O)CSc2nnc(-c3ccccc3OC)[nH]2)[C@]2(C)[C@H](C)CC[C@]3(CCC(=O)[C@H]32)[C@@H](C)[C@@H]1O",
+    "pchembl_value": 6.917,
+    "standard_type": "Kd",
+    "standard_value": "121000.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL5189890",
+    "canonical_smiles": "NC[C@@H]1O[C@H](O[C@H]2[C@@H](O)[C@H](O[C@@H]3[C@@H](O)[C@H](N)C[C@H](N)[C@H]3O[C@H]3O[C@H]4[C@@H](OC[C@@H]4O)[C@H](O)[C@H]3N)O[C@@H]2CO)[C@H](N)[C@@H](O)[C@@H]1O",
+    "pchembl_value": 6.89,
+    "standard_type": "IC50",
+    "standard_value": "130.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3114326",
+    "canonical_smiles": "N[C@@H]1C[C@H](N)[C@@]2(CC[C@@H](CNC(=O)[C@@H](N)Cc3c[nH]c4ccccc34)O2)[C@H](O)[C@H]1O",
+    "pchembl_value": 6.827,
+    "standard_type": "IC50",
+    "standard_value": "149000.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3114325",
+    "canonical_smiles": "N[C@@H]1C[C@H](N)[C@@]2(CC[C@@H](CNC(=O)[C@@H]3CCCN3)O2)[C@H](O)[C@H]1O",
+    "pchembl_value": 6.807,
+    "standard_type": "IC50",
+    "standard_value": "156000.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL511656",
+    "canonical_smiles": "NCC[C@H](O)C(=O)N[C@@H]1C[C@H](N)[C@@H](O[C@H]2O[C@H](CO)[C@@H](O)[C@H](O)[C@H]2N)[C@H](O[C@@H]2O[C@H](CN)[C@@H](O)[C@H]2O)[C@H]1O",
+    "pchembl_value": 6.8,
+    "standard_type": "IC50",
+    "standard_value": "160.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3244798",
+    "canonical_smiles": "CN(C)c1ncnc2c1ncn2[C@@H]1O[C@H](CO)[C@@H](NC(=O)[C@@H](N)CSCCCCCCO)[C@H]1O",
+    "pchembl_value": 6.78,
+    "standard_type": "Km",
+    "standard_value": "166000.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL1631491",
+    "canonical_smiles": "N[C@@H]1C[C@H](N)[C@@]2(CC[C@@H](O)[C@@H](O)CO2)[C@H](O)[C@H]1O",
+    "pchembl_value": 6.775,
+    "standard_type": "IC50",
+    "standard_value": "168000.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3114323",
+    "canonical_smiles": "N[C@@H]1C[C@H](N)[C@@]2(CC[C@@H](CNC(=O)[C@@H](N)Cc3cnc[nH]3)O2)[C@H](O)[C@H]1O",
+    "pchembl_value": 6.764,
+    "standard_type": "IC50",
+    "standard_value": "172000.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3244797",
+    "canonical_smiles": "CCCCCCCCSC[C@H](N)C(=O)N[C@H]1[C@@H](O)[C@H](n2cnc3c(N(C)C)ncnc32)O[C@@H]1CO",
+    "pchembl_value": 6.752,
+    "standard_type": "Km",
+    "standard_value": "177000.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL1631495",
+    "canonical_smiles": "NCC[C@H](O)C(=O)N[C@@H]1C[C@H](N)[C@@]2(CC[C@H](O)[C@H](O)CO2)[C@H](O)[C@H]1O",
+    "pchembl_value": 6.73,
+    "standard_type": "IC50",
+    "standard_value": "186000.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL5170658",
+    "canonical_smiles": "NC[C@@H]1O[C@H](O[C@H]2[C@@H](O)[C@H](O[C@@H]3[C@@H](O)[C@H](N)C[C@H](N)[C@H]3O[C@H]3O[C@H]4[C@@H](OC[C@H]4O)[C@H](O)[C@H]3N)O[C@@H]2CO)[C@H](N)[C@@H](O)[C@@H]1O",
+    "pchembl_value": 6.7,
+    "standard_type": "IC50",
+    "standard_value": "200.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3244796",
+    "canonical_smiles": "CCCCCCSC[C@H](N)C(=O)N[C@H]1[C@@H](O)[C@H](n2cnc3c(N(C)C)ncnc32)O[C@@H]1CO",
+    "pchembl_value": 6.668,
+    "standard_type": "Km",
+    "standard_value": "215000.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3244795",
+    "canonical_smiles": "CCCCCSC[C@H](N)C(=O)N[C@H]1[C@@H](O)[C@H](n2cnc3c(N(C)C)ncnc32)O[C@@H]1CO",
+    "pchembl_value": 6.593,
+    "standard_type": "Km",
+    "standard_value": "255000.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4444392",
+    "canonical_smiles": "CCN[C@@H]1C[C@H](N)[C@@H](O[C@H]2OC(CN)=C(c3ccccc3)C[C@H]2N)[C@H](O)[C@H]1O[C@H]1OC[C@](C)(O)[C@H](NC)[C@H]1O",
+    "pchembl_value": 6.57,
+    "standard_type": "IC50",
+    "standard_value": "270.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL529",
+    "canonical_smiles": "CC[C@H]1OC(=O)[C@H](C)[C@@H](O[C@H]2C[C@@](C)(OC)[C@@H](O)[C@H](C)O2)[C@H](C)[C@@H](O[C@@H]2O[C@H](C)C[C@H](N(C)C)[C@H]2O)[C@](C)(O)C[C@@H](C)CN(C)[C@H](C)[C@@H](O)[C@]1(C)O",
+    "pchembl_value": 6.52,
+    "standard_type": "IC50",
+    "standard_value": "300.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3114324",
+    "canonical_smiles": "NCCCC[C@H](N)C(=O)NC[C@@H]1CC[C@@]2(O1)[C@H](O)[C@@H](O)[C@H](N)C[C@@H]2N",
+    "pchembl_value": 6.488,
+    "standard_type": "IC50",
+    "standard_value": "325000.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3114328",
+    "canonical_smiles": "NCCCC[C@H](N)C(=O)N[C@@H]1C[C@H](N)[C@@]2(C[C@H](O)[C@H](O)CO2)[C@H](O)[C@H]1O",
+    "pchembl_value": 6.456,
+    "standard_type": "IC50",
+    "standard_value": "350000.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3244793",
+    "canonical_smiles": "CCCSC[C@H](N)C(=O)N[C@H]1[C@@H](O)[C@H](n2cnc3c(N(C)C)ncnc32)O[C@@H]1CO",
+    "pchembl_value": 6.427,
+    "standard_type": "Km",
+    "standard_value": "374000.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3244794",
+    "canonical_smiles": "CCCCSC[C@H](N)C(=O)N[C@H]1[C@@H](O)[C@H](n2cnc3c(N(C)C)ncnc32)O[C@@H]1CO",
+    "pchembl_value": 6.403,
+    "standard_type": "Km",
+    "standard_value": "395000.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL405863",
+    "canonical_smiles": "CC[C@H]1OC(=O)[C@H](C)[C@@H](O[C@H]2C[C@@](C)(OC)[C@@H](O)[C@H](C)O2)[C@H](C)[C@@H](O[C@@H]2O[C@H](C)C[C@H](N(C)C)[C@H]2O)[C@](C)(OC)C[C@@H](C)C(=O)[C@H](C)[C@H]2[C@H](SCCn3cnc4cccnc43)C(=O)O[C@@]21C",
+    "pchembl_value": 6.38,
+    "standard_type": "IC50",
+    "standard_value": "420.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL130",
+    "canonical_smiles": "O=C(N[C@H](CO)[C@H](O)c1ccc([N+](=O)[O-])cc1)C(Cl)Cl",
+    "pchembl_value": 6.37,
+    "standard_type": "IC50",
+    "standard_value": "430.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL1631494",
+    "canonical_smiles": "C=CCC(C)(C)CN[C@@H]1C[C@H](N)[C@@]2(CCC=CCO2)[C@H](O)[C@H]1O",
+    "pchembl_value": 6.368,
+    "standard_type": "IC50",
+    "standard_value": "429000.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3112607",
+    "canonical_smiles": "N[C@@H](Cc1ccc(O)cc1)C(=O)N[C@@H]1C[C@H](N)[C@@]2(CC[C@H](O)[C@H](O)CO2)[C@H](O)[C@H]1O",
+    "pchembl_value": 6.347,
+    "standard_type": "IC50",
+    "standard_value": "450000.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL474967",
+    "canonical_smiles": "NC[C@H]1O[C@@H](O[C@@H]2[C@@H](O)[C@H](N)C[C@H](N)[C@H]2O[C@H]2O[C@H](CO)[C@@H](O)[C@H](O)[C@H]2N)[C@H](O)[C@@H]1O",
+    "pchembl_value": 6.34,
+    "standard_type": "IC50",
+    "standard_value": "460.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3244799",
+    "canonical_smiles": "CN(C)c1ncnc2c1ncn2[C@@H]1O[C@H](CO)[C@@H](NC(=O)[C@@H](N)CSCc2ccccc2)[C@H]1O",
+    "pchembl_value": 6.337,
+    "standard_type": "Km",
+    "standard_value": "460000.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL2303630",
+    "canonical_smiles": "CSC[S@@+]([O-])CC(CO)NC(=O)/C=C/c1c(C)[nH]c(=O)[nH]c1=O",
+    "pchembl_value": 6.3,
+    "standard_type": "Ki",
+    "standard_value": "500.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4553689",
+    "canonical_smiles": "CC1=C\\[C@@H](O)C[C@H](F)Cc2nc(co2)C(=O)N2CCC[C@@H]2C(=O)O[C@H](C(C)C)[C@H](C)/C=C/C(=O)NC\\C=C\\1",
+    "pchembl_value": 6.3,
+    "standard_type": "IC50",
+    "standard_value": "500.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4174689",
+    "canonical_smiles": "C[C@H](NC(=O)[C@@H](NC(=O)[C@@H](N)CCCCN)[C@@H](O)CN)C(=O)NCC(=O)N[C@H](CCCN)C(=O)N1CCC[C@H]1C(=O)N[C@@H](Cc1cnc[nH]1)C(=O)N[C@@H](CCCCN)C(=O)N/C(=C\\CCNC(=N)N)C(=O)O",
+    "pchembl_value": 6.3,
+    "standard_type": "IC50",
+    "standard_value": "500.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3114334",
+    "canonical_smiles": "NCCCC[C@H](N)CN[C@@H]1C[C@H](N)[C@@]2(C[C@H](O)[C@H](O)CO2)[C@H](O)[C@H]1O",
+    "pchembl_value": 6.268,
+    "standard_type": "IC50",
+    "standard_value": "540000.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4470951",
+    "canonical_smiles": "CCCCC1=C(CN)O[C@H](O[C@H]2[C@H](O)[C@@H](O[C@H]3OC[C@](C)(O)[C@H](NC)[C@H]3O)[C@H](NCC)C[C@@H]2N)[C@H](N)C1",
+    "pchembl_value": 6.24,
+    "standard_type": "IC50",
+    "standard_value": "580.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3114339",
+    "canonical_smiles": "NCCCC[C@H](N)CN[C@@H]1C[C@H](N)[C@@]2(CC[C@@H](O)[C@@H](O)CO2)[C@H](O)[C@H]1O",
+    "pchembl_value": 6.222,
+    "standard_type": "IC50",
+    "standard_value": "600000.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3114338",
+    "canonical_smiles": "N[C@H](CN[C@@H]1C[C@H](N)[C@@]2(CC[C@@H](O)[C@@H](O)CO2)[C@H](O)[C@H]1O)Cc1ccc(O)cc1",
+    "pchembl_value": 6.222,
+    "standard_type": "IC50",
+    "standard_value": "600000.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3114337",
+    "canonical_smiles": "N[C@H](CN[C@@H]1C[C@H](N)[C@@]2(CC[C@H](O)[C@H](O)CO2)[C@H](O)[C@H]1O)Cc1ccc(O)cc1",
+    "pchembl_value": 6.222,
+    "standard_type": "IC50",
+    "standard_value": "600000.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3114336",
+    "canonical_smiles": "NCC[C@H](O)CN[C@@H]1C[C@H](N)[C@@]2(CC[C@H](O)[C@H](O)CO2)[C@H](O)[C@H]1O",
+    "pchembl_value": 6.222,
+    "standard_type": "IC50",
+    "standard_value": "600000.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3114333",
+    "canonical_smiles": "N[C@@H](Cc1ccc(O)cc1)C(=O)N[C@@H]1C[C@H](N)[C@@]2(CC[C@@H](O)[C@@H](O)CO2)[C@H](O)[C@H]1O",
+    "pchembl_value": 6.222,
+    "standard_type": "IC50",
+    "standard_value": "600000.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3114332",
+    "canonical_smiles": "N[C@@H](Cc1ccc(O)cc1)C(=O)N[C@@H]1C[C@H](N)[C@@]2(C[C@H](O)[C@H](O)CO2)[C@H](O)[C@H]1O",
+    "pchembl_value": 6.222,
+    "standard_type": "IC50",
+    "standard_value": "600000.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3114331",
+    "canonical_smiles": "NCC[C@H](O)C(=O)N[C@@H]1C[C@H](N)[C@@]2(CC[C@@H](O)[C@@H](O)CO2)[C@H](O)[C@H]1O",
+    "pchembl_value": 6.222,
+    "standard_type": "IC50",
+    "standard_value": "600000.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3114330",
+    "canonical_smiles": "NCC[C@H](O)C(=O)N[C@@H]1C[C@H](N)[C@@]2(C[C@H](O)[C@H](O)CO2)[C@H](O)[C@H]1O",
+    "pchembl_value": 6.222,
+    "standard_type": "IC50",
+    "standard_value": "600000.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3114329",
+    "canonical_smiles": "NCCCC[C@H](N)C(=O)N[C@@H]1C[C@H](N)[C@@]2(CC[C@@H](O)[C@@H](O)CO2)[C@H](O)[C@H]1O",
+    "pchembl_value": 6.222,
+    "standard_type": "IC50",
+    "standard_value": "600000.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3114327",
+    "canonical_smiles": "N[C@@H]1C[C@H](N)[C@@]2(CC[C@@H](CNC(=O)[C@@H](N)Cc3ccc(O)cc3)O2)[C@H](O)[C@H]1O",
+    "pchembl_value": 6.222,
+    "standard_type": "IC50",
+    "standard_value": "600000.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL1951095",
+    "canonical_smiles": "CN(C)[C@@H]1C(O)=C(C(N)=O)C(=O)[C@@]2(O)C(O)=C3C(=O)c4c(O)c(NC(=O)CN5CCCC5)cc(F)c4C[C@H]3C[C@@H]12",
+    "pchembl_value": 6.21,
+    "standard_type": "IC50",
+    "standard_value": "620.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4439765",
+    "canonical_smiles": "CCN[C@@H]1C[C@H](N)[C@@H](O[C@H]2OC(CN)=C(SCC)C[C@H]2N)[C@H](O)[C@H]1O[C@H]1OC[C@](C)(O)[C@H](NC)[C@H]1O",
+    "pchembl_value": 6.17,
+    "standard_type": "IC50",
+    "standard_value": "670.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL469912",
+    "canonical_smiles": "COc1ccc(C[C@H](N)C(=O)N[C@H]2[C@@H](O)[C@H](n3cnc4c(N(C)C)ncnc43)O[C@@H]2CO)cc1",
+    "pchembl_value": 6.05,
+    "standard_type": "IC50",
+    "standard_value": "900.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3251866",
+    "canonical_smiles": "CCCC(=O)O[C@H]1[C@H](C)O[C@@H](O[C@H]2[C@H](N(C)C)[C@@H](O)[C@H](O[C@H]3[C@@H](CC=O)C[C@@H](C)[C@@H](OC(C)=O)/C=C/C=C/C[C@@H](C)OC(=O)C[C@@H](O)[C@@H]3OC)O[C@@H]2C)C[C@@]1(C)O",
+    "pchembl_value": 6.05,
+    "standard_type": "IC50",
+    "standard_value": "900.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3251868",
+    "canonical_smiles": "CCCC(=O)O[C@H]1/C=C/C=C/C[C@@H](C)OC(=O)C[C@@H](O)[C@H](OC)[C@@H](O[C@@H]2O[C@H](C)[C@@H](O[C@H]3C[C@@](C)(O)[C@@H](OC(=O)CCC)[C@H](C)O3)[C@H](N(C)C)[C@H]2O)[C@@H](CC=O)C[C@H]1C",
+    "pchembl_value": 6.05,
+    "standard_type": "IC50",
+    "standard_value": "900.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3244602",
+    "canonical_smiles": "CCCC(=O)O[C@H]1[C@H](C)O[C@@H](O[C@H]2[C@H](N(C)C)[C@@H](O)[C@H](O[C@H]3[C@@H](CC=O)C[C@@H](C)[C@@H](OC(=O)CCl)/C=C/C=C/C[C@@H](C)OC(=O)C[C@@H](O)[C@@H]3OC)O[C@@H]2C)C[C@@]1(C)O",
+    "pchembl_value": 6.05,
+    "standard_type": "IC50",
+    "standard_value": "900.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL5170706",
+    "canonical_smiles": "C[C@@H]1C[C@@H](O)[C@H]2O[C@H](O[C@H]3[C@H](O[C@@H]4O[C@H](CO)[C@@H](O[C@H]5O[C@@H](CN)[C@@H](O)[C@H](O)[C@H]5N)[C@H]4O)[C@@H](O)[C@H](N)C[C@@H]3N)[C@H](N)[C@@H](O)[C@@H]2O1",
+    "pchembl_value": 6.05,
+    "standard_type": "IC50",
+    "standard_value": "890.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL1163270",
+    "canonical_smiles": "C[C@H](O)[C@H]1O[C@H](O[C@H]2[C@H](O[C@@H]3O[C@H](CN)[C@@H](O)[C@H]3O)[C@@H](O)[C@H](NC(=O)[C@@H](O)CCN)C[C@@H]2N)[C@H](N)[C@@H](O)[C@@H]1O",
+    "pchembl_value": 6.01,
+    "standard_type": "IC50",
+    "standard_value": "980.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL1631493",
+    "canonical_smiles": "N[C@@H]1C[C@H](N)[C@@]2(CCC=CCO2)[C@H](O)[C@H]1O",
+    "pchembl_value": 6.0,
+    "standard_type": "IC50",
+    "standard_value": "1000000.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL2106399",
+    "canonical_smiles": "CO[C@@H]1[C@@H](O[C@@H]2O[C@H](C)[C@@H](O[C@H]3C[C@@](C)(O)[C@@H](OC(=O)CC(C)C)[C@H](C)O3)[C@H](N(C)C)[C@H]2O)[C@@H](CC=O)C[C@@H](C)[C@@H](O)/C=C/C=C/C[C@@H](C)OC(=O)C[C@H]1O",
+    "pchembl_value": 6.0,
+    "standard_type": "IC50",
+    "standard_value": "1000.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3251853",
+    "canonical_smiles": "CCCC(=O)O[C@H]1[C@H](C)O[C@@H](O[C@H]2[C@H](N(C)C)[C@@H](O)[C@H](O[C@H]3[C@@H](CC=O)C[C@@H](C)[C@@H](O)/C=C/C=C/C[C@@H](C)OC(=O)C[C@@H](O)[C@@H]3OC)O[C@@H]2C)C[C@@]1(C)O",
+    "pchembl_value": 5.96,
+    "standard_type": "IC50",
+    "standard_value": "1100.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3251869",
+    "canonical_smiles": "CO[C@@H]1[C@@H](O[C@@H]2O[C@H](C)[C@@H](O[C@H]3C[C@@](C)(O)[C@@H](OC(=O)CC(C)C)[C@H](C)O3)[C@H](N(C)C)[C@H]2O)[C@@H](CC=O)C[C@@H](C)[C@@H](OC(C)=O)/C=C/C=C/C[C@@H](C)OC(=O)C[C@H]1O",
+    "pchembl_value": 5.96,
+    "standard_type": "IC50",
+    "standard_value": "1100.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL115026",
+    "canonical_smiles": "CSCSCC(CO)NC(=O)/C=C/c1c(C)nc(O)nc1O",
+    "pchembl_value": 5.96,
+    "standard_type": "Ki",
+    "standard_value": "1090.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3248507",
+    "canonical_smiles": "CCCSC[C@H](CO)NC(=O)/C=C/c1c(C)[nH]c(=O)[nH]c1=O",
+    "pchembl_value": 5.96,
+    "standard_type": "Ki",
+    "standard_value": "1100.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL1164465",
+    "canonical_smiles": "C[C@H](O)[C@H]1O[C@H](O[C@H]2[C@H](O[C@@H]3O[C@H](CN)[C@@H](O)[C@H]3O)[C@@H](O)[C@H](N)C[C@@H]2N)[C@H](N)[C@@H](O)[C@@H]1O",
+    "pchembl_value": 5.95,
+    "standard_type": "IC50",
+    "standard_value": "1130.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL224436",
+    "canonical_smiles": "CO[C@@H]1[C@@H](O[C@@H]2O[C@H](C)[C@@H](O[C@H]3C[C@@](C)(O)[C@@H](OC(=O)CC(C)C)[C@H](C)O3)[C@H](N(C)C)[C@H]2O)[C@@H](CC=O)C[C@@H](C)[C@@H](O)/C=C/C=C/C[C@@H](C)OC(=O)C[C@H]1OC(C)=O",
+    "pchembl_value": 5.92,
+    "standard_type": "IC50",
+    "standard_value": "1200.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3251852",
+    "canonical_smiles": "CCCC(=O)O[C@H]1[C@H](C)O[C@@H](O[C@H]2[C@H](N(C)C)[C@@H](O)[C@H](O[C@H]3[C@@H](CC=O)C[C@@H](C)[C@@H](O)/C=C/C=C/C[C@@H](C)OC(=O)C[C@@H](OC(C)=O)[C@@H]3OC)O[C@@H]2C)C[C@@]1(C)O",
+    "pchembl_value": 5.92,
+    "standard_type": "IC50",
+    "standard_value": "1200.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3248509",
+    "canonical_smiles": "Cc1[nH]c(=O)[nH]c(=O)c1/C=C/C(=O)NC(CO)CSCc1ccccc1",
+    "pchembl_value": 5.92,
+    "standard_type": "Ki",
+    "standard_value": "1210.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL557931",
+    "canonical_smiles": "CC[C@H]1OC(=O)[C@H](C)[C@@H](O[C@H]2C[C@@](C)(OC)[C@@H](O)[C@H](C)O2)[C@H](C)[C@@H](O[C@@H]2O[C@H](C)C[C@H](N(C)C)[C@H]2O)[C@](C)(OC)C[C@@H](C)C(=O)N[C@H](C)[C@@H](O)[C@]1(C)O",
+    "pchembl_value": 5.89,
+    "standard_type": "IC50",
+    "standard_value": "1300.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3251861",
+    "canonical_smiles": "CO[C@@H]1[C@@H](O[C@@H]2O[C@H](C)[C@@H](O[C@H]3C[C@@](C)(O)[C@@H](OC(=O)CC(C)C)[C@H](C)O3)[C@H](N(C)C)[C@H]2O)[C@@H](CC=O)C[C@@H](C)[C@@H](OC(C)=O)/C=C/C=C/C[C@@H](C)OC(=O)C[C@H]1OC(C)=O",
+    "pchembl_value": 5.89,
+    "standard_type": "IC50",
+    "standard_value": "1300.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3244603",
+    "canonical_smiles": "CCCC(=O)O[C@H]1[C@H](C)O[C@@H](O[C@H]2[C@H](N(C)C)[C@@H](O)[C@H](O[C@H]3[C@@H](CC=O)C[C@@H](C)[C@@H](OC(=O)C(Cl)Cl)/C=C/C=C/C[C@@H](C)OC(=O)C[C@@H](O)[C@@H]3OC)O[C@@H]2C)C[C@@]1(C)O",
+    "pchembl_value": 5.89,
+    "standard_type": "IC50",
+    "standard_value": "1300.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4754000",
+    "canonical_smiles": "C[C@H](NC(=O)[C@@H](NC(=O)[C@@H](N)CCCCN)[C@@H](O)CN)C(=O)NCC(=O)N[C@H](CCCO)C(=O)N1CCC[C@H]1C(=O)N[C@@H](Cc1c[nH]cn1)C(=O)N[C@@H](CCCCN)C(=O)N/C(=C\\CCNC(=N)N)C(=O)O",
+    "pchembl_value": 5.89,
+    "standard_type": "IC50",
+    "standard_value": "1300.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL126",
+    "canonical_smiles": "CC(=O)NC[C@H]1CN(c2ccc(N3CCOCC3)c(F)c2)C(=O)O1",
+    "pchembl_value": 5.86,
+    "standard_type": "IC50",
+    "standard_value": "1380000.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3244601",
+    "canonical_smiles": "CO[C@@H]1[C@@H](O[C@@H]2O[C@H](C)[C@@H](O[C@H]3C[C@@](C)(O)[C@@H](OC(=O)CC(C)C)[C@H](C)O3)[C@H](N(C)C)[C@H]2O)[C@@H](CC=O)C[C@@H](C)[C@@H](OC(=O)C(Cl)Cl)/C=C/C=C/C[C@@H](C)OC(=O)C[C@H]1OC(C)=O",
+    "pchembl_value": 5.85,
+    "standard_type": "IC50",
+    "standard_value": "1400.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL5203971",
+    "canonical_smiles": "NC[C@@H]1O[C@H](O[C@H]2[C@@H](O)[C@H](O[C@@H]3[C@@H](O)[C@H](N)C[C@H](N)[C@H]3O[C@H]3O[C@H]4[C@@H](OCCC[C@H]4O)[C@H](O)[C@H]3N)O[C@@H]2CO)[C@H](N)[C@@H](O)[C@@H]1O",
+    "pchembl_value": 5.82,
+    "standard_type": "IC50",
+    "standard_value": "1500.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3251867",
+    "canonical_smiles": "CCCC(=O)O[C@H]1[C@H](C)O[C@@H](O[C@H]2[C@H](N(C)C)[C@@H](O)[C@H](O[C@H]3[C@@H](CC=O)C[C@@H](C)[C@@H](OC(=O)CC)/C=C/C=C/C[C@@H](C)OC(=O)C[C@@H](O)[C@@H]3OC)O[C@@H]2C)C[C@@]1(C)O",
+    "pchembl_value": 5.77,
+    "standard_type": "IC50",
+    "standard_value": "1700.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3244599",
+    "canonical_smiles": "CCC(=O)O[C@H]1/C=C/C=C/C[C@@H](C)OC(=O)C[C@@H](O)[C@H](OC)[C@@H](O[C@@H]2O[C@H](C)[C@@H](O[C@H]3C[C@@](C)(O)[C@@H](OC(=O)C(C)CC)[C@H](C)O3)[C@H](N(C)C)[C@H]2O)[C@@H](CC=O)C[C@H]1C",
+    "pchembl_value": 5.77,
+    "standard_type": "IC50",
+    "standard_value": "1700.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3244600",
+    "canonical_smiles": "CO[C@@H]1[C@@H](O[C@@H]2O[C@H](C)[C@@H](O[C@H]3C[C@@](C)(O)[C@@H](OC(=O)CC(C)C)[C@H](C)O3)[C@H](N(C)C)[C@H]2O)[C@@H](CC=O)C[C@@H](C)[C@@H](OC(=O)CCl)/C=C/C=C/C[C@@H](C)OC(=O)C[C@H]1OC(C)=O",
+    "pchembl_value": 5.77,
+    "standard_type": "IC50",
+    "standard_value": "1700.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3251854",
+    "canonical_smiles": "CCC(=O)O[C@H]1[C@H](C)O[C@@H](O[C@H]2[C@H](N(C)C)[C@@H](O)[C@H](O[C@H]3[C@@H](CC=O)C[C@@H](C)[C@@H](O)/C=C/C=C/C[C@@H](C)OC(=O)C[C@@H](OC(C)=O)[C@@H]3OC)O[C@@H]2C)C[C@@]1(C)O",
+    "pchembl_value": 5.72,
+    "standard_type": "IC50",
+    "standard_value": "1900.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3251862",
+    "canonical_smiles": "CCC(=O)O[C@H]1/C=C/C=C/C[C@@H](C)OC(=O)C[C@@H](OC(C)=O)[C@H](OC)[C@@H](O[C@@H]2O[C@H](C)[C@@H](O[C@H]3C[C@@](C)(O)[C@@H](OC(=O)CC(C)C)[C@H](C)O3)[C@H](N(C)C)[C@H]2O)[C@@H](CC=O)C[C@H]1C",
+    "pchembl_value": 5.72,
+    "standard_type": "IC50",
+    "standard_value": "1900.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3251863",
+    "canonical_smiles": "CCCC(=O)O[C@H]1/C=C/C=C/C[C@@H](C)OC(=O)C[C@@H](OC(C)=O)[C@H](OC)[C@@H](O[C@@H]2O[C@H](C)[C@@H](O[C@H]3C[C@@](C)(O)[C@@H](OC(=O)CC(C)C)[C@H](C)O3)[C@H](N(C)C)[C@H]2O)[C@@H](CC=O)C[C@H]1C",
+    "pchembl_value": 5.72,
+    "standard_type": "IC50",
+    "standard_value": "1900.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3244432",
+    "canonical_smiles": "CCCC(=O)O[C@H]1[C@H](C)O[C@@H](O[C@H]2[C@H](N(C)C)[C@@H](OC(=O)CCC(=O)O)[C@H](O[C@H]3[C@@H](CC=O)C[C@@H](C)[C@@H](O)/C=C/C=C/C[C@@H](C)OC(=O)C[C@@H](O)[C@@H]3OC)O[C@@H]2C)C[C@@]1(C)O",
+    "pchembl_value": 5.72,
+    "standard_type": "IC50",
+    "standard_value": "1900.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL5205282",
+    "canonical_smiles": "C=C[C@]1(C)C[C@@H](OC(=O)CSc2nnc(-c3ccccc3F)[nH]2)[C@]2(C)[C@H](C)CC[C@]3(CCC(=O)[C@H]32)[C@@H](C)[C@@H]1O",
+    "pchembl_value": 5.71,
+    "standard_type": "Kd",
+    "standard_value": "1950.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3251864",
+    "canonical_smiles": "CO[C@@H]1[C@@H](O[C@@H]2O[C@H](C)[C@@H](O[C@H]3C[C@@](C)(O)[C@@H](OC(=O)CC(C)C)[C@H](C)O3)[C@H](N(C)C)[C@H]2O)[C@@H](CC=O)C[C@@H](C)[C@@H](OC(=O)C(C)C)/C=C/C=C/C[C@@H](C)OC(=O)C[C@H]1OC(C)=O",
+    "pchembl_value": 5.7,
+    "standard_type": "IC50",
+    "standard_value": "2000.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3248506",
+    "canonical_smiles": "CCCSCC(CO)NC(=O)/C=C/c1c(C)[nH]c(=O)[nH]c1=O",
+    "pchembl_value": 5.7,
+    "standard_type": "Ki",
+    "standard_value": "2000.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3251865",
+    "canonical_smiles": "CO[C@@H]1[C@@H](O[C@@H]2O[C@H](C)[C@@H](O[C@H]3C[C@@](C)(O)[C@@H](OC(C)=O)[C@H](C)O3)[C@H](N(C)C)[C@H]2O)[C@@H](CC=O)C[C@@H](C)[C@@H](OC(C)=O)/C=C/C=C/C[C@@H](C)OC(=O)C[C@H]1O",
+    "pchembl_value": 5.68,
+    "standard_type": "IC50",
+    "standard_value": "2100.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3251873",
+    "canonical_smiles": "CCCC(=O)O[C@H]1[C@H](C)O[C@@H](O[C@H]2[C@H](N(C)C)[C@@H](O)[C@H](O[C@H]3[C@@H](CC=O)C[C@@H](C)[C@@H](OC(C)=O)/C=C/C=C/C[C@@H](C)OC(=O)C[C@@H](OC(C)=O)[C@@H]3OC)O[C@@H]2C)C[C@@]1(C)O",
+    "pchembl_value": 5.66,
+    "standard_type": "IC50",
+    "standard_value": "2200.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3248511",
+    "canonical_smiles": "CCCCCC(CO)NC(=O)/C=C/c1c(C)[nH]c(=O)[nH]c1=O",
+    "pchembl_value": 5.64,
+    "standard_type": "Ki",
+    "standard_value": "2300.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL1753",
+    "canonical_smiles": "CCC[C@@H]1C[C@@H](C(=O)N[C@@H]([C@H]2O[C@H](SC)[C@H](O)[C@@H](O)[C@H]2O)[C@H](C)Cl)N(C)C1",
+    "pchembl_value": 5.57,
+    "standard_type": "Ki",
+    "standard_value": "2700.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3244596",
+    "canonical_smiles": "CO[C@@H]1[C@@H](O[C@@H]2O[C@H](C)[C@@H](O[C@H]3C[C@@](C)(O)[C@@H](O)[C@H](C)O3)[C@H](N(C)C)[C@H]2O)[C@@H](CC=O)C[C@@H](C)[C@@H](OC(C)=O)/C=C/C=C/C[C@@H](C)OC(=O)C[C@H]1O",
+    "pchembl_value": 5.55,
+    "standard_type": "IC50",
+    "standard_value": "2800.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3244606",
+    "canonical_smiles": "CCCC(=O)O[C@H]1[C@H](C)O[C@@H](O[C@H]2[C@H](N(C)C)[C@@H](OC(=O)CCC(=O)O)[C@H](O[C@H]3[C@@H](CC=O)C[C@@H](C)[C@@H](OC(=O)CCC(=O)O)/C=C/C=C/C[C@@H](C)OC(=O)C[C@@H](O)[C@@H]3OC)O[C@@H]2C)C[C@@]1(C)O",
+    "pchembl_value": 5.55,
+    "standard_type": "IC50",
+    "standard_value": "2800.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL5434382",
+    "canonical_smiles": "CCN1CCN(Cc2csc(-c3ccccc3)n2)CC1",
+    "pchembl_value": 5.55,
+    "standard_type": "IC50",
+    "standard_value": "2800.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4757804",
+    "canonical_smiles": "CNC[C@H](O)[C@H](NC(=O)[C@@H](N)CCCCN)C(=O)N[C@@H](C)C(=O)NCC(=O)N[C@H](CCCN)C(=O)N1CCC[C@H]1C(=O)N[C@@H](Cc1c[nH]cn1)C(=O)N[C@@H](CCCCN)C(=O)N/C(=C\\CCNC(=N)N)C(=O)O",
+    "pchembl_value": 5.5,
+    "standard_type": "IC50",
+    "standard_value": "3200.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3244607",
+    "canonical_smiles": "CCCC(=O)O[C@H]1[C@H](C)O[C@@H](O[C@H]2[C@H](N(C)C)[C@@H](OC(=O)CCC(=O)O)[C@H](O[C@H]3[C@@H](CC=O)C[C@@H](C)[C@@H](OC(C)=O)/C=C/C=C/C[C@@H](C)OC(=O)C[C@@H](O)[C@@H]3OC)O[C@@H]2C)C[C@@]1(C)O",
+    "pchembl_value": 5.48,
+    "standard_type": "IC50",
+    "standard_value": "3300.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL5201220",
+    "canonical_smiles": "NC[C@@H]1O[C@H](O[C@H]2[C@@H](O)[C@H](O[C@@H]3[C@@H](O)[C@H](N)C[C@H](N)[C@H]3O[C@H]3O[C@H]4[C@@H](OCC[C@H]4O)[C@H](O)[C@H]3N)O[C@@H]2CO)[C@H](N)[C@@H](O)[C@@H]1O",
+    "pchembl_value": 5.48,
+    "standard_type": "IC50",
+    "standard_value": "3300.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3244605",
+    "canonical_smiles": "CO[C@@H]1[C@@H](O[C@@H]2O[C@H](C)[C@@H](O[C@H]3C[C@@](C)(O)[C@@H](OC(=O)CC(C)C)[C@H](C)O3)[C@H](N(C)C)[C@H]2O)[C@@H](CC=O)C[C@@H](C)[C@@H](OC(=O)CCC(=O)O)/C=C/C=C/C[C@@H](C)OC(=O)C[C@H]1OC(C)=O",
+    "pchembl_value": 5.47,
+    "standard_type": "IC50",
+    "standard_value": "3400.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3244604",
+    "canonical_smiles": "CO[C@@H]1[C@@H](O[C@@H]2O[C@H](C)[C@@H](O[C@H]3C[C@@](C)(O)[C@@H](OC(=O)CC(C)C)[C@H](C)O3)[C@H](N(C)C)[C@H]2OC(=O)CCC(=O)O)[C@@H](CC=O)C[C@@H](C)[C@@H](O)/C=C/C=C/C[C@@H](C)OC(=O)C[C@H]1OC(C)=O",
+    "pchembl_value": 5.46,
+    "standard_type": "IC50",
+    "standard_value": "3500.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3244598",
+    "canonical_smiles": "CCC(=O)O[C@H]1/C=C/C=C/C[C@@H](C)OC(=O)C[C@@H](O)[C@H](OC)[C@@H](O[C@@H]2O[C@H](C)[C@@H](O[C@H]3C[C@@](C)(O)[C@@H](O)[C@H](C)O3)[C@H](N(C)C)[C@H]2O)[C@@H](CC=O)C[C@H]1C",
+    "pchembl_value": 5.4,
+    "standard_type": "IC50",
+    "standard_value": "4000.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL1440",
+    "canonical_smiles": "CN(C)[C@@H]1C(O)=C(C(N)=O)C(=O)[C@@]2(O)C(O)=C3C(=O)c4c(O)cccc4[C@@](C)(O)[C@H]3C[C@@H]12",
+    "pchembl_value": 5.34,
+    "standard_type": "IC50",
+    "standard_value": "4580.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL427409",
+    "canonical_smiles": "NC[C@H]1O[C@H](O[C@H]2[C@H](O)[C@@H](O)[C@H](N)C[C@@H]2N)[C@H](N)[C@@H](O)[C@@H]1O",
+    "pchembl_value": 5.3,
+    "standard_type": "IC50",
+    "standard_value": "5000.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4521742",
+    "canonical_smiles": "CC1=C\\[C@@H](O)C[C@H](O)Cc2nc(co2)C(=O)N2CCC[C@@H]2C(=O)O[C@H](C(C)C)[C@H](C)/C=C/C(=O)NC\\C=C\\1",
+    "pchembl_value": 5.22,
+    "standard_type": "IC50",
+    "standard_value": "6000.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3244597",
+    "canonical_smiles": "CO[C@@H]1[C@@H](O[C@@H]2O[C@H](C)[C@@H](O[C@H]3C[C@@](C)(O)[C@@H](O)[C@H](C)O3)[C@H](N(C)C)[C@H]2O)[C@@H](CC=O)C[C@@H](C)[C@@H](OC(C)=O)/C=C/C=C/C[C@@H](C)OC(=O)C[C@H]1OC(C)=O",
+    "pchembl_value": 5.2,
+    "standard_type": "IC50",
+    "standard_value": "6300.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3251855",
+    "canonical_smiles": "CO[C@@H]1[C@@H](O[C@@H]2O[C@H](C)[C@@H](O[C@H]3C[C@@](C)(O)[C@@H](OC(C)=O)[C@H](C)O3)[C@H](N(C)C)[C@H]2O)[C@@H](CC=O)C[C@@H](C)[C@@H](O)/C=C/C=C/C[C@@H](C)OC(=O)C[C@H]1OC(C)=O",
+    "pchembl_value": 5.17,
+    "standard_type": "IC50",
+    "standard_value": "6700.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL1276662",
+    "canonical_smiles": "CC(=O)NC[C@H]1CN(c2ccc(-c3ccc(CNC(=N)N)cc3)c(F)c2)C(=O)O1",
+    "pchembl_value": 5.06,
+    "standard_type": "IC50",
+    "standard_value": "8700.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL5411816",
+    "canonical_smiles": "Cc1nc(CN2CCN(Cc3csc(-c4ccccc4)n3)CC2)cs1",
+    "pchembl_value": 5.04,
+    "standard_type": "IC50",
+    "standard_value": "9100.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3244608",
+    "canonical_smiles": "CCCC(=O)O[C@H]1[C@H](C)O[C@@H](O[C@H]2[C@H](N(C)C)[C@@H](OC(=O)CCCC(=O)O)[C@H](O[C@H]3[C@@H](CC=O)C[C@@H](C)[C@@H](O)/C=C/C=C/C[C@@H](C)OC(=O)C[C@@H](O)[C@@H]3OC)O[C@@H]2C)C[C@@]1(C)O",
+    "pchembl_value": 5.03,
+    "standard_type": "IC50",
+    "standard_value": "9300.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4748593",
+    "canonical_smiles": "C[C@H](NC(=O)[C@@H](NC(=O)[C@@H](N)CCCCN)[C@@H](O)[C@@H](C)N)C(=O)NCC(=O)N[C@H](CCCN)C(=O)N1CCC[C@H]1C(=O)N[C@@H](Cc1c[nH]cn1)C(=O)N[C@@H](CCCCN)C(=O)N/C(=C\\CCNC(=N)N)C(=O)O",
+    "pchembl_value": 5.0,
+    "standard_type": "IC50",
+    "standard_value": "10000.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3251856",
+    "canonical_smiles": "CO[C@@H]1[C@@H](O[C@@H]2O[C@H](C)[C@@H](O[C@H]3C[C@@](C)(O)[C@@H](O)[C@H](C)O3)[C@H](N(C)C)[C@H]2O)[C@@H](CC=O)C[C@@H](C)[C@@H](O)/C=C/C=C/C[C@@H](C)OC(=O)C[C@H]1OC(C)=O",
+    "pchembl_value": 4.97,
+    "standard_type": "IC50",
+    "standard_value": "10700.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL1631490",
+    "canonical_smiles": "N[C@@H]1C[C@H](N)[C@@]2(C[C@H](O)[C@H](O)CO2)[C@H](O)[C@H]1O",
+    "pchembl_value": 4.95,
+    "standard_type": "IC50",
+    "standard_value": "11300.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3251859",
+    "canonical_smiles": "CCCC(=O)O[C@H]1[C@H](C)O[C@@H](O[C@H]2[C@H](N(C)C)[C@@H](OC(=O)CC)[C@H](O[C@H]3[C@@H](CC=O)C[C@@H](C)[C@@H](O)/C=C/C=C/C[C@@H](C)OC(=O)C[C@@H](O)[C@@H]3OC)O[C@@H]2C)C[C@@]1(C)O",
+    "pchembl_value": 4.86,
+    "standard_type": "IC50",
+    "standard_value": "13800.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4754988",
+    "canonical_smiles": "C[C@H](NC(=O)[C@@H](NC(=O)[C@@H](N)CCCCN)[C@@H](O)CCN)C(=O)NCC(=O)N[C@H](CCCN)C(=O)N1CCC[C@H]1C(=O)N[C@@H](Cc1c[nH]cn1)C(=O)N[C@@H](CCCCN)C(=O)N/C(=C\\CCNC(=N)N)C(=O)O",
+    "pchembl_value": 4.84,
+    "standard_type": "IC50",
+    "standard_value": "14400.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3251858",
+    "canonical_smiles": "CCCC(=O)O[C@H]1[C@H](C)O[C@@H](O[C@H]2[C@H](N(C)C)[C@@H](OC(C)=O)[C@H](O[C@H]3[C@@H](CC=O)C[C@@H](C)[C@@H](O)/C=C/C=C/C[C@@H](C)OC(=O)C[C@@H](O)[C@@H]3OC)O[C@@H]2C)C[C@@]1(C)O",
+    "pchembl_value": 4.83,
+    "standard_type": "IC50",
+    "standard_value": "14800.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4751891",
+    "canonical_smiles": "C[C@H](NC(=O)[C@H](CCN)NC(=O)[C@@H](N)CCCCN)C(=O)NCC(=O)N[C@H](CCCN)C(=O)N1CCC[C@H]1C(=O)N[C@@H](Cc1c[nH]cn1)C(=O)N[C@@H](CCCCN)C(=O)N/C(=C\\CCNC(=N)N)C(=O)O",
+    "pchembl_value": 4.77,
+    "standard_type": "IC50",
+    "standard_value": "17000.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3251860",
+    "canonical_smiles": "CCCC(=O)O[C@H]1[C@H](C)O[C@@H](O[C@H]2[C@H](N(C)C)[C@@H](OC(=O)CC)[C@H](O[C@H]3[C@@H](CC=O)C[C@@H](C)[C@@H](O)/C=C/C=C/C[C@@H](C)OC(=O)C[C@@H](OC(C)=O)[C@@H]3OC)O[C@@H]2C)C[C@@]1(C)O",
+    "pchembl_value": 4.75,
+    "standard_type": "IC50",
+    "standard_value": "17800.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4785848",
+    "canonical_smiles": "C[C@H](N)CC[C@@H](NC(=O)CNC(=O)[C@H](C)NC(=O)[C@@H](NC(=O)[C@@H](N)CCCCN)[C@@H](O)CN)C(=O)N1CCC[C@H]1C(=O)N[C@@H](Cc1c[nH]cn1)C(=O)N[C@@H](CCCCN)C(=O)N/C(=C\\CCNC(=N)N)C(=O)O",
+    "pchembl_value": 4.75,
+    "standard_type": "IC50",
+    "standard_value": "17900.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4759544",
+    "canonical_smiles": "C[C@H](NC(=O)[C@@H](NC(=O)[C@@H](N)CCCCN)[C@@H](O)CN)C(=O)NCC(=O)N[C@](C)(CCCN)C(=O)N1CCC[C@H]1C(=O)N[C@@H](Cc1c[nH]cn1)C(=O)N[C@@H](CCCCN)C(=O)N/C(=C\\CCNC(=N)N)C(=O)O",
+    "pchembl_value": 4.74,
+    "standard_type": "IC50",
+    "standard_value": "18100.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL1241590",
+    "canonical_smiles": "CS(=O)(=O)c1ccc([C@@H](O)[C@@H](CF)NC(=O)C(Cl)Cl)cc1",
+    "pchembl_value": 4.7,
+    "standard_type": "IC50",
+    "standard_value": "20000.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3251872",
+    "canonical_smiles": "CCCC(=O)O[C@H]1[C@H](C)O[C@@H](O[C@H]2[C@H](N(C)C)[C@@H](OC(C)=O)[C@H](O[C@H]3[C@@H](CC=O)C[C@@H](C)[C@@H](O)/C=C/C=C/C[C@@H](C)OC(=O)C[C@@H](OC(C)=O)[C@@H]3OC)O[C@@H]2C)C[C@@]1(C)O",
+    "pchembl_value": 4.68,
+    "standard_type": "IC50",
+    "standard_value": "20900.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3251870",
+    "canonical_smiles": "CO[C@@H]1[C@@H](O[C@@H]2O[C@H](C)[C@@H](O[C@H]3C[C@@](C)(O)[C@@H](OC(=O)CC(C)C)[C@H](C)O3)[C@H](N(C)C)[C@H]2OC(C)=O)[C@@H](CC=O)C[C@@H](C)[C@@H](OC(C)=O)/C=C/C=C/C[C@@H](C)OC(=O)C[C@H]1OC(C)=O",
+    "pchembl_value": 4.67,
+    "standard_type": "IC50",
+    "standard_value": "21400.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3251874",
+    "canonical_smiles": "CCCC(=O)O[C@H]1[C@H](C)O[C@@H](O[C@H]2[C@H](N(C)C)[C@@H](OC(C)=O)[C@H](O[C@H]3[C@@H](CC=O)C[C@@H](C)[C@@H](OC(C)=O)/C=C/C=C/C[C@@H](C)OC(=O)C[C@@H](O)[C@@H]3OC)O[C@@H]2C)C[C@@]1(C)O",
+    "pchembl_value": 4.63,
+    "standard_type": "IC50",
+    "standard_value": "23400.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4759202",
+    "canonical_smiles": "C[C@H](NC(=O)[C@@H](NC(=O)[C@@H](N)CCCCN)[C@@H](C)CN)C(=O)NCC(=O)N[C@H](CCCN)C(=O)N1CCC[C@H]1C(=O)N[C@@H](Cc1c[nH]cn1)C(=O)N[C@@H](CCCCN)C(=O)N/C(=C\\CCNC(=N)N)C(=O)O",
+    "pchembl_value": 4.57,
+    "standard_type": "IC50",
+    "standard_value": "26700.0",
+    "target_chembl_id": "CHEMBL2363135",
+    "organism": "Bacteria"
+  }
+]

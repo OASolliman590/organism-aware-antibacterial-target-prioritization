@@ -1,0 +1,236 @@
+[
+  {
+    "molecule_chembl_id": "CHEMBL4515707",
+    "canonical_smiles": "O=C(NNC(=S)Nc1cccc(F)c1)c1ccccc1O",
+    "pchembl_value": 7.0,
+    "standard_type": "IC50",
+    "standard_value": "100.0",
+    "target_chembl_id": "CHEMBL4523951",
+    "organism": "Enterococcus faecalis (strain ATCC 700802 / V583)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL28",
+    "canonical_smiles": "O=c1cc(-c2ccc(O)cc2)oc2cc(O)cc(O)c12",
+    "pchembl_value": 6.788,
+    "standard_type": "IC50",
+    "standard_value": "163000.0",
+    "target_chembl_id": "CHEMBL1956",
+    "organism": "Escherichia coli K-12"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL5173242",
+    "canonical_smiles": "CC[C@H](C)[C@@H](CCC(=O)NC)NC(=O)[C@H](Cc1c[nH]c2ccc(F)cc12)NC(=O)[C@H](CCC(C)C)NCc1cnn(C)c1-c1ccc(OC)cc1",
+    "pchembl_value": 6.615,
+    "standard_type": "IC50",
+    "standard_value": "242700.0",
+    "target_chembl_id": "CHEMBL1956",
+    "organism": "Escherichia coli K-12"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL771",
+    "canonical_smiles": "N[C@@H]1CONC1=O",
+    "pchembl_value": 6.582,
+    "standard_type": "IC50",
+    "standard_value": "262000.0",
+    "target_chembl_id": "CHEMBL4523951",
+    "organism": "Enterococcus faecalis (strain ATCC 700802 / V583)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4535288",
+    "canonical_smiles": "CC(=O)c1ccc(NC(=S)NNC(=O)c2ccccc2O)cc1",
+    "pchembl_value": 6.43,
+    "standard_type": "IC50",
+    "standard_value": "370.0",
+    "target_chembl_id": "CHEMBL4523951",
+    "organism": "Enterococcus faecalis (strain ATCC 700802 / V583)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4537639",
+    "canonical_smiles": "CCOC(=O)c1cc(Br)c2nc(-c3cccc(CN)c3)oc2c1",
+    "pchembl_value": 6.365,
+    "standard_type": "IC50",
+    "standard_value": "432000.0",
+    "target_chembl_id": "CHEMBL4523951",
+    "organism": "Enterococcus faecalis (strain ATCC 700802 / V583)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4457124",
+    "canonical_smiles": "N#Cc1ccc(NC(=S)NNC(=O)c2ccccc2O)cc1",
+    "pchembl_value": 6.29,
+    "standard_type": "IC50",
+    "standard_value": "510.0",
+    "target_chembl_id": "CHEMBL4523951",
+    "organism": "Enterococcus faecalis (strain ATCC 700802 / V583)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4441028",
+    "canonical_smiles": "O=C(NNC(=S)Nc1cccc2ccccc12)c1ccccc1O",
+    "pchembl_value": 6.28,
+    "standard_type": "IC50",
+    "standard_value": "520.0",
+    "target_chembl_id": "CHEMBL4523951",
+    "organism": "Enterococcus faecalis (strain ATCC 700802 / V583)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4547125",
+    "canonical_smiles": "COc1ccccc1NC(=S)NNC(=O)c1ccccc1O",
+    "pchembl_value": 6.26,
+    "standard_type": "IC50",
+    "standard_value": "550.0",
+    "target_chembl_id": "CHEMBL4523951",
+    "organism": "Enterococcus faecalis (strain ATCC 700802 / V583)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4450059",
+    "canonical_smiles": "O=C(NNC(=S)Nc1ccc(Cl)c(Cl)c1)c1cc2ccccc2cc1O",
+    "pchembl_value": 6.25,
+    "standard_type": "IC50",
+    "standard_value": "560.0",
+    "target_chembl_id": "CHEMBL4523951",
+    "organism": "Enterococcus faecalis (strain ATCC 700802 / V583)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4566999",
+    "canonical_smiles": "O=C(NNC(=S)Nc1ccc(Cl)cc1Cl)c1ccccc1O",
+    "pchembl_value": 6.24,
+    "standard_type": "IC50",
+    "standard_value": "580.0",
+    "target_chembl_id": "CHEMBL4523951",
+    "organism": "Enterococcus faecalis (strain ATCC 700802 / V583)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4445254",
+    "canonical_smiles": "O=C(NNC(=S)Nc1cccc(Cl)c1)c1ccccc1O",
+    "pchembl_value": 6.2,
+    "standard_type": "IC50",
+    "standard_value": "630.0",
+    "target_chembl_id": "CHEMBL4523951",
+    "organism": "Enterococcus faecalis (strain ATCC 700802 / V583)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4448556",
+    "canonical_smiles": "O=C(NNC(=S)Nc1ccc(OC(F)(F)F)cc1)c1ccccc1O",
+    "pchembl_value": 6.16,
+    "standard_type": "IC50",
+    "standard_value": "700.0",
+    "target_chembl_id": "CHEMBL4523951",
+    "organism": "Enterococcus faecalis (strain ATCC 700802 / V583)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4524762",
+    "canonical_smiles": "COc1ccc(NC(=S)NNC(=O)c2ccccc2O)cc1",
+    "pchembl_value": 6.15,
+    "standard_type": "IC50",
+    "standard_value": "710.0",
+    "target_chembl_id": "CHEMBL4523951",
+    "organism": "Enterococcus faecalis (strain ATCC 700802 / V583)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4591078",
+    "canonical_smiles": "O=C(NNC(=S)Nc1cccc(I)c1)c1ccccc1O",
+    "pchembl_value": 6.14,
+    "standard_type": "IC50",
+    "standard_value": "730.0",
+    "target_chembl_id": "CHEMBL4523951",
+    "organism": "Enterococcus faecalis (strain ATCC 700802 / V583)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL3633780",
+    "canonical_smiles": "O=C(NNC(=S)Nc1ccccc1)c1ccccc1O",
+    "pchembl_value": 6.1,
+    "standard_type": "IC50",
+    "standard_value": "800.0",
+    "target_chembl_id": "CHEMBL4523951",
+    "organism": "Enterococcus faecalis (strain ATCC 700802 / V583)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4472847",
+    "canonical_smiles": "O=C(NNC(=S)Nc1ccccc1Cl)c1ccccc1O",
+    "pchembl_value": 6.1,
+    "standard_type": "IC50",
+    "standard_value": "790.0",
+    "target_chembl_id": "CHEMBL4523951",
+    "organism": "Enterococcus faecalis (strain ATCC 700802 / V583)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4594055",
+    "canonical_smiles": "O=C(NNC(=S)Nc1ccc(Cl)cc1)c1ccccc1O",
+    "pchembl_value": 6.08,
+    "standard_type": "IC50",
+    "standard_value": "830.0",
+    "target_chembl_id": "CHEMBL4523951",
+    "organism": "Enterococcus faecalis (strain ATCC 700802 / V583)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4531935",
+    "canonical_smiles": "O=C(NNC(=S)Nc1ccc(F)cc1)c1ccccc1O",
+    "pchembl_value": 6.08,
+    "standard_type": "IC50",
+    "standard_value": "840.0",
+    "target_chembl_id": "CHEMBL4523951",
+    "organism": "Enterococcus faecalis (strain ATCC 700802 / V583)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4514663",
+    "canonical_smiles": "CCCCCNC(=S)NNC(=O)c1ccccc1O",
+    "pchembl_value": 6.03,
+    "standard_type": "IC50",
+    "standard_value": "930.0",
+    "target_chembl_id": "CHEMBL4523951",
+    "organism": "Enterococcus faecalis (strain ATCC 700802 / V583)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4461445",
+    "canonical_smiles": "O=C(NNC(=S)Nc1ccc(Cl)c(Cl)c1)c1ccc(I)cc1O",
+    "pchembl_value": 6.03,
+    "standard_type": "IC50",
+    "standard_value": "930.0",
+    "target_chembl_id": "CHEMBL4523951",
+    "organism": "Enterococcus faecalis (strain ATCC 700802 / V583)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4453039",
+    "canonical_smiles": "O=C(NNC(=S)Nc1ccccc1F)c1ccccc1O",
+    "pchembl_value": 6.01,
+    "standard_type": "IC50",
+    "standard_value": "970.0",
+    "target_chembl_id": "CHEMBL4523951",
+    "organism": "Enterococcus faecalis (strain ATCC 700802 / V583)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4465913",
+    "canonical_smiles": "O=C(NNC(=S)Nc1ccc(OCc2ccccc2)cc1)c1ccccc1O",
+    "pchembl_value": 6.0,
+    "standard_type": "IC50",
+    "standard_value": "990.0",
+    "target_chembl_id": "CHEMBL4523951",
+    "organism": "Enterococcus faecalis (strain ATCC 700802 / V583)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4451238",
+    "canonical_smiles": "Nc1ccc(C(=O)NNC(=S)Nc2ccc(Cl)c(Cl)c2)c(O)c1",
+    "pchembl_value": 6.0,
+    "standard_type": "IC50",
+    "standard_value": "990.0",
+    "target_chembl_id": "CHEMBL4523951",
+    "organism": "Enterococcus faecalis (strain ATCC 700802 / V583)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4476621",
+    "canonical_smiles": "O=C(NNC(=S)Nc1ccc(Cl)c(Cl)c1)c1ccccc1O",
+    "pchembl_value": 5.81,
+    "standard_type": "IC50",
+    "standard_value": "1540.0",
+    "target_chembl_id": "CHEMBL4523951",
+    "organism": "Enterococcus faecalis (strain ATCC 700802 / V583)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL50",
+    "canonical_smiles": "O=c1c(O)c(-c2ccc(O)c(O)c2)oc2cc(O)cc(O)c12",
+    "pchembl_value": 4.7,
+    "standard_type": "IC50",
+    "standard_value": "19900.0",
+    "target_chembl_id": "CHEMBL1956",
+    "organism": "Escherichia coli K-12"
+  }
+]

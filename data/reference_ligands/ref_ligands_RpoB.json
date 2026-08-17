@@ -1,0 +1,371 @@
+[
+  {
+    "molecule_chembl_id": "CHEMBL236921",
+    "canonical_smiles": "CO[C@H]1/C=C/O[C@@]2(C)Oc3c(C)c(O)c4c(c3C2=O)C(=O)C=C(NC(=O)/C(C)=C\\C=C\\[C@H](C)[C@H](O)[C@@H](C)[C@@H](O)[C@@H](C)[C@H](OC(C)=O)[C@@H]1C)C4=O",
+    "pchembl_value": 11.0,
+    "standard_type": "IC50",
+    "standard_value": "10.0",
+    "target_chembl_id": "CHEMBL2006",
+    "organism": "Mycobacterium tuberculosis"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL374478",
+    "canonical_smiles": "CO[C@H]1/C=C/O[C@@]2(C)Oc3c(C)c(O)c4c(O)c(c(/C=N/N5CCN(C)CC5)c(O)c4c3C2=O)NC(=O)/C(C)=C\\C=C\\[C@H](C)[C@H](O)[C@@H](C)[C@@H](O)[C@@H](C)[C@H](OC(C)=O)[C@@H]1C",
+    "pchembl_value": 11.0,
+    "standard_type": "IC50",
+    "standard_value": "10.0",
+    "target_chembl_id": "CHEMBL2006",
+    "organism": "Mycobacterium tuberculosis"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL1909658",
+    "canonical_smiles": "CO[C@H]1/C=C/O[C@@]2(C)Oc3c(C)c(O)c4c(c3C2=O)C(=O)C(/C=N/N2CCN(C)CC2)=C(NC(=O)/C(C)=C\\C=C\\[C@H](C)[C@H](O)[C@@H](C)[C@@H](O)[C@@H](C)[C@H](OC(C)=O)[C@@H]1C)C4=O",
+    "pchembl_value": 7.89,
+    "standard_type": "IC50",
+    "standard_value": "13.0",
+    "target_chembl_id": "CHEMBL2006",
+    "organism": "Mycobacterium tuberculosis"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL1911296",
+    "canonical_smiles": "CO[C@H]1/C=C/O[C@@]2(C)Oc3c(C)c(SC)c4c(c3C2=O)C(=O)C=C(NC(=O)/C(C)=C\\C=C\\[C@H](C)[C@H](O)[C@@H](C)[C@@H](O)[C@@H](C)[C@H](OC(C)=O)[C@@H]1C)C4=O",
+    "pchembl_value": 7.82,
+    "standard_type": "IC50",
+    "standard_value": "15.0",
+    "target_chembl_id": "CHEMBL2006",
+    "organism": "Mycobacterium tuberculosis"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL1911286",
+    "canonical_smiles": "CO[C@H]1/C=C/O[C@@]2(C)Oc3c(C)c(OS(=O)(=O)c4ccc(C)cc4)c4c(c3C2=O)C(=O)C=C(NC(=O)/C(C)=C\\C=C\\[C@H](C)[C@H](O)[C@@H](C)[C@@H](O)[C@@H](C)[C@H](OC(C)=O)[C@@H]1C)C4=O",
+    "pchembl_value": 7.68,
+    "standard_type": "IC50",
+    "standard_value": "21.0",
+    "target_chembl_id": "CHEMBL2006",
+    "organism": "Mycobacterium tuberculosis"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL174670",
+    "canonical_smiles": "CC(=O)Nc1ccc2[nH]cc(C[C@H](NC(=O)c3ccc4c(c3)nc(-c3ccoc3)n4C3CCCCC3)C(=O)O)c2c1",
+    "pchembl_value": 6.903,
+    "standard_type": "IC50",
+    "standard_value": "125000.0",
+    "target_chembl_id": "CHEMBL1852",
+    "organism": "Escherichia coli K-12"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL1911306",
+    "canonical_smiles": "CO[C@H]1/C=C/O[C@@]2(C)Oc3c(c4c5c(nn(CCO)c5c3C)C(=C(/C=N/N3CCN(C)CC3)C4=O)NC(=O)/C(C)=C\\C=C\\[C@H](C)[C@H](O)[C@@H](C)[C@@H](O)[C@@H](C)[C@H](OC(C)=O)[C@@H]1C)C2=O",
+    "pchembl_value": 6.86,
+    "standard_type": "IC50",
+    "standard_value": "139.0",
+    "target_chembl_id": "CHEMBL2006",
+    "organism": "Mycobacterium tuberculosis"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL1911298",
+    "canonical_smiles": "CO[C@H]1/C=C/O[C@@]2(C)Oc3c(C)c(OS(=O)(=O)c4ccccc4)c4c(c3C2=O)C(=O)C(/C=N/N2CCN(C)CC2)=C(NC(=O)/C(C)=C\\C=C\\[C@H](C)[C@H](O)[C@@H](C)[C@@H](O)[C@@H](C)[C@H](OC(C)=O)[C@@H]1C)C4=O",
+    "pchembl_value": 6.85,
+    "standard_type": "IC50",
+    "standard_value": "142.0",
+    "target_chembl_id": "CHEMBL2006",
+    "organism": "Mycobacterium tuberculosis"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL369000",
+    "canonical_smiles": "CC(C)(Oc1ccc2[nH]cc(C[C@H](NC(=O)c3ccc4c(c3)nc(-c3ccoc3)n4C3CCCCC3)C(=O)O)c2c1)C(=O)O",
+    "pchembl_value": 6.699,
+    "standard_type": "IC50",
+    "standard_value": "200000.0",
+    "target_chembl_id": "CHEMBL1852",
+    "organism": "Escherichia coli K-12"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL366574",
+    "canonical_smiles": "O=C(O)COc1ccc2[nH]cc(C[C@H](NC(=O)c3ccc4c(c3)nc(-c3ccoc3)n4C3CCCCC3)C(=O)O)c2c1",
+    "pchembl_value": 6.699,
+    "standard_type": "IC50",
+    "standard_value": "200000.0",
+    "target_chembl_id": "CHEMBL1852",
+    "organism": "Escherichia coli K-12"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL353549",
+    "canonical_smiles": "O=C(N[C@@H](Cc1c[nH]c2ccccc12)C(=O)O)c1ccc2c(c1)nc(-c1ccoc1)n2C1CCCCC1",
+    "pchembl_value": 6.699,
+    "standard_type": "IC50",
+    "standard_value": "200000.0",
+    "target_chembl_id": "CHEMBL1852",
+    "organism": "Escherichia coli K-12"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL366575",
+    "canonical_smiles": "O=C(N[C@@H](Cc1c[nH]c2ccc(C3N=NN=N3)cc12)C(=O)O)c1ccc2c(c1)nc(-c1ccoc1)n2C1CCCCC1",
+    "pchembl_value": 6.699,
+    "standard_type": "IC50",
+    "standard_value": "200000.0",
+    "target_chembl_id": "CHEMBL1852",
+    "organism": "Escherichia coli K-12"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL367225",
+    "canonical_smiles": "O=C(N[C@@H](Cc1c[nH]c2ccc(O)cc12)C(=O)O)c1ccc2c(c1)nc(-c1ccoc1)n2C1CCCCC1",
+    "pchembl_value": 6.699,
+    "standard_type": "IC50",
+    "standard_value": "200000.0",
+    "target_chembl_id": "CHEMBL1852",
+    "organism": "Escherichia coli K-12"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL176905",
+    "canonical_smiles": "O=C(O)c1ccc2[nH]cc(C[C@H](NC(=O)c3ccc4c(c3)nc(-c3ccoc3)n4C3CCCCC3)C(=O)O)c2c1",
+    "pchembl_value": 6.699,
+    "standard_type": "IC50",
+    "standard_value": "200000.0",
+    "target_chembl_id": "CHEMBL1852",
+    "organism": "Escherichia coli K-12"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL424769",
+    "canonical_smiles": "NC(=O)c1ccc2[nH]cc(C[C@H](NC(=O)c3ccc4c(c3)nc(-c3ccoc3)n4C3CCCCC3)C(=O)O)c2c1",
+    "pchembl_value": 6.699,
+    "standard_type": "IC50",
+    "standard_value": "200000.0",
+    "target_chembl_id": "CHEMBL1852",
+    "organism": "Escherichia coli K-12"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL173466",
+    "canonical_smiles": "O=C(O)C(=O)Nc1ccc2[nH]cc(C[C@H](NC(=O)c3ccc4c(c3)nc(-c3ccoc3)n4C3CCCCC3)C(=O)O)c2c1",
+    "pchembl_value": 6.602,
+    "standard_type": "IC50",
+    "standard_value": "250000.0",
+    "target_chembl_id": "CHEMBL1852",
+    "organism": "Escherichia coli K-12"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL368852",
+    "canonical_smiles": "O=C(N[C@@H](Cc1c[nH]c2ccc(NS(=O)(=O)C(F)(F)F)cc12)C(=O)O)c1ccc2c(c1)nc(-c1ccoc1)n2C1CCCCC1",
+    "pchembl_value": 6.602,
+    "standard_type": "IC50",
+    "standard_value": "250000.0",
+    "target_chembl_id": "CHEMBL1852",
+    "organism": "Escherichia coli K-12"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL184023",
+    "canonical_smiles": "CCCC/C(C)=C/C=C(\\C)C(=O)c1c(O)cc(CCC/C=C/NC(=O)OC)oc1=O",
+    "pchembl_value": 6.47,
+    "standard_type": "IC50",
+    "standard_value": "340.0",
+    "target_chembl_id": "CHEMBL1852",
+    "organism": "Escherichia coli K-12"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL174629",
+    "canonical_smiles": "O=C(O)c1ccc2c(c1)nc(-c1cccs1)n2C1CCCCC1",
+    "pchembl_value": 6.301,
+    "standard_type": "IC50",
+    "standard_value": "500000.0",
+    "target_chembl_id": "CHEMBL1852",
+    "organism": "Escherichia coli K-12"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL174836",
+    "canonical_smiles": "O=C(O)c1ccc2c(c1)nc(-c1ccncc1)n2C1CCCCC1",
+    "pchembl_value": 6.301,
+    "standard_type": "IC50",
+    "standard_value": "500000.0",
+    "target_chembl_id": "CHEMBL1852",
+    "organism": "Escherichia coli K-12"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL362058",
+    "canonical_smiles": "O=C(O)c1ccc2c(c1)nc(-c1ccco1)n2C1CCCCC1",
+    "pchembl_value": 6.301,
+    "standard_type": "IC50",
+    "standard_value": "500000.0",
+    "target_chembl_id": "CHEMBL1852",
+    "organism": "Escherichia coli K-12"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL426227",
+    "canonical_smiles": "O=C(O)c1ccc2c(c1)nc(-c1ncc[nH]1)n2C1CCCCC1",
+    "pchembl_value": 6.301,
+    "standard_type": "IC50",
+    "standard_value": "500000.0",
+    "target_chembl_id": "CHEMBL1852",
+    "organism": "Escherichia coli K-12"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL175177",
+    "canonical_smiles": "O=C(O)c1ccc2c(c1)nc(-c1ccoc1)n2C1CCCCC1",
+    "pchembl_value": 6.301,
+    "standard_type": "IC50",
+    "standard_value": "500000.0",
+    "target_chembl_id": "CHEMBL1852",
+    "organism": "Escherichia coli K-12"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL368168",
+    "canonical_smiles": "Cn1cccc1-c1nc2cc(C(=O)O)ccc2n1C1CCCCC1",
+    "pchembl_value": 6.301,
+    "standard_type": "IC50",
+    "standard_value": "500000.0",
+    "target_chembl_id": "CHEMBL1852",
+    "organism": "Escherichia coli K-12"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL174683",
+    "canonical_smiles": "O=C(O)c1ccc2c(c1)nc(-c1ccccn1)n2C1CCCCC1",
+    "pchembl_value": 6.301,
+    "standard_type": "IC50",
+    "standard_value": "500000.0",
+    "target_chembl_id": "CHEMBL1852",
+    "organism": "Escherichia coli K-12"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL176662",
+    "canonical_smiles": "O=C(O)c1ccc2c(c1)nc(-c1ccc[nH]1)n2C1CCCCC1",
+    "pchembl_value": 6.301,
+    "standard_type": "IC50",
+    "standard_value": "500000.0",
+    "target_chembl_id": "CHEMBL1852",
+    "organism": "Escherichia coli K-12"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL361434",
+    "canonical_smiles": "O=C(O)c1ccc2c(c1)nc(-c1ccccc1)n2C1CCCCC1",
+    "pchembl_value": 6.301,
+    "standard_type": "IC50",
+    "standard_value": "500000.0",
+    "target_chembl_id": "CHEMBL1852",
+    "organism": "Escherichia coli K-12"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL174564",
+    "canonical_smiles": "O=C(O)c1ccc2c(c1)nc(-c1ccsc1)n2C1CCCCC1",
+    "pchembl_value": 6.301,
+    "standard_type": "IC50",
+    "standard_value": "500000.0",
+    "target_chembl_id": "CHEMBL1852",
+    "organism": "Escherichia coli K-12"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL434136",
+    "canonical_smiles": "O=C(O)c1ccc2c(c1)nc(-c1nccs1)n2C1CCCCC1",
+    "pchembl_value": 6.301,
+    "standard_type": "IC50",
+    "standard_value": "500000.0",
+    "target_chembl_id": "CHEMBL1852",
+    "organism": "Escherichia coli K-12"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL174838",
+    "canonical_smiles": "O=C(O)c1ccc2c(c1)nc(-c1cccnc1)n2C1CCCCC1",
+    "pchembl_value": 6.301,
+    "standard_type": "IC50",
+    "standard_value": "500000.0",
+    "target_chembl_id": "CHEMBL1852",
+    "organism": "Escherichia coli K-12"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL175002",
+    "canonical_smiles": "Nc1ccc2[nH]cc(C[C@H](NC(=O)c3ccc4c(c3)nc(-c3ccoc3)n4C3CCCCC3)C(=O)O)c2c1",
+    "pchembl_value": 6.301,
+    "standard_type": "IC50",
+    "standard_value": "500000.0",
+    "target_chembl_id": "CHEMBL1852",
+    "organism": "Escherichia coli K-12"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL177073",
+    "canonical_smiles": "CS(=O)(=O)Nc1ccc2[nH]cc(C[C@H](NC(=O)c3ccc4c(c3)nc(-c3ccoc3)n4C3CCCCC3)C(=O)O)c2c1",
+    "pchembl_value": 6.301,
+    "standard_type": "IC50",
+    "standard_value": "500000.0",
+    "target_chembl_id": "CHEMBL1852",
+    "organism": "Escherichia coli K-12"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL1911289",
+    "canonical_smiles": "CO[C@H]1/C=C/O[C@@]2(C)Oc3c(C)c(N(C)C)c4c(c3C2=O)C(=O)C=C(NC(=O)/C(C)=C\\C=C\\[C@H](C)[C@H](O)[C@@H](C)[C@@H](O)[C@@H](C)[C@H](OC(C)=O)[C@@H]1C)C4=O",
+    "pchembl_value": 6.3,
+    "standard_type": "IC50",
+    "standard_value": "503.0",
+    "target_chembl_id": "CHEMBL2006",
+    "organism": "Mycobacterium tuberculosis"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL186014",
+    "canonical_smiles": "CCCC/C(C)=C/C=C(\\C)C(=O)c1c(O)cc(C(C)CC/C=C/NC(=O)OC)oc1=O",
+    "pchembl_value": 6.04,
+    "standard_type": "IC50",
+    "standard_value": "920.0",
+    "target_chembl_id": "CHEMBL1852",
+    "organism": "Escherichia coli K-12"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL185900",
+    "canonical_smiles": "CCCC/C=C/C=C(\\C)C(=O)c1c(O)cc(C(C)CC/C=C/NC(=O)OC)oc1=O",
+    "pchembl_value": 5.98,
+    "standard_type": "IC50",
+    "standard_value": "1040.0",
+    "target_chembl_id": "CHEMBL1852",
+    "organism": "Escherichia coli K-12"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL186013",
+    "canonical_smiles": "CCCC/C(C)=C/C=C(\\C)C(=O)c1c(O)cc(C(C)CC/C=C\\NC(=O)OC)oc1=O",
+    "pchembl_value": 5.9,
+    "standard_type": "IC50",
+    "standard_value": "1260.0",
+    "target_chembl_id": "CHEMBL1852",
+    "organism": "Escherichia coli K-12"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL185761",
+    "canonical_smiles": "CCCC/C(C)=C\\C=C(\\C)C(=O)c1c(O)cc(C(C)CC/C=C/NC(=O)OC)oc1=O",
+    "pchembl_value": 5.6,
+    "standard_type": "IC50",
+    "standard_value": "2500.0",
+    "target_chembl_id": "CHEMBL1852",
+    "organism": "Escherichia coli K-12"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL185927",
+    "canonical_smiles": "CCCC/C(C)=C/C=C(\\C)C(=O)c1c(O)cc(C(C)CCCCNC(=O)OC)oc1=O",
+    "pchembl_value": 5.4,
+    "standard_type": "IC50",
+    "standard_value": "4000.0",
+    "target_chembl_id": "CHEMBL1852",
+    "organism": "Escherichia coli K-12"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL185050",
+    "canonical_smiles": "CCCC/C(C)=C/C=C(\\C)C(=O)c1c(OC)cc(C(C)CC/C=C/NC(=O)OC)oc1=O",
+    "pchembl_value": 5.38,
+    "standard_type": "IC50",
+    "standard_value": "4200.0",
+    "target_chembl_id": "CHEMBL1852",
+    "organism": "Escherichia coli K-12"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL1911287",
+    "canonical_smiles": "CO[C@H]1/C=C/O[C@@]2(C)Oc3c(C)c(N)c4c(c3C2=O)C(=O)C=C(NC(=O)/C(C)=C\\C=C\\[C@H](C)[C@H](O)[C@@H](C)[C@@H](O)[C@@H](C)[C@H](OC(C)=O)[C@@H]1C)C4=O",
+    "pchembl_value": 5.36,
+    "standard_type": "IC50",
+    "standard_value": "4400.0",
+    "target_chembl_id": "CHEMBL2006",
+    "organism": "Mycobacterium tuberculosis"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL1911295",
+    "canonical_smiles": "CO[C@H]1/C=C/O[C@@]2(C)Oc3c(C)c(NC4CCCCCC4)c4c(c3C2=O)C(=O)C=C(NC(=O)/C(C)=C\\C=C\\[C@H](C)[C@H](O)[C@@H](C)[C@@H](O)[C@@H](C)[C@H](OC(C)=O)[C@@H]1C)C4=O",
+    "pchembl_value": 4.81,
+    "standard_type": "IC50",
+    "standard_value": "15400.0",
+    "target_chembl_id": "CHEMBL2006",
+    "organism": "Mycobacterium tuberculosis"
+  }
+]

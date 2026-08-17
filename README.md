@@ -1,110 +1,77 @@
-# Organism-aware ligand-based antibacterial target prioritization
+# Open organism-aware antibacterial target prediction
 
-This repository implements an auditable cheminformatics workflow for prioritizing antibacterial target hypotheses for 12 user-provided compounds across six bacterial organisms: *Bacillus cereus*, *Klebsiella pneumoniae*, *Escherichia coli*, *Proteus mirabilis*, *Acinetobacter baumannii*, and MRSA/*Staphylococcus aureus*.
+This repository contains a reproducible cheminformatics framework for **open target discovery** from small-molecule structures, followed by organism-specific biological and clinical filtering. It is designed for antibacterial research involving ESKAPE organisms and related pathogens.
 
-> **Interpretation:** the output is a ligand-based target-prioritization analysis, not proof of target engagement. It is designed to improve target-panel selection before docking, molecular dynamics, biochemical assays, or cellular validation.
+> **Data-protection policy:** unpublished compound structures, compound names, docking/MD outputs, and compound-specific predictions are intentionally excluded from this GitHub repository. Place authorized local inputs in `inputs/`; that directory is ignored by Git.
 
-## Scientific design
+## Scientific objective
 
-The workflow combines four evidence layers. First, RDKit ECFP4 fingerprints are used to calculate the maximum Tanimoto similarity and the mean similarity of the five closest active reference ligands for each candidate target class. Second, MACCS-key similarity is calculated as an interpretable complementary fingerprint rather than treating one fingerprint as definitive. Third, class-relevant structural flags are recorded, including sulfonamides, beta-lactams, hydroxamates, diaminopyrimidine-like motifs, xanthine-like motifs, hydrazones, benzimidazoles, benzothiazoles, and aryl halides. Fourth, the raw ligand evidence is adjusted by a small, explicit organism/target prior. These priors are deliberately modest and are not probabilities.
+The pipeline does not force a compound into a preselected target panel. It first generates chemically plausible target hypotheses from a broad reference universe, then applies organism-specific filters based on target family, bacterial essentiality, cellular localization, clinical precedent, resistance biology, and target availability. The output is a ranked hypothesis set for docking, molecular dynamics, biochemical assays, and cellular validation—not proof of target engagement.
 
-The target reference sets were assembled from ChEMBL activity records during the analysis. The repository preserves the downloaded JSON reference sets used by the scoring run. Because the public data are uneven across target classes, the number of references and the best-reference assay context are reported for every score. LpxA, PBP2a, and some Mur-family classes have sparse or heterogeneous public data; they must therefore be interpreted more cautiously.
+The framework uses RDKit ECFP4/Morgan and MACCS fingerprints, nearest-neighbour reference-ligand evidence, target-family aggregation, structural/SAR flags, chemical-space visualization, and leakage-aware validation on known antibacterial drugs. Target scores report their evidence components separately so that target ranking is auditable rather than presented as a calibrated probability.
 
-The principal evidence score is:
+## Repository layout
 
-```text
-raw_ligand_evidence = 0.50 * normalized_max_ECFP4
-                    + 0.25 * normalized_top5_mean_ECFP4
-                    + 0.15 * normalized_max_MACCS
-                    + SAR_bonus
-
-organism_adjusted_score = raw_ligand_evidence * organism_target_prior
-```
-
-The normalized fingerprint components are transparent affine rescalings for ranking, not calibrated probabilities. A target is labelled high, moderate, or low evidence using the raw ligand score, while organism-adjusted rankings are used only within the requested organism panel.
-
-## Current target panels
-
-| Organism | Panel used for ranking |
+| Path | Purpose |
 |---|---|
-| *K. pneumoniae* | DHFR, FabI, TopoIV, MurA, LpxH |
-| *B. cereus* | FabI, DHFR, FtsZ, GyrB, MurA |
-| *E. coli* | MurA, DHFR, FabI, GyrB, LpxC |
-| *P. mirabilis* | MurA, DHFR, FabI, GyrB, LpxC |
-| *A. baumannii* | PBP2a, FabI, GyrB, LpxA, MurC |
-| MRSA/*S. aureus* | PBP2a, DHFR, FabI, FtsZ, GyrB |
+| `pipeline/` | Compound preparation, reference-ligand scoring, open target discovery, organism filtering, benchmarking, figures, and report generation |
+| `data/reference_ligands/` | Public reference-ligand records used by the current target-family modules |
+| `inputs/` | Local-only research inputs; ignored by Git and represented only by `.gitkeep` |
+| `data/compounds/` | Local-only normalized compound structures; ignored by Git |
+| `results/` | Local-only compound-specific outputs; ignored by Git |
+| `run_pipeline.py` | Local end-to-end runner |
+| `requirements.txt` | Python dependencies |
 
-The current panel is kept separate from the prior docking/MD CSV. This distinction is important because several prior hypotheses—KPC-2, OXA-23, BlaZ, AmpC, and LeuRS—are not represented by the current ChEMBL ligand-reference universe. They are retained as orthogonal hypotheses rather than silently treated as negative results.
+## Local execution with authorized unpublished inputs
 
-## Input files
-
-Place the following files in `inputs/` before running the workflow:
-
-* `README.md` containing the authoritative named MOL records;
-* `final_target_list_per_bacterium.csv` containing prior docking/MD target assignments;
-* the available SDF files and/or `all_compounds_combined.sdf`.
-
-The preparation script intentionally uses the named records in `README.md` as the authoritative name-to-structure mapping because the uploaded SDF filenames did not consistently match their internal `_Name` fields. It writes a normalized 12-compound SDF and manifest.
-
-## Execution
+Copy authorized input files into `inputs/`, including the structure files and any private target metadata. The input directory is not committed or uploaded by the standard Git workflow.
 
 ```bash
 python -m pip install -r requirements.txt
-python pipeline/prepare_compounds.py
-python pipeline/target_scoring.py
-python pipeline/rank_and_figures.py
-python pipeline/summarize_results.py
-python pipeline/prior_comparison.py
+python run_pipeline.py
 ```
 
-The same workflow can be run from a clone with:
+Set `PROJECT_ROOT` and `INPUT_DIR` when running from another location. The pipeline writes compound-specific structures, tables, figures, and reports to ignored local directories.
 
-```bash
-export PROJECT_ROOT="$PWD"
-export INPUT_DIR="$PWD/inputs"
-python pipeline/prepare_compounds.py
-python pipeline/target_scoring.py
-python pipeline/rank_and_figures.py
-python pipeline/summarize_results.py
-python pipeline/prior_comparison.py
+## Open target-discovery design
+
+The revised workflow is intentionally two-stage. **Stage A: chemically valid target discovery.** Compounds are compared against a broad target-family reference universe, including clinically relevant antibacterial target families such as beta-lactamases, DNA gyrase/topoisomerase IV, FabI/FabH, Mur enzymes, FtsZ, DHFR/DHPS, Lpx enzymes, aminoacyl-tRNA synthetases, and other families when reference coverage is adequate. Candidates are retained only when similarity, nearest-neighbour consistency, fingerprint agreement, and structural plausibility meet transparent criteria.
+
+**Stage B: organism-specific clinical filtering.** Each chemically plausible target is annotated for organism relevance, essentiality or fitness impact, subcellular accessibility, clinical validation, resistance relevance, and evidence quality. This stage ranks target hypotheses for a specific organism without pretending that the organism itself determines ligand binding.
+
+The general score is:
+
+```text
+chemical_target_evidence =
+    weighted ECFP4 nearest-neighbour evidence
+  + MACCS agreement
+  + reference-consistency evidence
+  + target-family SAR plausibility
+
+organism_clinical_priority =
+    chemical_target_evidence
+  × organism relevance
+  × essentiality/fitness evidence
+  × accessibility/clinical evidence
 ```
 
-## Main outputs
+The factors are reported separately. They are not calibrated probabilities, and a high clinical priority cannot rescue chemically implausible ligand evidence.
 
-| Output | Description |
-|---|---|
-| `results/organism_target_shortlist.csv` | Top two target hypotheses per compound within each organism panel, with justification text |
-| `results/organism_panel_rankings.csv` | Full organism-panel rankings, raw evidence, organism prior, and adjusted score |
-| `results/ranked_target_evidence.csv` | Full compound-by-target-class ligand evidence table |
-| `results/organism_target_mean_scores.csv` | Mean, median, maximum, and component scores by organism and target class |
-| `results/prior_target_comparison.csv` | Reconciliation of prior docking/MD targets with the scored target universe and original panels |
-| `results/compound_target_ecfp4_heatmap.png` | Maximum ECFP4 similarity heatmap |
-| `results/compound_target_maccs_heatmap.png` | Maximum MACCS-key similarity heatmap |
-| `results/compound_maccs_similarity_heatmap.png` | Pairwise MACCS similarity of the user compounds |
-| `results/tmap_like_ecfp4_reference_map.png` | UMAP/Jaccard map of user compounds and representative reference ligands |
-| `results/organism_panel_target_rankings.png` | Organism-adjusted top-two target rankings |
-| `results/prior_docking_md_overlap.png` | Prior assignment overlap classification |
-| `results/physchem_permeability_space.png` | MW/logP/TPSA space with a Gram-negative permeability caution flag |
+## Benchmarking
 
-## Interpretation of the current analysis
+The repository includes an evaluation framework for known antibacterial drugs with curated target labels. Benchmarking is leakage-aware: a drug or near-duplicate analogue must not be allowed to contribute its own target evidence to the reference set used to predict it. Performance is reported with top-1/top-3/top-5 recall, mean reciprocal rank, mean percentile rank, enrichment over random target ranking, and per-target-family confusion or retrieval plots.
 
-The ligand-only component is strongest for the benzimidazole-thioacetamide BI series against the GyrB reference set, and for several T2Z/OX-11 compounds against Mur-ligase or GyrB-related reference chemistry. The X1V sulfonamide-benzothiazole series is chemically coherent in the map and is not automatically assigned to DHPS because the current organism panels do not include DHPS; DHPS is included as an orthogonal rescue target in the full target-class score table because its sulfonamide/PABA rationale is mechanistically relevant.
+Benchmark drugs should be sourced from public, citable resources such as ChEMBL, DrugBank records where available, FDA labels, and primary literature. Their target labels must distinguish direct molecular targets from resistance mechanisms, phenotypic mechanisms, and broad target-family annotations.
 
-The current panel ranking should not be interpreted as a universal claim that GyrB is the target for every organism. The repeated GyrB ranking reflects the composition of the available reference sets and the fact that all organisms are evaluated against the same compound set. The organism prior changes rank ordering modestly, but it cannot correct a target universe that omits beta-lactamases or LeuRS. The prior CSV therefore remains important: beta-lactamase and LeuRS hypotheses should be tested by dedicated protein-level docking, sequence-appropriate structures, and biochemical assays rather than discarded from the basis of this ligand-only screen.
+## Reproducibility and limitations
 
-## Validation against prior docking/MD work
+Reference-ligand data are heterogeneous and target-family coverage is uneven. Fingerprint similarity is a ligand-space hypothesis generator, not a binding assay. Cross-organism target records, whole-complex measurements, resistance determinants, efflux, permeability, expression, and target-site sequence variation require separate annotation or experimental validation. Sparse target classes should be marked low confidence rather than hidden.
 
-The prior-target comparison currently identifies four direct scored overlaps: *B. cereus*–FtsZ, *E. coli*–MurA, *P. mirabilis*–MurA, and MRSA–DNA gyrase mapped to the GyrB class. Three additional prior hypotheses belong to scored families but fall outside the original organism panels: *K. pneumoniae*–FtsZ, *E. coli*–FtsZ, and *A. baumannii*–FabH. Eight prior hypotheses are not scored because they are beta-lactamase or LeuRS hypotheses. Those eight should be treated as orthogonal validation targets, not failed predictions.
-
-## Limitations and next steps
-
-This workflow does not model protein sequence divergence, target expression, cellular uptake, efflux, permeability, resistance determinants, or polypharmacology. ChEMBL assays are heterogeneous, and target-family records can contain cross-organism or whole-complex measurements. The public ligand sets are also imbalanced: some target classes have hundreds of references, while LpxA has only one retained reference and PBP2a has a small set. The map is TMAP-like rather than an exact TMAP implementation: it uses UMAP with Jaccard distance on ECFP4 bit vectors when UMAP is available.
-
-The recommended next experimental/computational stage is to retain two or three hypotheses per compound: one high-scoring ligand-based target, one biologically important prior docking/MD target, and one orthogonal mechanistic control. For the beta-lactamase hypotheses, use organism-matched proteins and consistent catalytic-state preparation. For the GyrB/MurC/FabI hypotheses, use sequence-matched proteins and repeat docking with protonation, cofactors, and conserved-water treatment standardized across targets. Finally, test target engagement with purified-enzyme inhibition or thermal-shift assays before interpreting cellular antibacterial activity as target-specific.
+All unpublished inputs and compound-specific outputs remain local until the compounds are publicly released and the author explicitly approves a new repository release.
 
 ## References
 
-1. RDKit: cheminformatics and machine-learning software. <https://www.rdkit.org/>
-2. ChEMBL database and web services. <https://www.ebi.ac.uk/chembl/>
-3. Morgan/ECFP fingerprints are used here for similarity ranking; MACCS keys provide an orthogonal structural-key representation.
-4. UMAP is used only for visualization of fingerprint chemical space. It is not used as a predictive model.
+1. [RDKit documentation](https://www.rdkit.org/)
+2. [ChEMBL database and API](https://www.ebi.ac.uk/chembl/)
+3. [UMAP documentation](https://umap-learn.readthedocs.io/)
+4. [WHO bacterial priority pathogens](https://www.who.int/publications/i/item/9789240093461)

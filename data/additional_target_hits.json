@@ -1,0 +1,1134 @@
+{
+  "RpoB RNA polymerase": [
+    {
+      "target_chembl_id": "CHEMBL2006",
+      "pref_name": "DNA-directed RNA polymerase subunit beta",
+      "organism": "Mycobacterium tuberculosis",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL4296294",
+      "pref_name": "DNA-directed RNA polymerase subunit beta",
+      "organism": "Escherichia coli O127:H6 (strain E2348/69 / EPEC)",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL1852",
+      "pref_name": "DNA-directed RNA polymerase subunit beta",
+      "organism": "Escherichia coli K-12",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL2363852",
+      "pref_name": "DNA-directed RNA polymerase",
+      "organism": "Clostridium difficile",
+      "target_type": "PROTEIN COMPLEX"
+    },
+    {
+      "target_chembl_id": "CHEMBL2364672",
+      "pref_name": "Bacterial DNA-directed RNA polymerase",
+      "organism": "Bacteria",
+      "target_type": "PROTEIN COMPLEX"
+    },
+    {
+      "target_chembl_id": "CHEMBL4296169",
+      "pref_name": "DNA-directed RNA polymerase",
+      "organism": "Escherichia coli",
+      "target_type": "PROTEIN COMPLEX"
+    },
+    {
+      "target_chembl_id": "CHEMBL4523676",
+      "pref_name": "RNA-directed RNA polymerase",
+      "organism": "Influenza A virus (strain A/Puerto Rico/8/1934 H1N1)",
+      "target_type": "PROTEIN COMPLEX"
+    },
+    {
+      "target_chembl_id": "CHEMBL1075072",
+      "pref_name": "T7 RNA polymerase",
+      "organism": "Enterobacteria phage T7",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL3885620",
+      "pref_name": "Polymerase acidic protein /RNA-directed RNA polymerase catalytic subunit",
+      "organism": "Influenza A virus (strain A/Wilson-Smith/1933 H1N1)",
+      "target_type": "PROTEIN-PROTEIN INTERACTION"
+    },
+    {
+      "target_chembl_id": "CHEMBL4665582",
+      "pref_name": "DNA-directed RNA polymerase III subunit RPC1",
+      "organism": "Homo sapiens",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL5725143",
+      "pref_name": "DNA-directed RNA polymerase I subunit RPA49",
+      "organism": "Homo sapiens",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL6066157",
+      "pref_name": "DNA-directed RNA polymerase II subunit RPB2",
+      "organism": "Homo sapiens",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL1641353",
+      "pref_name": "DNA-directed RNA polymerase II subunit RPB1",
+      "organism": "Homo sapiens",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL3286067",
+      "pref_name": "DNA-directed RNA polymerase I subunit RPA1",
+      "organism": "Homo sapiens",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL6066856",
+      "pref_name": "RNA polymerase II",
+      "organism": "Mus musculus",
+      "target_type": "PROTEIN COMPLEX"
+    },
+    {
+      "target_chembl_id": "CHEMBL5375",
+      "pref_name": "Hepatitis C virus NS5B RNA-dependent RNA polymerase",
+      "organism": "Hepatitis C virus",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL4296320",
+      "pref_name": "RNA-directed RNA polymerase",
+      "organism": "Hepacivirus hominis",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL6196181",
+      "pref_name": "RNA-directed RNA polymerase L",
+      "organism": "Crimean-Congo hemorrhagic fever virus",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL4854",
+      "pref_name": "DNA-directed RNA polymerase",
+      "organism": "Enterobacteria phage T3",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL3120041",
+      "pref_name": "DNA-directed RNA polymerase, mitochondrial",
+      "organism": "Homo sapiens",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL4303062",
+      "pref_name": "RNA-directed RNA polymerase L",
+      "organism": "Zaire ebolavirus (strain Mayinga-76) (ZEBOV) (Zaire Ebola virus)",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL4523583",
+      "pref_name": "RNA-directed RNA polymerase L",
+      "organism": "Lake Victoria marburgvirus (strain Musoke-80) (MARV) (Marburg virus (strainKenya/Musoke/1980))",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL4630897",
+      "pref_name": "RNA-directed RNA polymerase L",
+      "organism": "Human respiratory syncytial virus A",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL5725024",
+      "pref_name": "RNA-directed RNA polymerase L",
+      "organism": "Toscana virus",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL5725131",
+      "pref_name": "RNA polymerase-associated protein RTF1 homolog",
+      "organism": "Homo sapiens",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL6066226",
+      "pref_name": "RNA-directed RNA polymerase L",
+      "organism": "Andes orthohantavirus",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL6066228",
+      "pref_name": "RNA-directed RNA polymerase L",
+      "organism": "Bunyavirus La Crosse",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL6066322",
+      "pref_name": "DNA-directed RNA polymerases I, II, and III subunit RPABC1",
+      "organism": "Homo sapiens",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL6067043",
+      "pref_name": "DNA-directed RNA polymerase I subunit RPA34",
+      "organism": "Homo sapiens",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL6067272",
+      "pref_name": "RNA polymerase II-associated protein 1",
+      "organism": "Homo sapiens",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL6195763",
+      "pref_name": "DNA-directed RNA polymerases I, II, and III subunit RPABC5",
+      "organism": "Homo sapiens",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL1914260",
+      "pref_name": "DNA-directed DNA/RNA polymerase mu",
+      "organism": "Homo sapiens",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL5724636",
+      "pref_name": "RNA polymerase-associated protein LEO1",
+      "organism": "Homo sapiens",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL5724759",
+      "pref_name": "RNA polymerase-associated protein CTR9 homolog",
+      "organism": "Homo sapiens",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL5725004",
+      "pref_name": "RNA polymerase II elongation factor ELL",
+      "organism": "Homo sapiens",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL5725179",
+      "pref_name": "RNA polymerase II-associated factor 1 homolog",
+      "organism": "Homo sapiens",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL3317331",
+      "pref_name": "RNA polymerase II subunit A C-terminal domain phosphatase SSU72",
+      "organism": "Homo sapiens",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL4105882",
+      "pref_name": "TATA box-binding protein-associated factor RNA polymerase I subunit A",
+      "organism": "Homo sapiens",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL4295608",
+      "pref_name": "Mediator of RNA polymerase II transcription subunit 15",
+      "organism": "Candida glabrata (strain ATCC 2001 / CBS 138 / JCM 3761 / NBRC 0622 /NRRL Y-65) (Yeast) (Torulopsis glabrata)",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL5725063",
+      "pref_name": "Activated RNA polymerase II transcriptional coactivator p15",
+      "organism": "Homo sapiens",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL5725080",
+      "pref_name": "TATA box-binding protein-associated factor RNA polymerase I subunit B",
+      "organism": "Homo sapiens",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL5725134",
+      "pref_name": "DNA-directed RNA polymerases I and III subunit RPAC1",
+      "organism": "Homo sapiens",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL6066400",
+      "pref_name": "DNA-directed RNA polymerases I, II, and III subunit RPABC3",
+      "organism": "Homo sapiens",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL4146",
+      "pref_name": "Mediator of RNA polymerase II transcription subunit 23",
+      "organism": "Homo sapiens",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL5169169",
+      "pref_name": "Mediator of RNA polymerase II transcription subunit 25",
+      "organism": "Homo sapiens",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL5724623",
+      "pref_name": "Mediator of RNA polymerase II transcription subunit 12",
+      "organism": "Homo sapiens",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL5724624",
+      "pref_name": "Mediator of RNA polymerase II transcription subunit 1",
+      "organism": "Homo sapiens",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL5724625",
+      "pref_name": "Mediator of RNA polymerase II transcription subunit 16",
+      "organism": "Homo sapiens",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL1795098",
+      "pref_name": "Carboxy-terminal domain RNA polymerase II polypeptide A small phosphatase 1",
+      "organism": "Homo sapiens",
+      "target_type": "SINGLE PROTEIN"
+    }
+  ],
+  "LeuRS leucine tRNA ligase": [
+    {
+      "target_chembl_id": "CHEMBL4105844",
+      "pref_name": "Leucine--tRNA ligase",
+      "organism": "Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv)",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL4295566",
+      "pref_name": "Leucine--tRNA ligase",
+      "organism": "Escherichia coli (strain K12)",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL4295595",
+      "pref_name": "Leucine--tRNA ligase",
+      "organism": "Staphylococcus aureus (strain NCTC 8325)",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL4662935",
+      "pref_name": "Leucine--tRNA ligase",
+      "organism": "Bacteria",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL1075253",
+      "pref_name": "Leucine--tRNA ligase, cytoplasmic",
+      "organism": "Saccharomyces cerevisiae S288c",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL4105806",
+      "pref_name": "Leucine--tRNA ligase, mitochondrial",
+      "organism": "Homo sapiens",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL3258",
+      "pref_name": "Leucine--tRNA ligase, cytoplasmic",
+      "organism": "Homo sapiens",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL3307222",
+      "pref_name": "Leucine-tRNA ligase",
+      "organism": "Trichophyton rubrum (strain ATCC MYA-4607 / CBS 118892) (Athlete'sfoot fungus)",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL1982",
+      "pref_name": "Isoleucine--tRNA ligase",
+      "organism": "Staphylococcus aureus",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL2364671",
+      "pref_name": "Isoleucine--tRNA ligase",
+      "organism": "Streptococcus pyogenes",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL3879837",
+      "pref_name": "Isoleucine--tRNA ligase",
+      "organism": "Thermus thermophilus (strain HB8 / ATCC 27634 / DSM 579)",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL3235",
+      "pref_name": "Isoleucine--tRNA ligase, cytoplasmic",
+      "organism": "Homo sapiens",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL3657",
+      "pref_name": "Isoleucine--tRNA ligase",
+      "organism": "Escherichia coli K-12",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL4105821",
+      "pref_name": "Isoleucine--tRNA ligase, mitochondrial",
+      "organism": "Homo sapiens",
+      "target_type": "SINGLE PROTEIN"
+    }
+  ],
+  "penicillin binding protein": [
+    {
+      "target_chembl_id": "CHEMBL3512",
+      "pref_name": "Penicillin-binding protein 2a",
+      "organism": "Staphylococcus aureus",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL3112383",
+      "pref_name": "Penicillin-binding protein 3",
+      "organism": "Bacillus subtilis (strain 168)",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL2549",
+      "pref_name": "Penicillin-binding protein 4",
+      "organism": "Staphylococcus aureus",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL4269",
+      "pref_name": "Penicillin-binding protein 3",
+      "organism": "Staphylococcus aureus",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL1255141",
+      "pref_name": "Penicillin-binding protein 1A",
+      "organism": "Streptococcus pneumoniae serotype 4 (strain ATCC BAA-334 / TIGR4)",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL1287593",
+      "pref_name": "Penicillin-binding protein 4",
+      "organism": "Staphylococcus aureus (strain COL)",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL3112382",
+      "pref_name": "Penicillin-binding protein 4",
+      "organism": "Bacillus subtilis (strain 168)",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL1813",
+      "pref_name": "Penicillin-binding protein 1A",
+      "organism": "Escherichia coli K-12",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL6188",
+      "pref_name": "Penicillin-binding protein 2x",
+      "organism": "Streptococcus pneumoniae serotype 4 (strain ATCC BAA-334 / TIGR4)",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL1255133",
+      "pref_name": "Penicillin-binding protein 2B",
+      "organism": "Streptococcus pneumoniae serotype 4 (strain ATCC BAA-334 / TIGR4)",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL1255138",
+      "pref_name": "Penicillin-binding protein 2X",
+      "organism": "Streptococcus pneumoniae R6",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL2354204",
+      "pref_name": "Bacterial penicillin-binding protein",
+      "organism": "Bacteria",
+      "target_type": "PROTEIN FAMILY"
+    },
+    {
+      "target_chembl_id": "CHEMBL2362972",
+      "pref_name": "Penicillin-binding protein",
+      "organism": "Staphylococcus aureus",
+      "target_type": "PROTEIN FAMILY"
+    },
+    {
+      "target_chembl_id": "CHEMBL2362973",
+      "pref_name": "Penicillin-binding protein",
+      "organism": "Streptococcus pneumoniae",
+      "target_type": "PROTEIN FAMILY"
+    },
+    {
+      "target_chembl_id": "CHEMBL2363020",
+      "pref_name": "Penicillin-binding protein",
+      "organism": "Pseudomonas aeruginosa",
+      "target_type": "PROTEIN FAMILY"
+    },
+    {
+      "target_chembl_id": "CHEMBL2363021",
+      "pref_name": "Penicillin-binding protein",
+      "organism": "Staphylococcus",
+      "target_type": "PROTEIN FAMILY"
+    },
+    {
+      "target_chembl_id": "CHEMBL3259512",
+      "pref_name": "Penicillin-binding protein 1A",
+      "organism": "Pseudomonas aeruginosa PAO1",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL1814",
+      "pref_name": "Penicillin-binding protein 1B",
+      "organism": "Escherichia coli K-12",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL2565",
+      "pref_name": "Penicillin-binding protein 2b",
+      "organism": "Staphylococcus aureus",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL3825",
+      "pref_name": "Penicillin-binding protein 2",
+      "organism": "Staphylococcus aureus",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL5540",
+      "pref_name": "Penicillin-binding protein 1B",
+      "organism": "Pseudomonas aeruginosa",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL4295546",
+      "pref_name": "Penicillin-binding protein 1B",
+      "organism": "Acinetobacter baumannii",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL4296322",
+      "pref_name": "Penicillin-binding protein 2B",
+      "organism": "Streptococcus pneumoniae (strain ATCC BAA-255 / R6)",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL3515",
+      "pref_name": "Penicillin-binding protein 1",
+      "organism": "Staphylococcus aureus (strain COL)",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL4268",
+      "pref_name": "Penicillin-binding protein 1",
+      "organism": "Staphylococcus aureus",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL5539",
+      "pref_name": "Penicillin-binding protein 2",
+      "organism": "Pseudomonas aeruginosa",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL5225",
+      "pref_name": "Penicillin-binding protein 3",
+      "organism": "Pseudomonas aeruginosa",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL3309036",
+      "pref_name": "Cell shape peptidoglycan synthetase penicillin-binding protein 2",
+      "organism": "Escherichia coli",
+      "target_type": "SINGLE PROTEIN"
+    }
+  ],
+  "beta lactamase": [
+    {
+      "target_chembl_id": "CHEMBL3326",
+      "pref_name": "Beta-lactamase L1",
+      "organism": "Stenotrophomonas maltophilia",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL1169593",
+      "pref_name": "Metallo-beta-lactamase type 2",
+      "organism": "Aeromonas hydrophila",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL1667695",
+      "pref_name": "Metallo-beta-lactamase type 2",
+      "organism": "Klebsiella pneumoniae",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL1744488",
+      "pref_name": "Metallo-beta-lactamase type 2",
+      "organism": "Bacillus cereus",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL4295695",
+      "pref_name": "Metallo-beta-lactamase type 2",
+      "organism": "Bacillus cereus",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL5465386",
+      "pref_name": "Metallo-beta-lactamase type 2",
+      "organism": "Bacteria",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL4840",
+      "pref_name": "Metallo-beta-lactamase type 2",
+      "organism": "Bacteroides fragilis",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL5732",
+      "pref_name": "Beta-lactamase 1",
+      "organism": "Bacillus cereus",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL1075210",
+      "pref_name": "Metallo-beta-lactamase type 2",
+      "organism": "Pseudomonas aeruginosa",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL1667692",
+      "pref_name": "Metallo-beta-lactamase type 2",
+      "organism": "Flavobacterium meningosepticum",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL3832957",
+      "pref_name": "Metallo beta-lactamase",
+      "organism": "Pseudomonas aeruginosa",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL4105964",
+      "pref_name": "Metallo-beta-lactamase type 2",
+      "organism": "Serratia marcescens",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL3499",
+      "pref_name": "Beta-lactamase class C",
+      "organism": "Enterobacter cloacae",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL5042",
+      "pref_name": "Carbapenem-hydrolizing beta-lactamase SFC-1",
+      "organism": "Serratia fonticola",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL5157",
+      "pref_name": "Carbapenem-hydrolyzing beta-lactamase SME-3",
+      "organism": "Serratia marcescens",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL5439",
+      "pref_name": "Beta-lactamase",
+      "organism": "Bacillus clausii",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL1667679",
+      "pref_name": "Beta-lactamase CTX-M-16",
+      "organism": "Escherichia coli",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL1667690",
+      "pref_name": "IND-like metallo-beta-lactamase",
+      "organism": "Chryseobacterium indologenes",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL1667691",
+      "pref_name": "Metallo-beta-lactamase IND-2",
+      "organism": "Chryseobacterium indologenes",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL1667700",
+      "pref_name": "Beta-lactamase ADC-33",
+      "organism": "Acinetobacter baumannii",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL1744489",
+      "pref_name": "Beta-lactamase PSE-4",
+      "organism": "Pseudomonas aeruginosa",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL3562180",
+      "pref_name": "Carbapenem-hydrolyzing beta-lactamase KPC",
+      "organism": "Klebsiella oxytoca",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL3885668",
+      "pref_name": "Beta-lactamase",
+      "organism": "Pseudomonas aeruginosa",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL2026",
+      "pref_name": "Beta-lactamase",
+      "organism": "Escherichia coli K-12",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL4114",
+      "pref_name": "Beta-lactamase",
+      "organism": "Staphylococcus aureus",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL4782",
+      "pref_name": "Beta-lactamase",
+      "organism": "Proteus vulgaris",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL2725",
+      "pref_name": "Beta-lactamase",
+      "organism": "Enterobacter cloacae",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL5031",
+      "pref_name": "Beta-lactamase",
+      "organism": "Pseudomonas aeruginosa (strain ATCC 15692 / PAO1 / 1C / PRS 101 / LMG12228)",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL5041",
+      "pref_name": "Beta-lactamase TEM-125",
+      "organism": "Escherichia coli",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL5303",
+      "pref_name": "PER-2 beta-lactamase",
+      "organism": "Citrobacter freundii",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL5305",
+      "pref_name": "Beta-lactamase ACC-4",
+      "organism": "Escherichia coli",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL5482",
+      "pref_name": "Beta-lactamase OXA-10",
+      "organism": "Pseudomonas aeruginosa",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL5012",
+      "pref_name": "Beta-lactamase",
+      "organism": "Klebsiella oxytoca",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL5693",
+      "pref_name": "Beta-lactamase",
+      "organism": "Serratia marcescens",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL5751",
+      "pref_name": "Beta-lactamase",
+      "organism": "Bacillus anthracis",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL5895",
+      "pref_name": "Beta-lactamase",
+      "organism": "Providencia stuartii",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL6132",
+      "pref_name": "Carbapenem-hydrolyzing beta-lactamase KPC",
+      "organism": "Klebsiella pneumoniae",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL5744",
+      "pref_name": "Beta-lactamase",
+      "organism": "Proteus mirabilis",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL5764",
+      "pref_name": "Beta-lactamase",
+      "organism": "Morganella morganii",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL6146",
+      "pref_name": "Beta-lactamase VIM-4",
+      "organism": "Pseudomonas aeruginosa",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL5633",
+      "pref_name": "Beta-lactamase",
+      "organism": "Bacillus licheniformis",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL1075073",
+      "pref_name": "Beta-lactamase SCO-1",
+      "organism": "Escherichia coli",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL1075081",
+      "pref_name": "SHV-5 extended spectrum beta-lactamase",
+      "organism": "Escherichia coli",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL1075159",
+      "pref_name": "Beta-lactamase",
+      "organism": "Acinetobacter baumannii",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL1250341",
+      "pref_name": "Beta-lactamase GES-13",
+      "organism": "Pseudomonas aeruginosa",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL1255121",
+      "pref_name": "Beta-lactamase SHV-72",
+      "organism": "Klebsiella pneumoniae",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL1255122",
+      "pref_name": "Metallo-beta-lactamase VIM-11",
+      "organism": "Pseudomonas aeruginosa",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL1255123",
+      "pref_name": "Metallo-beta-lactamase VIM-2",
+      "organism": "Pseudomonas aeruginosa",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL1255124",
+      "pref_name": "Metallo-beta-lactamase",
+      "organism": "Pseudomonas stutzeri",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL1255130",
+      "pref_name": "Beta-lactamase",
+      "organism": "Citrobacter freundii",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL1255143",
+      "pref_name": "Metallo-beta-lactamase",
+      "organism": "Acinetobacter baumannii",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL1255144",
+      "pref_name": "Beta-lactamase SHV-55",
+      "organism": "Klebsiella pneumoniae",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL1255145",
+      "pref_name": "Class D beta-lactamase",
+      "organism": "Brachyspira pilosicoli",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL1287595",
+      "pref_name": "GOB-1 metallo-beta-lactamase",
+      "organism": "Elizabethkingia meningoseptica",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL1287597",
+      "pref_name": "Metallo-beta-lactamase",
+      "organism": "Caulobacter vibrioides",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL1287606",
+      "pref_name": "Beta-lactamase SHV-11",
+      "organism": "Escherichia coli",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL1293244",
+      "pref_name": "Beta-lactamase",
+      "organism": "Pseudomonas aeruginosa",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL1293260",
+      "pref_name": "Beta-lactamase",
+      "organism": "Salmonella choleraesuis (strain SC-B67)",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL1641339",
+      "pref_name": "PenB class A beta-lactamase",
+      "organism": "Burkholderia cenocepacia",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL1641350",
+      "pref_name": "Beta-lactamase",
+      "organism": "Pseudomonas aeruginosa",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL1641358",
+      "pref_name": "Beta-lactamase",
+      "organism": "Klebsiella pneumoniae",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL1667678",
+      "pref_name": "Extended-spectrum beta-lactamase CTX-M-53",
+      "organism": "Salmonella enterica subsp. enterica serovar Westhampton",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL1667689",
+      "pref_name": "Metallo-beta-lactamase IND-6",
+      "organism": "Chryseobacterium indologenes",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL1667693",
+      "pref_name": "Extended spectrum beta-lactamase CTX-M-71",
+      "organism": "Klebsiella pneumoniae",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL1667696",
+      "pref_name": "Metallo-beta-lactamase VIM-2",
+      "organism": "Klebsiella pneumoniae",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL1697666",
+      "pref_name": "Extended-spectrum beta-lactamase PER-6",
+      "organism": "Aeromonas allosaccharophila",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL1697675",
+      "pref_name": "Beta-lactamase Toho-1",
+      "organism": "Escherichia coli",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL1744490",
+      "pref_name": "Beta-lactamase pse-1",
+      "organism": "Escherichia coli",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL2233619",
+      "pref_name": "Beta-lactamase SHV-95",
+      "organism": "Citrobacter freundii",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL2233620",
+      "pref_name": "Extended-spectrum beta-lactamase SHV-48",
+      "organism": "Acinetobacter baumannii",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL3309038",
+      "pref_name": "Metallo-beta-lactamase VIM-19",
+      "organism": "Escherichia coli",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL3308938",
+      "pref_name": "Beta-lactamase",
+      "organism": "Pseudomonas luteola",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL3562177",
+      "pref_name": "Beta-lactamase",
+      "organism": "Aeromonas veronii",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL3562179",
+      "pref_name": "Beta-lactamase",
+      "organism": "Enterobacter cloacae",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL3885662",
+      "pref_name": "Beta-lactamase",
+      "organism": "Aeromonas hydrophila",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL3885665",
+      "pref_name": "Beta-lactamase",
+      "organism": "Escherichia coli",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL4105931",
+      "pref_name": "Beta-lactamase",
+      "organism": "Pseudomonas fluorescens",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL4295603",
+      "pref_name": "Beta-lactamase",
+      "organism": "Klebsiella pneumoniae",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL4295613",
+      "pref_name": "Beta-lactamase",
+      "organism": "Escherichia coli",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL4295954",
+      "pref_name": "Beta-lactamase",
+      "organism": "Acinetobacter baumannii",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL5223041",
+      "pref_name": "Beta-lactamase",
+      "organism": "Acinetobacter calcoaceticus",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL5223042",
+      "pref_name": "Beta-lactamase",
+      "organism": "Acinetobacter nosocomialis",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL5223043",
+      "pref_name": "Beta-lactamase",
+      "organism": "Acinetobacter pittii",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL3652",
+      "pref_name": "Beta-lactamase TEM",
+      "organism": "Enterobacter cloacae",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL4314",
+      "pref_name": "Imipenem-hydrolyzing beta-lactamase",
+      "organism": "Enterobacter cloacae",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL6131",
+      "pref_name": "Beta-lactamase CTX-M",
+      "organism": "Escherichia coli",
+      "target_type": "SINGLE PROTEIN"
+    }
+  ],
+  "D Ala D Ala ligase": [
+    {
+      "target_chembl_id": "CHEMBL2366488",
+      "pref_name": "D-alanine--D-alanine ligase",
+      "organism": "Helicobacter pylori (strain HPAG1)",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL4523951",
+      "pref_name": "D-alanine--D-alanine ligase",
+      "organism": "Enterococcus faecalis (strain ATCC 700802 / V583)",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL2030",
+      "pref_name": "D-alanine--D-alanine ligase",
+      "organism": "Mycobacterium tuberculosis",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL1956",
+      "pref_name": "D-alanine--D-alanine ligase B",
+      "organism": "Escherichia coli K-12",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL2363020",
+      "pref_name": "Penicillin-binding protein",
+      "organism": "Pseudomonas aeruginosa",
+      "target_type": "PROTEIN FAMILY"
+    },
+    {
+      "target_chembl_id": "CHEMBL2362973",
+      "pref_name": "Penicillin-binding protein",
+      "organism": "Streptococcus pneumoniae",
+      "target_type": "PROTEIN FAMILY"
+    },
+    {
+      "target_chembl_id": "CHEMBL5539",
+      "pref_name": "Penicillin-binding protein 2",
+      "organism": "Pseudomonas aeruginosa",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL5225",
+      "pref_name": "Penicillin-binding protein 3",
+      "organism": "Pseudomonas aeruginosa",
+      "target_type": "SINGLE PROTEIN"
+    },
+    {
+      "target_chembl_id": "CHEMBL2354204",
+      "pref_name": "Bacterial penicillin-binding protein",
+      "organism": "Bacteria",
+      "target_type": "PROTEIN FAMILY"
+    },
+    {
+      "target_chembl_id": "CHEMBL3309036",
+      "pref_name": "Cell shape peptidoglycan synthetase penicillin-binding protein 2",
+      "organism": "Escherichia coli",
+      "target_type": "SINGLE PROTEIN"
+    }
+  ]
+}

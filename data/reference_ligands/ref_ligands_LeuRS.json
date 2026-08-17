@@ -1,0 +1,713 @@
+[
+  {
+    "molecule_chembl_id": "CHEMBL1163081",
+    "canonical_smiles": "CC(C)C[C@H](N)C(=O)NS(=O)(=O)OC[C@H]1O[C@@H](n2cnc3c(N)ncnc32)[C@H](O)[C@@H]1O",
+    "pchembl_value": 9.86,
+    "standard_type": "Ki",
+    "standard_value": "0.139",
+    "target_chembl_id": "CHEMBL4295566",
+    "organism": "Escherichia coli (strain K12)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4204314",
+    "canonical_smiles": "CC(C)C[C@H](N)C(=O)NS(=O)(=O)OC[C@H]1O[C@@H](n2cnc3c(N)nccc32)[C@H](O)[C@@H]1O",
+    "pchembl_value": 9.18,
+    "standard_type": "Ki",
+    "standard_value": "0.654",
+    "target_chembl_id": "CHEMBL4295566",
+    "organism": "Escherichia coli (strain K12)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4444740",
+    "canonical_smiles": "Cc1cc(-c2cccc(S(=O)(=O)CC(=O)[C@@H](N)CC(C)C)c2)ncn1",
+    "pchembl_value": 8.85,
+    "standard_type": "Kd",
+    "standard_value": "1.4",
+    "target_chembl_id": "CHEMBL4295566",
+    "organism": "Escherichia coli (strain K12)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4864835",
+    "canonical_smiles": "CC(C)C[C@H](N)C(=O)NS(=O)(=O)OC[C@H]1OC[C@@H](CCCn2cc(CNC(=O)NCc3ccccc3)nn2)[C@H](O)[C@@H]1O",
+    "pchembl_value": 8.61,
+    "standard_type": "Ki",
+    "standard_value": "2.48",
+    "target_chembl_id": "CHEMBL4295566",
+    "organism": "Escherichia coli (strain K12)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4869028",
+    "canonical_smiles": "CCCCCc1ccc(-c2cn(CCC[C@@H]3CO[C@H](COS(=O)(=O)NC(=O)[C@@H](N)CC(C)C)[C@@H](O)[C@H]3O)nn2)cc1",
+    "pchembl_value": 8.26,
+    "standard_type": "Ki",
+    "standard_value": "5.51",
+    "target_chembl_id": "CHEMBL4295566",
+    "organism": "Escherichia coli (strain K12)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4465674",
+    "canonical_smiles": "CC(C)C[C@H](N)C(=O)NS(=O)(=O)OC[C@H]1O[C@@H](n2ccc(N)nc2=O)[C@H](O)[C@@H]1O",
+    "pchembl_value": 8.01,
+    "standard_type": "Ki",
+    "standard_value": "9.8",
+    "target_chembl_id": "CHEMBL4295566",
+    "organism": "Escherichia coli (strain K12)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4163140",
+    "canonical_smiles": "CC(C)C[C@H](N)C(=O)NS(=O)(=O)c1cccc(-c2ccncc2)c1",
+    "pchembl_value": 7.89,
+    "standard_type": "IC50",
+    "standard_value": "13.0",
+    "target_chembl_id": "CHEMBL4295566",
+    "organism": "Escherichia coli (strain K12)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4172643",
+    "canonical_smiles": "CC(C)C[C@H](N)C(=O)NS(=O)(=O)c1cccc(-c2ccnc(N)c2)c1",
+    "pchembl_value": 7.85,
+    "standard_type": "IC50",
+    "standard_value": "14.0",
+    "target_chembl_id": "CHEMBL4295566",
+    "organism": "Escherichia coli (strain K12)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4864965",
+    "canonical_smiles": "CC(C)C[C@H](N)C(=O)NS(=O)(=O)OC[C@H]1OC[C@@H](CCCn2cc(-c3ccc(OC(F)(F)F)cc3)nn2)[C@H](O)[C@@H]1O",
+    "pchembl_value": 7.75,
+    "standard_type": "Ki",
+    "standard_value": "17.83",
+    "target_chembl_id": "CHEMBL4295566",
+    "organism": "Escherichia coli (strain K12)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4467328",
+    "canonical_smiles": "CC(C)C[C@H](N)C(=O)NS(=O)(=O)OC[C@H]1O[C@@H](n2ccc(=O)[nH]c2=O)[C@H](O)[C@@H]1O",
+    "pchembl_value": 7.68,
+    "standard_type": "Ki",
+    "standard_value": "20.8",
+    "target_chembl_id": "CHEMBL4295566",
+    "organism": "Escherichia coli (strain K12)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4159778",
+    "canonical_smiles": "CC(C)C[C@H](N)C(=O)NS(=O)(=O)c1cccc(-c2cccc(N)n2)c1",
+    "pchembl_value": 7.64,
+    "standard_type": "IC50",
+    "standard_value": "23.0",
+    "target_chembl_id": "CHEMBL4295566",
+    "organism": "Escherichia coli (strain K12)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4451258",
+    "canonical_smiles": "CC(C)C[C@H](N)C(=O)NS(=O)(=O)OC[C@H]1O[C@@H](n2ccc(=O)n(C)c2=O)[C@H](O)[C@@H]1O",
+    "pchembl_value": 7.53,
+    "standard_type": "Ki",
+    "standard_value": "29.5",
+    "target_chembl_id": "CHEMBL4295566",
+    "organism": "Escherichia coli (strain K12)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4855635",
+    "canonical_smiles": "CC(C)C[C@H](N)C(=O)NS(=O)(=O)OC[C@H]1O[C@@H](CCn2nnc(-c3ccccc3)n2)[C@H](O)[C@@H]1O",
+    "pchembl_value": 7.51,
+    "standard_type": "Ki",
+    "standard_value": "30.94",
+    "target_chembl_id": "CHEMBL4295566",
+    "organism": "Escherichia coli (strain K12)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4171058",
+    "canonical_smiles": "CC(C)C[C@H](N)C(=O)NS(=O)(=O)c1cccc(-c2ccccc2)c1",
+    "pchembl_value": 7.5,
+    "standard_type": "IC50",
+    "standard_value": "32.0",
+    "target_chembl_id": "CHEMBL4295566",
+    "organism": "Escherichia coli (strain K12)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4864716",
+    "canonical_smiles": "CC(C)C[C@H](N)C(=O)NS(=O)(=O)OC[C@H]1OC[C@@H](CCCn2cc(-c3cccnc3)nn2)[C@H](O)[C@@H]1O",
+    "pchembl_value": 7.5,
+    "standard_type": "Ki",
+    "standard_value": "31.62",
+    "target_chembl_id": "CHEMBL4295566",
+    "organism": "Escherichia coli (strain K12)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4852287",
+    "canonical_smiles": "CC(C)C[C@H](N)C(=O)NS(=O)(=O)OC[C@H]1OC[C@@H](CCCn2cc(CNC(=O)c3ccccc3)nn2)[C@H](O)[C@@H]1O",
+    "pchembl_value": 7.5,
+    "standard_type": "Ki",
+    "standard_value": "31.28",
+    "target_chembl_id": "CHEMBL4295566",
+    "organism": "Escherichia coli (strain K12)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4160841",
+    "canonical_smiles": "CC(C)C[C@H](N)C(=O)NS(=O)(=O)c1ccccc1",
+    "pchembl_value": 7.46,
+    "standard_type": "IC50",
+    "standard_value": "35.0",
+    "target_chembl_id": "CHEMBL4295566",
+    "organism": "Escherichia coli (strain K12)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4163450",
+    "canonical_smiles": "Cc1cc(-c2cccc(S(=O)(=O)NC(=O)[C@@H](N)CC(C)C)c2)nc(N)n1",
+    "pchembl_value": 7.39,
+    "standard_type": "IC50",
+    "standard_value": "41.0",
+    "target_chembl_id": "CHEMBL4295566",
+    "organism": "Escherichia coli (strain K12)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4105269",
+    "canonical_smiles": "Cl.NC[C@H]1OB(O)c2c3c(cc(Cl)c21)OCCO3",
+    "pchembl_value": 7.34,
+    "standard_type": "IC50",
+    "standard_value": "46.0",
+    "target_chembl_id": "CHEMBL4105844",
+    "organism": "Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4167692",
+    "canonical_smiles": "Cc1cc(-c2cccc(S(=O)(=O)NC(=O)[C@@H](N)CC(C)C)c2)ncn1",
+    "pchembl_value": 7.33,
+    "standard_type": "IC50",
+    "standard_value": "47.0",
+    "target_chembl_id": "CHEMBL4295566",
+    "organism": "Escherichia coli (strain K12)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4867227",
+    "canonical_smiles": "CCCCCCCCc1cn(CCC[C@@H]2CO[C@H](COS(=O)(=O)NC(=O)[C@@H](N)CC(C)C)[C@@H](O)[C@H]2O)nn1",
+    "pchembl_value": 7.28,
+    "standard_type": "Ki",
+    "standard_value": "52.36",
+    "target_chembl_id": "CHEMBL4295566",
+    "organism": "Escherichia coli (strain K12)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4161986",
+    "canonical_smiles": "CC(C)C[C@H](N)C(=O)NS(=O)(=O)c1cccc(-c2ccnc(N)n2)c1",
+    "pchembl_value": 7.27,
+    "standard_type": "IC50",
+    "standard_value": "54.0",
+    "target_chembl_id": "CHEMBL4295566",
+    "organism": "Escherichia coli (strain K12)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4077894",
+    "canonical_smiles": "CCOc1ccc(Cl)c2c1B(O)O[C@@H]2CN.Cl",
+    "pchembl_value": 7.25,
+    "standard_type": "IC50",
+    "standard_value": "56.0",
+    "target_chembl_id": "CHEMBL4105844",
+    "organism": "Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4171458",
+    "canonical_smiles": "CC(C)C[C@H](N)C(=O)NS(=O)(=O)c1ccc2ccccc2c1",
+    "pchembl_value": 7.19,
+    "standard_type": "IC50",
+    "standard_value": "65.0",
+    "target_chembl_id": "CHEMBL4295566",
+    "organism": "Escherichia coli (strain K12)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4086672",
+    "canonical_smiles": "COc1ccc(Br)c2c1B(O)O[C@@H]2CN.Cl",
+    "pchembl_value": 7.13,
+    "standard_type": "IC50",
+    "standard_value": "74.0",
+    "target_chembl_id": "CHEMBL4105844",
+    "organism": "Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4075879",
+    "canonical_smiles": "CCOc1ccc(Br)c2c1B(O)O[C@@H]2CN",
+    "pchembl_value": 7.12,
+    "standard_type": "IC50",
+    "standard_value": "75.0",
+    "target_chembl_id": "CHEMBL4105844",
+    "organism": "Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4104309",
+    "canonical_smiles": "Cl.NCC1OB(O)c2c(OCCF)ccc(Cl)c21",
+    "pchembl_value": 7.12,
+    "standard_type": "IC50",
+    "standard_value": "76.0",
+    "target_chembl_id": "CHEMBL4105844",
+    "organism": "Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4102148",
+    "canonical_smiles": "CCOc1ccc(F)c2c1B(O)O[C@@H]2CN",
+    "pchembl_value": 7.1,
+    "standard_type": "IC50",
+    "standard_value": "80.0",
+    "target_chembl_id": "CHEMBL4105844",
+    "organism": "Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4082544",
+    "canonical_smiles": "NCC1OB(O)c2c3c(cc(Br)c21)OCCO3.O=C(O)C(F)(F)F",
+    "pchembl_value": 7.04,
+    "standard_type": "IC50",
+    "standard_value": "92.0",
+    "target_chembl_id": "CHEMBL4105844",
+    "organism": "Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4876966",
+    "canonical_smiles": "CC(C)C[C@H](N)C(=O)NS(=O)(=O)OC[C@H]1OC[C@@H](CCCn2cc(CCc3ccccc3)nn2)[C@H](O)[C@@H]1O",
+    "pchembl_value": 6.96,
+    "standard_type": "Ki",
+    "standard_value": "108.35",
+    "target_chembl_id": "CHEMBL4295566",
+    "organism": "Escherichia coli (strain K12)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4081207",
+    "canonical_smiles": "Cl.NC[C@H]1OB(O)c2c(OCCO)ccc(Br)c21",
+    "pchembl_value": 6.92,
+    "standard_type": "IC50",
+    "standard_value": "120.0",
+    "target_chembl_id": "CHEMBL4105844",
+    "organism": "Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4066833",
+    "canonical_smiles": "Cl.NC[C@H]1OB(O)c2c3c(cc(Br)c21)OCCO3",
+    "pchembl_value": 6.92,
+    "standard_type": "IC50",
+    "standard_value": "120.0",
+    "target_chembl_id": "CHEMBL4105844",
+    "organism": "Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4081755",
+    "canonical_smiles": "CCOc1cccc2c1B(O)O[C@@H]2CN",
+    "pchembl_value": 6.89,
+    "standard_type": "IC50",
+    "standard_value": "130.0",
+    "target_chembl_id": "CHEMBL4105844",
+    "organism": "Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4084478",
+    "canonical_smiles": "Cl.NCC1OB(O)c2c3c(cc(Cl)c21)OCCO3",
+    "pchembl_value": 6.89,
+    "standard_type": "IC50",
+    "standard_value": "130.0",
+    "target_chembl_id": "CHEMBL4105844",
+    "organism": "Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4066786",
+    "canonical_smiles": "COc1ccc(Cl)c2c1B(O)O[C@@H]2CN.Cl",
+    "pchembl_value": 6.82,
+    "standard_type": "IC50",
+    "standard_value": "150.0",
+    "target_chembl_id": "CHEMBL4105844",
+    "organism": "Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4105458",
+    "canonical_smiles": "Cl.NCC1OB(O)c2c(OCCO)ccc(Br)c21",
+    "pchembl_value": 6.82,
+    "standard_type": "IC50",
+    "standard_value": "150.0",
+    "target_chembl_id": "CHEMBL4105844",
+    "organism": "Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4090012",
+    "canonical_smiles": "Cl.NC[C@H]1OB(O)c2c(OCCCO)ccc(Br)c21",
+    "pchembl_value": 6.8,
+    "standard_type": "IC50",
+    "standard_value": "160.0",
+    "target_chembl_id": "CHEMBL4105844",
+    "organism": "Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4861722",
+    "canonical_smiles": "CC(C)C[C@H](N)C(=O)NS(=O)(=O)OC[C@H]1OC[C@@H](CCCn2cc(-c3ccccc3)nn2)[C@H](O)[C@@H]1O",
+    "pchembl_value": 6.74,
+    "standard_type": "Ki",
+    "standard_value": "182.35",
+    "target_chembl_id": "CHEMBL4295566",
+    "organism": "Escherichia coli (strain K12)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4067937",
+    "canonical_smiles": "CCCCOc1ccc(Br)c2c1B(O)O[C@@H]2CN.Cl",
+    "pchembl_value": 6.7,
+    "standard_type": "IC50",
+    "standard_value": "200.0",
+    "target_chembl_id": "CHEMBL4105844",
+    "organism": "Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4082159",
+    "canonical_smiles": "Cl.NC[C@H]1OB(O)c2c(OCCO)ccc(Cl)c21",
+    "pchembl_value": 6.7,
+    "standard_type": "IC50",
+    "standard_value": "200.0",
+    "target_chembl_id": "CHEMBL4105844",
+    "organism": "Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4174152",
+    "canonical_smiles": "CC(C)C[C@H](N)C(=O)NS(=O)(=O)c1cccc(-c2cc(-c3ccccc3)nc(N)n2)c1",
+    "pchembl_value": 6.65,
+    "standard_type": "IC50",
+    "standard_value": "224.0",
+    "target_chembl_id": "CHEMBL4295566",
+    "organism": "Escherichia coli (strain K12)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4094412",
+    "canonical_smiles": "CCCOc1ccc(Br)c2c1B(O)O[C@@H]2CN.Cl",
+    "pchembl_value": 6.62,
+    "standard_type": "IC50",
+    "standard_value": "240.0",
+    "target_chembl_id": "CHEMBL4105844",
+    "organism": "Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4084509",
+    "canonical_smiles": "Cl.NCC1OB(O)c2c(OCC(F)F)ccc(Br)c21",
+    "pchembl_value": 6.62,
+    "standard_type": "IC50",
+    "standard_value": "240.0",
+    "target_chembl_id": "CHEMBL4105844",
+    "organism": "Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4061966",
+    "canonical_smiles": "Cl.NCC1OB(O)c2c(OCCO)ccc(Cl)c21",
+    "pchembl_value": 6.62,
+    "standard_type": "IC50",
+    "standard_value": "240.0",
+    "target_chembl_id": "CHEMBL4105844",
+    "organism": "Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4096785",
+    "canonical_smiles": "CCCOc1cc(Cl)c2c(c1)B(O)OC2CN.Cl",
+    "pchembl_value": 6.6,
+    "standard_type": "IC50",
+    "standard_value": "250.0",
+    "target_chembl_id": "CHEMBL4105844",
+    "organism": "Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4074178",
+    "canonical_smiles": "Cl.NCC1OB(O)c2c3c(cc(Cl)c21)OCO3",
+    "pchembl_value": 6.6,
+    "standard_type": "IC50",
+    "standard_value": "250.0",
+    "target_chembl_id": "CHEMBL4105844",
+    "organism": "Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4087944",
+    "canonical_smiles": "Cl.NCC1OB(O)c2c(OCCF)ccc(Br)c21",
+    "pchembl_value": 6.58,
+    "standard_type": "IC50",
+    "standard_value": "260.0",
+    "target_chembl_id": "CHEMBL4105844",
+    "organism": "Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4078760",
+    "canonical_smiles": "CCOc1cc(Br)c2c(c1)B(O)OC2CN.Cl",
+    "pchembl_value": 6.58,
+    "standard_type": "IC50",
+    "standard_value": "260.0",
+    "target_chembl_id": "CHEMBL4105844",
+    "organism": "Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4066921",
+    "canonical_smiles": "CCCCOc1ccc(Cl)c2c1B(O)O[C@@H]2CN.Cl",
+    "pchembl_value": 6.57,
+    "standard_type": "IC50",
+    "standard_value": "270.0",
+    "target_chembl_id": "CHEMBL4105844",
+    "organism": "Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4076333",
+    "canonical_smiles": "Cl.NCC1OB(O)c2c(OCC(F)F)ccc(Cl)c21",
+    "pchembl_value": 6.54,
+    "standard_type": "IC50",
+    "standard_value": "290.0",
+    "target_chembl_id": "CHEMBL4105844",
+    "organism": "Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4104573",
+    "canonical_smiles": "CCCOc1ccc(Cl)c2c1B(O)O[C@@H]2CN.Cl",
+    "pchembl_value": 6.51,
+    "standard_type": "IC50",
+    "standard_value": "310.0",
+    "target_chembl_id": "CHEMBL4105844",
+    "organism": "Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4075254",
+    "canonical_smiles": "Cl.NCC1OB(O)c2c(OCc3ccccc3)ccc(Cl)c21",
+    "pchembl_value": 6.5,
+    "standard_type": "IC50",
+    "standard_value": "320.0",
+    "target_chembl_id": "CHEMBL4105844",
+    "organism": "Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4089141",
+    "canonical_smiles": "Cl.NCC1OB(O)c2c(Oc3ccccc3)ccc(Cl)c21",
+    "pchembl_value": 6.47,
+    "standard_type": "IC50",
+    "standard_value": "340.0",
+    "target_chembl_id": "CHEMBL4105844",
+    "organism": "Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4071439",
+    "canonical_smiles": "CCCOc1cc(Br)c2c(c1)B(O)OC2CN.Cl",
+    "pchembl_value": 6.43,
+    "standard_type": "IC50",
+    "standard_value": "370.0",
+    "target_chembl_id": "CHEMBL4105844",
+    "organism": "Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4081973",
+    "canonical_smiles": "Cl.NCC1OB(O)c2cc(OCCCO)cc(Br)c21",
+    "pchembl_value": 6.43,
+    "standard_type": "IC50",
+    "standard_value": "370.0",
+    "target_chembl_id": "CHEMBL4105844",
+    "organism": "Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4850408",
+    "canonical_smiles": "CC(C)C[C@H](N)C(=O)NS(=O)(=O)OC[C@H]1OC[C@@H](CCCn2cc(CCCCO)nn2)[C@H](O)[C@@H]1O",
+    "pchembl_value": 6.41,
+    "standard_type": "Ki",
+    "standard_value": "387.66",
+    "target_chembl_id": "CHEMBL4295566",
+    "organism": "Escherichia coli (strain K12)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4103410",
+    "canonical_smiles": "Cl.NCC1OB(O)c2c(OCc3ccccc3)ccc(Br)c21",
+    "pchembl_value": 6.36,
+    "standard_type": "IC50",
+    "standard_value": "440.0",
+    "target_chembl_id": "CHEMBL4105844",
+    "organism": "Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4092224",
+    "canonical_smiles": "Cl.NCC1OB(O)c2cc(OCCCO)cc(Cl)c21",
+    "pchembl_value": 6.36,
+    "standard_type": "IC50",
+    "standard_value": "440.0",
+    "target_chembl_id": "CHEMBL4105844",
+    "organism": "Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4080074",
+    "canonical_smiles": "Cl.NCC1OB(O)c2c(OCCc3ccccc3)ccc(Br)c21",
+    "pchembl_value": 6.33,
+    "standard_type": "IC50",
+    "standard_value": "470.0",
+    "target_chembl_id": "CHEMBL4105844",
+    "organism": "Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4062832",
+    "canonical_smiles": "Cl.NC[C@H]1OB(O)c2c(OCCCO)ccc(Cl)c21",
+    "pchembl_value": 6.33,
+    "standard_type": "IC50",
+    "standard_value": "470.0",
+    "target_chembl_id": "CHEMBL4105844",
+    "organism": "Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4062801",
+    "canonical_smiles": "NCC1OB(O)c2c3c(cc(Br)c21)OCO3.O=C(O)C(F)(F)F",
+    "pchembl_value": 6.21,
+    "standard_type": "IC50",
+    "standard_value": "610.0",
+    "target_chembl_id": "CHEMBL4105844",
+    "organism": "Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4070589",
+    "canonical_smiles": "CCOc1cc(Cl)c2c(c1)B(O)OC2CN.Cl",
+    "pchembl_value": 6.2,
+    "standard_type": "IC50",
+    "standard_value": "630.0",
+    "target_chembl_id": "CHEMBL4105844",
+    "organism": "Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4518074",
+    "canonical_smiles": "NCC1OB(O)c2ccccc21",
+    "pchembl_value": 6.19,
+    "standard_type": "IC50",
+    "standard_value": "640.0",
+    "target_chembl_id": "CHEMBL4105844",
+    "organism": "Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4087629",
+    "canonical_smiles": "Cl.NCC1OB(O)c2c(Oc3ccc(Br)cc3)ccc(Br)c21",
+    "pchembl_value": 6.16,
+    "standard_type": "IC50",
+    "standard_value": "690.0",
+    "target_chembl_id": "CHEMBL4105844",
+    "organism": "Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4065024",
+    "canonical_smiles": "Cl.NCC1OB(O)c2c(OCCc3ccccc3)ccc(Cl)c21",
+    "pchembl_value": 6.14,
+    "standard_type": "IC50",
+    "standard_value": "720.0",
+    "target_chembl_id": "CHEMBL4105844",
+    "organism": "Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4100936",
+    "canonical_smiles": "Cl.NCC1OB(O)c2cc(OCCO)cc(Br)c21",
+    "pchembl_value": 6.05,
+    "standard_type": "IC50",
+    "standard_value": "890.0",
+    "target_chembl_id": "CHEMBL4105844",
+    "organism": "Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4099978",
+    "canonical_smiles": "Cl.NCC1OB(O)c2cc(OCCO)cc(Cl)c21",
+    "pchembl_value": 5.96,
+    "standard_type": "IC50",
+    "standard_value": "1110.0",
+    "target_chembl_id": "CHEMBL4105844",
+    "organism": "Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4871282",
+    "canonical_smiles": "CC(C)C[C@H](N)C(=O)NS(=O)(=O)OC[C@H]1OC[C@@H](CCCn2cc(CNCc3ccccc3)nn2)[C@H](O)[C@@H]1O",
+    "pchembl_value": 5.9,
+    "standard_type": "Ki",
+    "standard_value": "1260.73",
+    "target_chembl_id": "CHEMBL4295566",
+    "organism": "Escherichia coli (strain K12)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4871079",
+    "canonical_smiles": "CC(C)C[C@H](N)C(=O)NS(=O)(=O)OC[C@H]1OC[C@@H](CCCn2cc(CN)nn2)[C@H](O)[C@@H]1O",
+    "pchembl_value": 5.53,
+    "standard_type": "Ki",
+    "standard_value": "2969.71",
+    "target_chembl_id": "CHEMBL4295566",
+    "organism": "Escherichia coli (strain K12)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4077080",
+    "canonical_smiles": "Cl.NC[C@@H]1OB(O)c2c3c(cc(Br)c21)OCCO3",
+    "pchembl_value": 5.38,
+    "standard_type": "IC50",
+    "standard_value": "4200.0",
+    "target_chembl_id": "CHEMBL4105844",
+    "organism": "Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4483579",
+    "canonical_smiles": "COc1cc(/C=N/Nc2nc(-c3ccc([N+](=O)[O-])cc3)cs2)cc([N+](=O)[O-])c1O",
+    "pchembl_value": 5.24,
+    "standard_type": "IC50",
+    "standard_value": "5800.0",
+    "target_chembl_id": "CHEMBL4105844",
+    "organism": "Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4557148",
+    "canonical_smiles": "O=[N+]([O-])c1cccc(-c2csc(N/N=C/c3ccccc3Br)n2)c1",
+    "pchembl_value": 5.05,
+    "standard_type": "IC50",
+    "standard_value": "8900.0",
+    "target_chembl_id": "CHEMBL4105844",
+    "organism": "Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4100159",
+    "canonical_smiles": "Cl.NC[C@@H]1OB(O)c2c(OCCO)ccc(Cl)c21",
+    "pchembl_value": 5.0,
+    "standard_type": "IC50",
+    "standard_value": "10000.0",
+    "target_chembl_id": "CHEMBL4105844",
+    "organism": "Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4081018",
+    "canonical_smiles": "Cl.NC[C@@H]1OB(O)c2c3c(cc(Cl)c21)OCCO3",
+    "pchembl_value": 4.9,
+    "standard_type": "IC50",
+    "standard_value": "12600.0",
+    "target_chembl_id": "CHEMBL4105844",
+    "organism": "Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4463501",
+    "canonical_smiles": "COc1ccc(/C=N/Nc2nc(-c3ccc(F)cc3)cs2)cc1Br",
+    "pchembl_value": 4.9,
+    "standard_type": "IC50",
+    "standard_value": "12500.0",
+    "target_chembl_id": "CHEMBL4105844",
+    "organism": "Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4097736",
+    "canonical_smiles": "Cl.NC[C@@H]1OB(O)c2c(OCCO)ccc(Br)c21",
+    "pchembl_value": 4.85,
+    "standard_type": "IC50",
+    "standard_value": "14200.0",
+    "target_chembl_id": "CHEMBL4105844",
+    "organism": "Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL378506",
+    "canonical_smiles": "OB1OCc2ccccc21",
+    "pchembl_value": 4.67,
+    "standard_type": "IC50",
+    "standard_value": "21300.0",
+    "target_chembl_id": "CHEMBL4105844",
+    "organism": "Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4441684",
+    "canonical_smiles": "Brc1ccccc1/C=N/Nc1nc(-c2ccccc2)cs1",
+    "pchembl_value": 4.62,
+    "standard_type": "IC50",
+    "standard_value": "24100.0",
+    "target_chembl_id": "CHEMBL4105844",
+    "organism": "Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv)"
+  },
+  {
+    "molecule_chembl_id": "CHEMBL4460948",
+    "canonical_smiles": "O=C(O)c1ccc(/C=N/Nc2nc(-c3ccc(Cl)cc3Cl)cs2)cc1",
+    "pchembl_value": 4.56,
+    "standard_type": "IC50",
+    "standard_value": "27300.0",
+    "target_chembl_id": "CHEMBL4105844",
+    "organism": "Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv)"
+  }
+]
