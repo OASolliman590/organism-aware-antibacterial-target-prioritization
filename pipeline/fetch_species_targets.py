@@ -28,6 +28,8 @@ TARGET_GENES = {
     "GyrB": "gyrB", "TopoIV": "parE", "RpoB": "rpoB", "LeuRS": "leuS",
     "MurA": "murA", "MurC": "murC", "MurE": "murE", "LpxA": "lpxA",
     "LpxC": "lpxC", "LpxH": "lpxH", "PBP2a": "mecA",
+    "PBP1A": "mrcA", "PBP1B": "mrcB", "PBP2": "pbpA", "PBP2B": "pbp2b",
+    "PBP2X": "pbp2x", "PBP3": "ftsI", "PBP4": "dacB",
 }
 GENE_ALIASES = {
     ("Staphylococcus aureus", "FabI"): ["fabI", "fabL"],
@@ -49,6 +51,13 @@ PROTEIN_TERMS = {
     "LpxC": ["UDP-3-O-[3-hydroxymyristoyl]glucosamine N-acyltransferase"],
     "LpxH": ["UDP-2,3-diacylglucosamine hydrolase"],
     "PBP2a": ["penicillin-binding protein 2a", "PBP2a"],
+    "PBP1A": ["penicillin-binding protein 1A", "PBP1A"],
+    "PBP1B": ["penicillin-binding protein 1B", "PBP1B"],
+    "PBP2": ["penicillin-binding protein 2", "PBP2"],
+    "PBP2B": ["penicillin-binding protein 2B", "PBP2B"],
+    "PBP2X": ["penicillin-binding protein 2X", "PBP2X"],
+    "PBP3": ["penicillin-binding protein 3", "PBP3"],
+    "PBP4": ["penicillin-binding protein 4", "PBP4"],
 }
 FIELDS = "accession,id,protein_name,organism_name,organism_id,gene_names,length,sequence,reviewed,annotation_score"
 

@@ -15,6 +15,7 @@ from rdkit.Chem import AllChem, MACCSkeys
 ROOT=Path(os.environ.get('PROJECT_ROOT',Path(__file__).resolve().parents[1]))
 REF=ROOT/'data'/'reference_ligands'
 ONTO=ROOT/'data'/'target_ontology_v2.csv'
+ONTO_SUB=ROOT/'data'/'target_subtype_ontology_v21.csv'
 QUALITY=ROOT/'data'/'reference_quality'/'target_reference_quality_v2.csv'
 COMPAT=ROOT/'data'/'species_targets'/'species_target_compatibility.csv'
 CARD_SUM=ROOT/'data'/'resistance_v2'/'card_resistance_family_summary_v2.csv'
@@ -45,7 +46,7 @@ def load_refs():
         if p.stem.endswith('summary'): continue
         cls=p.stem.replace('ref_ligands_',''); cls='GyrB' if cls=='Gyr' else cls
         for r in json.loads(p.read_text()):
-            m=mol(r.get('canonical_smiles'))
+            m=mol(r.get('canonical_smiles_standardized') or r.get('canonical_smiles'))
             if m is None: continue
             smi=Chem.MolToSmiles(m)
             refs.setdefault(cls,[]).append({**r,'_mol':m,'_fp':fp(m),'_maccs':maccs(m),'_smi':smi})
@@ -68,8 +69,22 @@ def load_queries(path):
     return out
 
 
+def load_ontology():
+    base=pd.read_csv(ONTO)
+    if ONTO_SUB.exists():
+        base=pd.concat([base,pd.read_csv(ONTO_SUB)],ignore_index=True).drop_duplicates('target_class',keep='first')
+    return base
+
+
+def parent_class(target, ann):
+    value=ann.get('parent_target_class') if hasattr(ann,'get') else None
+    if value is not None and pd.notna(value) and str(value) not in {'','nan'}:
+        return str(value)
+    return target
+
+
 def quality_score(grade):
-    return {'usable':1.0,'moderate_redundancy':0.85,'low':0.60,'insufficient':0.0}.get(str(grade),0.0)
+    return {'A':1.0,'B':0.85,'C':0.60,'D':0.25,'usable':1.0,'moderate_redundancy':0.85,'low':0.60,'insufficient':0.0}.get(str(grade),0.0)
 
 def clinical_value(x):
     x=str(x).lower()
@@ -97,13 +112,18 @@ def scope_score(scope,org,target):
 def anti_target_annotation(target):
     # Annotation-only risk prior; no claim of measured human off-target activity.
     high={'DHFR':('human DHFR homolog; inspect selectivity','high'),'LeuRS':('human LARS homolog; inspect selectivity','high'),'70S_ribosome':('mitochondrial translation selectivity','medium'),'30S_ribosome':('mitochondrial translation selectivity','medium'),'50S_ribosome':('mitochondrial translation selectivity','medium')}
+    if target.startswith('30S_') or target.startswith('50S_'):
+        return (0.50,'mitochondrial translation selectivity; annotation-only risk','annotation_only')
     if target in high: note,r=high[target]; return (0.75 if r=='high' else 0.50,note,'annotation_only')
     return (0.10,'no direct human orthologue risk assigned in ontology; safety remains untested','annotation_only')
 
 def validation_plan(target,role):
-    if target in {'GyrB','TopoIV','FtsZ','DHFR','FabI','FabH','MurA','MurC','MurE','LpxA','LpxC','LpxH','RpoB','LeuRS','PBP2a'}:
+    direct={'GyrB','TopoIV','FtsZ','DHFR','FabI','FabH','MurA','MurC','MurE','LpxA','LpxC','LpxH','RpoB','LeuRS','PBP','PBP2a','PBP1A','PBP1B','PBP2','PBP2B','PBP2X','PBP3','PBP4'}
+    if target in direct:
         return 'purified-protein inhibition or binding; species-orthologue assay; resistant-mutant or complementation test'
-    if 'ribosome' in target or target=='D-Ala-D-Ala':
+    if target.startswith('Beta-lactamase_'):
+        return 'enzyme inhibition plus antibiotic-rescue assay; resistance-isolate panel; target-dependence control'
+    if 'ribosome' in target or target.startswith('30S_') or target.startswith('50S_') or target=='D-Ala-D-Ala':
         return 'target-complex binding or biochemical translation assay; cell-based target-dependence experiment'
     return 'phenotypic assay followed by mechanism-specific orthogonal validation'
 
@@ -146,13 +166,20 @@ def apply_biology(raw,ontology,compat,card_summary=None,snp_summary=None,snp_org
     for _,r in raw.iterrows():
         if r.target_class not in ann.index: continue
         a=ann.loc[r.target_class]
+        parent=parent_class(r.target_class,a)
         for org in ORGANISMS:
             c=compat[(compat.organism==org)&(compat.target_class==r.target_class)] if not compat.empty else pd.DataFrame()
+            transfer_source=r.target_class
+            if c.empty and parent != r.target_class and not compat.empty:
+                c=compat[(compat.organism==org)&(compat.target_class==parent)]
+                transfer_source=parent
             transfer=float(c.iloc[0].species_transfer_score) if len(c) and pd.notna(c.iloc[0].species_transfer_score) else 0.0
             mapping_status=c.iloc[0].sequence_status if len(c) else 'no_mapping_record'
             scope=scope_score(a.organism_scope,org,r.target_class)
             clinical=clinical_value(a.clinical_status); essential=ordinal(a.essentiality_level); access=access_value(a.cellular_localization); resistance=ordinal(a.resistance_relevance)
             resistance_family={'GyrB':'GyrB/TopoIV resistance','TopoIV':'GyrB/TopoIV resistance','RpoB':'RpoB resistance','PBP2a':'PBP2a','DHFR':'DHFR resistance','DHPS':'DHFR/DHPS resistance','D-Ala-D-Ala':'D-Ala-D-Ala resistance','70S_ribosome':'Ribosome resistance','30S_ribosome':'Ribosome resistance','50S_ribosome':'Ribosome resistance','LpxA':'Lipid-A/envelope resistance','LpxC':'Lipid-A/envelope resistance','LpxH':'Lipid-A/envelope resistance','MurA':'MurA-pathway resistance','Beta-lactamase':'Beta-lactamase'}.get(r.target_class,'')
+            if not resistance_family:
+                resistance_family={'PBP1A':'PBP','PBP1B':'PBP','PBP2':'PBP','PBP2B':'PBP','PBP2X':'PBP','PBP3':'PBP','PBP4':'PBP','Beta-lactamase_class_A':'Beta-lactamase','Beta-lactamase_class_B':'Beta-lactamase','Beta-lactamase_class_C':'Beta-lactamase','Beta-lactamase_class_D':'Beta-lactamase'}.get(r.target_class,'')
             card_models=0; snp_rows=0; org_snp_rows=0
             if card_summary is not None and resistance_family:
                 z=card_summary[card_summary.target_resistance_family==resistance_family]
@@ -166,10 +193,16 @@ def apply_biology(raw,ontology,compat,card_summary=None,snp_summary=None,snp_org
             card_context=float(np.clip(.50*(1 if card_models else 0)+.50*(1 if snp_rows else 0),0,1))
             if struct_summary is not None:
                 z=struct_summary[struct_summary.target_class==r.target_class]
+                if z.empty and parent != r.target_class: z=struct_summary[struct_summary.target_class==parent]
                 struct_candidates=int(z.n_search_candidates.iloc[0]) if len(z) else 0; co_crystal=int(z.n_with_co_crystal_ligand.iloc[0]) if len(z) else 0
             else: struct_candidates=0; co_crystal=0
             pocket=float(1.0 if co_crystal else .60 if struct_candidates else 0.0)
             biological=.25*scope+.20*clinical+.20*essential+.15*access+.10*resistance+.10*card_context
+            resistance_burden=float(np.clip(.50*(1 if card_models else 0)+.50*(1 if snp_rows else 0),0,1))
+            if r.target_class.startswith('Beta-lactamase_'):
+                clinical_translation=float(np.clip(.25*clinical+.20*scope+.20*essential+.15*access+.10*pocket+.10*card_context,0,1))
+            else:
+                clinical_translation=float(np.clip(.25*clinical+.20*scope+.20*essential+.15*access+.10*pocket+.10*(1-.5*resistance_burden),0,1))
             anti,anti_note,anti_status=anti_target_annotation(r.target_class)
             overall=float(r.chemical_quality_adjusted_score*(.65+.35*transfer)*(.75+.25*pocket)*(.50+.50*biological)*(1-.20*anti))
             reasons=[]
@@ -182,10 +215,10 @@ def apply_biology(raw,ontology,compat,card_summary=None,snp_summary=None,snp_org
             elif overall>=.25 and r.chemical_quality_adjusted_score>=.25: conf='Moderate'
             elif r.chemical_evidence_score>=.20: conf='Low'
             else: conf='Insufficient'
-            rr=r.to_dict(); rr.update({'organism':org,'species_transfer_score':transfer,'sequence_mapping_status':mapping_status,
+            rr=r.to_dict(); rr.update({'organism':org,'parent_target_class':parent,'target_subtype':a.get('target_subtype',r.target_class),'binding_site_or_mechanism':a.get('binding_site_or_mechanism',a.get('mechanism_granularity','')),'organism_transfer_source':transfer_source,'species_transfer_score':transfer,'sequence_mapping_status':mapping_status,
                 'organism_scope_score':scope,'clinical_priority_score':clinical,'essentiality_score':essential,'cellular_access_score':access,
-                'resistance_relevance_score':resistance,'card_resistance_context_score':card_context,'card_model_count':card_models,'card_snp_row_count':snp_rows,'organism_specific_snp_row_count':org_snp_rows,
-                'rcsb_structure_candidate_count':struct_candidates,'rcsb_co_crystal_ligand_count':co_crystal,'pocket_evidence_score':pocket,'biological_priority_score':biological,'anti_target_risk_score':anti,
+                'resistance_relevance_score':resistance,'card_resistance_context_score':card_context,'resistance_burden_score':resistance_burden,'card_model_count':card_models,'card_snp_row_count':snp_rows,'organism_specific_snp_row_count':org_snp_rows,
+                'rcsb_structure_candidate_count':struct_candidates,'rcsb_co_crystal_ligand_count':co_crystal,'pocket_evidence_score':pocket,'biological_priority_score':biological,'clinical_translation_score':clinical_translation,'chemical_hypothesis_score':float(r.chemical_quality_adjusted_score),'anti_target_risk_score':anti,
                 'anti_target_evidence_status':anti_status,'anti_target_note':anti_note,'overall_priority_score':overall,
                 'confidence_class':conf,'uncertainty_reasons':'; '.join(reasons) if reasons else 'none',
                 'recommended_validation':validation_plan(r.target_class,a.target_role),'clinical_status':a.clinical_status,
@@ -196,7 +229,7 @@ def apply_biology(raw,ontology,compat,card_summary=None,snp_summary=None,snp_org
 
 def main():
     refs=load_refs(); quality=pd.read_csv(QUALITY) if QUALITY.exists() else pd.DataFrame()
-    ontology=pd.read_csv(ONTO); compat=pd.read_csv(COMPAT) if COMPAT.exists() else pd.DataFrame()
+    ontology=load_ontology(); compat=pd.read_csv(COMPAT) if COMPAT.exists() else pd.DataFrame()
     card_summary=pd.read_csv(CARD_SUM) if CARD_SUM.exists() else pd.DataFrame()
     snp_summary=pd.read_csv(CARD_SNP) if CARD_SNP.exists() else pd.DataFrame()
     snp_org=pd.read_csv(CARD_SNP_ORG) if CARD_SNP_ORG.exists() else pd.DataFrame(columns=['organism','resistance_family','n_snp_rows'])
@@ -216,6 +249,7 @@ def main():
         raw=pd.concat(private_scores,ignore_index=True); raw.to_csv(RES/'v2_open_target_scores_private.csv',index=False)
         ranked=apply_biology(raw,ontology,compat,card_summary,snp_summary,snp_org,struct_summary); ranked.to_csv(RES/'v2_open_target_predictions_by_organism.csv',index=False)
         ranked.sort_values(['organism','query_id','overall_priority_score'],ascending=[True,True,False]).groupby(['organism','query_id']).head(10).to_csv(RES/'v2_open_target_shortlist_by_organism.csv',index=False)
+        ranked.sort_values(['organism','query_id','clinical_translation_score'],ascending=[True,True,False]).groupby(['organism','query_id']).head(10).to_csv(RES/'v21_clinical_translation_shortlist_by_organism.csv',index=False)
         ranked[ranked.confidence_class.isin(['High','Moderate'])].sort_values('overall_priority_score',ascending=False).to_csv(RES/'v2_validation_priority_candidates.csv',index=False)
         print('private queries',len(private),'raw rows',len(raw),'ranked rows',len(ranked))
     else: print('No protected private structures available; public-only run completed.')

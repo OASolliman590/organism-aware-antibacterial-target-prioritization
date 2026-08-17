@@ -17,6 +17,7 @@ from rdkit.Chem.Scaffolds.MurckoScaffold import MurckoScaffoldSmiles
 
 ROOT=Path(__file__).resolve().parents[1]
 REF=ROOT/'data'/'reference_ligands'; BENCH=ROOT/'data'/'benchmark'/'eskape_benchmark_drugs.csv'
+SUBTYPE_ONTO=ROOT/'data'/'target_subtype_ontology_v21.csv'
 RES=ROOT/'results'; FIG=RES/'figures'; RES.mkdir(exist_ok=True); FIG.mkdir(exist_ok=True)
 
 ALIASES={
@@ -24,6 +25,7 @@ ALIASES={
  'D-Ala-D-Ala / cell wall':{'D-Ala-D-Ala'},'lipid A / membrane':{'LpxA','LpxC','LpxH'},
  'PBP':{'PBP','PBP2a'},'RpoB':{'RpoB'},'DHFR':{'DHFR'},'DHPS':{'DHPS'},'MurA':{'MurA'},'FabI':{'FabI'},
  'LeuRS':{'LeuRS'},'MurC':{'MurC'},'FtsZ':{'FtsZ'},'LpxC':{'LpxC'},'membrane':{'Membrane'},
+ 'Beta-lactamase':{'Beta-lactamase','Beta-lactamase_class_A','Beta-lactamase_class_B','Beta-lactamase_class_C','Beta-lactamase_class_D'},
 }
 
 def mol(s):
@@ -72,7 +74,14 @@ def score(q,refs,split):
                      'ensemble_score':float(.6*ef.max()+.4*mc.max()),'n_refs_after_split':len(keep),'n_excluded':excluded})
     return pd.DataFrame(rows)
 
-def accepted(label): return ALIASES.get(str(label),{str(label)})
+def accepted(label):
+    label=str(label)
+    acc=set(ALIASES.get(label,{label}))
+    if SUBTYPE_ONTO.exists():
+        ont=pd.read_csv(SUBTYPE_ONTO)
+        rows=ont[ont.parent_target_class.isin(acc)] if 'parent_target_class' in ont.columns else pd.DataFrame()
+        acc.update(rows.target_class.tolist())
+    return acc
 def evaluate(pred,mode):
     rows=[]
     for qid,g in pred.groupby('query_id'):

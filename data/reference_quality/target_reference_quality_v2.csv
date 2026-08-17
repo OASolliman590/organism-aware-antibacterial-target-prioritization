@@ -25,3 +25,20 @@ Membrane,0,0,0.0,0,0,,{},{},0.0,insufficient,approved,phenotypic_mechanism,no,no
 Efflux,0,0,0.0,0,0,,{},{},0.0,insufficient,clinically_relevant,resistance_mechanism,yes,yes,Requires transporter and species-specific context
 Porin,0,0,0.0,0,0,,{},{},0.0,insufficient,clinically_relevant,resistance_mechanism,yes,yes,Accessibility mechanism rather than direct binding target
 Human_off_target,0,0,0.0,0,0,,{},{},30.0,insufficient,not_antibacterial,safety_antitarget,no,yes,Used to identify selectivity liabilities rather than antibacterial efficacy
+PBP1A,0,0,0.0,0,0,,{},{},10.0,insufficient,approved,direct_viability_target,yes,yes,PBP1A labels are target-family/site evidence and must not be confused with broad PBP phenotypic assays
+PBP1B,0,0,0.0,0,0,,{},{},10.0,insufficient,approved,direct_viability_target,yes,yes,Retain organism and assay context because PBP1B chemistry is species-dependent
+PBP2,0,0,0.0,0,0,,{},{},10.0,insufficient,approved,direct_viability_target,yes,yes,Separate PBP2 from PBP2a and PBP2x
+PBP2B,0,0,0.0,0,0,,{},{},10.0,insufficient,approved,direct_viability_target,yes,yes,Mostly Gram-positive reference context
+PBP2X,0,0,0.0,0,0,,{},{},10.0,insufficient,approved,direct_viability_target,yes,yes,Keep PBP2X distinct from PBP2B
+PBP3,0,0,0.0,0,0,,{},{},10.0,insufficient,approved,direct_viability_target,yes,yes,Use direct molecular assignments rather than cell-only labels
+PBP4,0,0,0.0,0,0,,{},{},10.0,insufficient,validated_or_preclinical,direct_viability_target,yes,yes,Lower essentiality and redundancy require organism-specific interpretation
+Beta-lactamase_class_A,0,0,0.0,0,0,,{},{},10.0,insufficient,approved_resistance_target,resistance_target,yes,yes,Resistance-modifying target; class assignment follows Ambler nomenclature or named CTX-M/TEM/SHV/KPC/PSE/GES enzymes
+Beta-lactamase_class_B,0,0,0.0,0,0,,{},{},10.0,insufficient,approved_resistance_target,resistance_target,yes,yes,Metallo-beta-lactamase resistance-modifying target; do not treat as direct bactericidal target
+Beta-lactamase_class_C,0,0,0.0,0,0,,{},{},10.0,insufficient,approved_resistance_target,resistance_target,yes,yes,Class C/AmpC/ADC assignment requires named or explicit class evidence
+Beta-lactamase_class_D,0,0,0.0,0,0,,{},{},10.0,insufficient,approved_resistance_target,resistance_target,yes,yes,Class D/OXA assignment requires named or explicit class evidence
+30S_aminoglycoside,0,0,0.0,0,0,,{},{},10.0,insufficient,approved,direct_viability_target,yes,yes,Decoding-center or aminoglycoside-site evidence only; broad 30S records remain parent-family evidence
+30S_tetracycline,0,0,0.0,0,0,,{},{},10.0,insufficient,approved,direct_viability_target,yes,yes,Tetracycline-site evidence only; do not merge with aminoglycoside chemistry
+50S_macrolide,0,0,0.0,0,0,,{},{},10.0,insufficient,approved,direct_viability_target,yes,yes,Macrolide tunnel binding-site evidence
+50S_oxazolidinone,0,0,0.0,0,0,,{},{},10.0,insufficient,approved,direct_viability_target,yes,yes,Oxazolidinone/peptidyl-transferase-center evidence
+50S_pleuromutilin,0,0,0.0,0,0,,{},{},10.0,insufficient,approved,direct_viability_target,yes,yes,Pleuromutilin site evidence
+50S_chloramphenicol,0,0,0.0,0,0,,{},{},10.0,insufficient,approved,direct_viability_target,yes,yes,Chloramphenicol site evidence

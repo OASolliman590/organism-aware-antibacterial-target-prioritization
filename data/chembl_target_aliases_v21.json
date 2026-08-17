@@ -1,0 +1,19 @@
+{
+  "PBP1A": {"manual_target_ids": ["CHEMBL1813", "CHEMBL1255141", "CHEMBL3259512"], "search_terms": ["penicillin-binding protein 1A", "PBP1A"]},
+  "PBP1B": {"manual_target_ids": ["CHEMBL1814", "CHEMBL5540", "CHEMBL4295546"], "search_terms": ["penicillin-binding protein 1B", "PBP1B"]},
+  "PBP2": {"manual_target_ids": ["CHEMBL3825", "CHEMBL5539", "CHEMBL3309036"], "search_terms": ["penicillin-binding protein 2", "PBP2"]},
+  "PBP2B": {"manual_target_ids": ["CHEMBL2565", "CHEMBL1255133", "CHEMBL4296322"], "search_terms": ["penicillin-binding protein 2B", "PBP2B"]},
+  "PBP2X": {"manual_target_ids": ["CHEMBL6188", "CHEMBL1255138"], "search_terms": ["penicillin-binding protein 2X", "PBP2X"]},
+  "PBP3": {"manual_target_ids": ["CHEMBL3112383", "CHEMBL4269", "CHEMBL5225"], "search_terms": ["penicillin-binding protein 3", "PBP3"]},
+  "PBP4": {"manual_target_ids": ["CHEMBL2549", "CHEMBL1287593", "CHEMBL3112382"], "search_terms": ["penicillin-binding protein 4", "PBP4"]},
+  "Beta-lactamase_class_A": {"manual_target_ids": ["CHEMBL1667679", "CHEMBL3562180", "CHEMBL6132", "CHEMBL5041", "CHEMBL1075081", "CHEMBL1255121", "CHEMBL1744489", "CHEMBL5303", "CHEMBL1250341"], "search_terms": ["CTX-M beta-lactamase", "TEM beta-lactamase", "SHV beta-lactamase", "KPC beta-lactamase", "PSE beta-lactamase", "GES beta-lactamase"]},
+  "Beta-lactamase_class_B": {"manual_target_ids": ["CHEMBL3326", "CHEMBL1169593", "CHEMBL1667695", "CHEMBL1744488", "CHEMBL4295695", "CHEMBL5465386", "CHEMBL4840", "CHEMBL1075210", "CHEMBL1667692", "CHEMBL3832957", "CHEMBL4105964", "CHEMBL1667690", "CHEMBL1667691", "CHEMBL6146", "CHEMBL1255122", "CHEMBL1255123", "CHEMBL1255124", "CHEMBL1255143", "CHEMBL1287595"], "search_terms": ["metallo-beta-lactamase", "VIM beta-lactamase", "NDM beta-lactamase", "IMP beta-lactamase", "IND metallo-beta-lactamase"]},
+  "Beta-lactamase_class_C": {"manual_target_ids": ["CHEMBL3499", "CHEMBL1667700", "CHEMBL5305"], "search_terms": ["class C beta-lactamase", "AmpC beta-lactamase", "ADC beta-lactamase", "ACC beta-lactamase"]},
+  "Beta-lactamase_class_D": {"manual_target_ids": ["CHEMBL5482", "CHEMBL1255145"], "search_terms": ["OXA beta-lactamase", "class D beta-lactamase"]},
+  "30S_aminoglycoside": {"manual_target_ids": [], "search_terms": ["30S ribosomal subunit aminoglycoside", "16S rRNA aminoglycoside", "ribosome decoding center"]},
+  "30S_tetracycline": {"manual_target_ids": [], "search_terms": ["30S ribosomal subunit tetracycline", "30S tetracycline binding"]},
+  "50S_macrolide": {"manual_target_ids": [], "search_terms": ["50S ribosomal subunit macrolide", "23S rRNA macrolide", "ribosome exit tunnel macrolide"]},
+  "50S_oxazolidinone": {"manual_target_ids": [], "search_terms": ["50S ribosomal subunit oxazolidinone", "23S rRNA linezolid", "peptidyl transferase center oxazolidinone"]},
+  "50S_pleuromutilin": {"manual_target_ids": [], "search_terms": ["50S ribosomal subunit pleuromutilin", "23S rRNA pleuromutilin"]},
+  "50S_chloramphenicol": {"manual_target_ids": [], "search_terms": ["50S ribosomal subunit chloramphenicol", "23S rRNA chloramphenicol"]}
+}

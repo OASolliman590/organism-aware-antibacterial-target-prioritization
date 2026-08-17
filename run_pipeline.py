@@ -20,6 +20,7 @@ def run(rel):
 
 steps=[
     'pipeline/fetch_benchmark_structures.py',
+    'pipeline/fetch_chembl_reference_subtypes_v21.py',
     'pipeline/build_reference_quality.py',
     'pipeline/fetch_card_data.py',
     'pipeline/fetch_species_targets.py',
@@ -36,4 +37,4 @@ steps=[
 ]
 for rel in steps:
     if (ROOT/rel).exists(): run(rel)
-print('\nV2 open-target-discovery pipeline completed. See results/ for local outputs and data/ for public annotations.')
+print('\nV2.1 open-target-discovery pipeline completed. See results/ for local outputs and data/ for public annotations.')

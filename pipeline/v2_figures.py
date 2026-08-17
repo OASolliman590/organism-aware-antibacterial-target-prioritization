@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+from pathlib import Path
 
 ROOT=Path(os.environ.get('PROJECT_ROOT',Path(__file__).resolve().parents[1])); RES=ROOT/'results'; FIG=RES/'figures_v2'; FIG.mkdir(parents=True,exist_ok=True)
 sns.set_theme(style='whitegrid',context='talk')
@@ -37,6 +38,12 @@ def main():
     ax=ctx[['card_snp_rows','card_models','co_crystal']].plot(kind='bar',figsize=(18,7),logy=True,color=['#dc2626','#2563eb','#f59e0b']); ax.set_ylabel('Count (log scale)'); ax.set_xlabel('Target class'); plt.xticks(rotation=60,ha='right'); plt.legend(['CARD SNP rows','CARD models','RCSB co-crystal entries']); savefig('v2_resistance_structure_context.png')
     # Uncertainty: chemical quality vs calibrated overall score, colored by confidence.
     plt.figure(figsize=(11,8)); sns.scatterplot(data=df.sample(min(3000,len(df)),random_state=7),x='chemical_quality_adjusted_score',y='overall_priority_score',hue='confidence_class',style='organism',alpha=.65); plt.xlabel('Quality-adjusted chemical evidence'); plt.ylabel('Overall priority'); plt.title('Chemical evidence versus organism-aware priority'); savefig('v2_uncertainty_priority_scatter.png')
+    # v2.1 parallel chemical-versus-clinical-translational diagnostic.
+    if {'chemical_hypothesis_score','clinical_translation_score'}.issubset(df.columns):
+        plt.figure(figsize=(12,8)); sns.scatterplot(data=df.sample(min(3000,len(df)),random_state=7),x='chemical_hypothesis_score',y='clinical_translation_score',hue='confidence_class',style='organism',alpha=.65)
+        plt.xlim(0,1); plt.ylim(0,1); plt.xlabel('Chemical hypothesis score'); plt.ylabel('Clinical-translational score'); plt.title('v2.1: chemical compatibility versus clinical translation'); savefig('v21_chemical_vs_clinical_translation.png')
+        hm=df.groupby(['organism','target_class'])['clinical_translation_score'].mean().unstack(fill_value=0)
+        plt.figure(figsize=(18,7)); sns.heatmap(hm,cmap='crest',vmin=0,vmax=1,cbar_kws={'label':'Mean clinical-translational score'}); plt.xlabel('Target class / subtype'); plt.ylabel('Bacterial organism'); plt.xticks(rotation=60,ha='right'); savefig('v21_clinical_translation_heatmap.png')
     # Benchmark split/baseline figure if available.
     bp=RES/'benchmark_v2_summary.csv'
     if bp.exists():

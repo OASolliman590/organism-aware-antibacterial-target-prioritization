@@ -29,7 +29,9 @@ The v2 workflow separates the following evidence layers:
 | `pipeline/` | Public workflow modules for preparation, open target scoring, benchmarking, calibration, sequence mapping, resistance parsing, structure cataloguing, figures, and reporting |
 | `data/reference_ligands/` | Public ChEMBL-derived reference-ligand records used by the target classes |
 | `data/benchmark/` | Public ESKAPE-active antibacterial benchmark metadata and structures |
-| `data/target_ontology_v2.csv` | Auditable target ontology separating direct targets, complexes, pathways, resistance determinants, and phenotypic mechanisms |
+| `data/target_ontology_v2.csv` | Auditable parent target ontology separating direct targets, complexes, pathways, resistance determinants, and phenotypic mechanisms |
+| `data/target_subtype_ontology_v21.csv` | v2.1 mechanism/site subtypes for PBPs, beta-lactamases, 30S, and 50S ribosomal targets |
+| `data/chembl_target_aliases_v21.json` | Versioned ChEMBL target aliases and manually verified target-ID seeds for v2.1 retrieval |
 | `data/species_targets/` | Public species-target mapping and sequence-transfer metadata when present in the repository release |
 | `data/resistance_v2/` | CARD-derived public resistance-family and SNP summaries when present in the repository release |
 | `data/structures_v2/` | Bounded RCSB structure/pocket metadata; no docking inputs or private structures |
@@ -77,6 +79,16 @@ organism_aware_priority
 
 These are decision-support scores, not calibrated binding probabilities. A prediction with unresolved sequence mapping or poor target specificity is explicitly downgraded or classified as insufficient.
 
+## V2.1 reference-universe expansion
+
+v2.1 adds a reproducible target-subtype layer for clinically important classes that were underrepresented in the original reference universe. PBPs are separated into PBP1A, PBP1B, PBP2, PBP2B, PBP2X, PBP3, and PBP4. Beta-lactamases are separated by Ambler class, and ribosomal records are represented by 30S aminoglycoside/tetracycline sites and 50S macrolide, oxazolidinone, pleuromutilin, and chloramphenicol sites when ChEMBL target and assay metadata support that resolution.
+
+The new `pipeline/fetch_chembl_reference_subtypes_v21.py` performs bounded ChEMBL target discovery, activity retrieval, pChEMBL filtering, confidence-aware assay grading, conservative RDKit structure standardization, InChIKey deduplication, and provenance retention. The retrieval is cacheable and supports `CHEMBL_V21_DISCOVER=0`, `CHEMBL_V21_SUBTYPES=...`, `CHEMBL_V21_OFFLINE=1`, and `CHEMBL_V21_MAX_PER_SUBTYPE=...` for controlled reruns. A failed or temporarily unavailable ChEMBL endpoint must not be replaced by simulated data; the manifest and empty subtype outputs preserve the missingness for later refresh.
+
+v2.1 reports two linked rankings. The **chemical hypothesis score** answers which target or binding-site subtype is chemically compatible with the compound. The **clinical-translational score** combines clinical precedent, organism scope, essentiality, accessibility, structure precedent, and resistance context. These scores are deliberately retained separately rather than collapsed into a single claim of antibiotic activity.
+
+Because the ChEMBL REST service was temporarily unavailable during this implementation run, the v2.1 code and ontology were integrated and tested, but no new PBP, beta-lactamase, or ribosomal subtype activity records were fabricated. The current numerical benchmark therefore remains the v2 public-reference benchmark until the cached subtype retrieval completes successfully. This limitation is recorded in the local fetch logs and is an explicit reproducibility safeguard.
+
 ## Benchmarking
 
 The benchmark uses public antibacterial drugs with mechanism-level target labels. Query molecules and close analogues are excluded from the reference set at ECFP4 similarity ≥0.85, and exact Bemis–Murcko scaffold exclusion is evaluated separately. Results report coverage, top-1/top-3/top-5 retrieval, MRR, enrichment over random, prevalence baselines, split status, and per-query ranks.
@@ -106,6 +118,6 @@ The strongest next validation is a staged experiment: purified target or target-
 
 ## Reproducibility
 
-The main v2 modules are `pipeline/open_target_discovery_v2.py`, `pipeline/benchmark_v2.py`, `pipeline/calibrate_uncertainty_v2.py`, `pipeline/fetch_species_targets.py`, `pipeline/sequence_compatibility.py`, `pipeline/build_reference_quality.py`, `pipeline/build_card_resistance_annotations.py`, `pipeline/parse_card_snps_v2.py`, `pipeline/fetch_structure_catalog_v2.py`, `pipeline/v2_figures.py`, `pipeline/build_validation_plan_v2.py`, and `pipeline/summarize_v2.py`.
+The main v2.1 modules are `pipeline/open_target_discovery_v2.py`, `pipeline/benchmark_v2.py`, `pipeline/fetch_chembl_reference_subtypes_v21.py`, `pipeline/calibrate_uncertainty_v2.py`, `pipeline/fetch_species_targets.py`, `pipeline/sequence_compatibility.py`, `pipeline/build_reference_quality.py`, `pipeline/build_card_resistance_annotations.py`, `pipeline/parse_card_snps_v2.py`, `pipeline/fetch_structure_catalog_v2.py`, `pipeline/v2_figures.py`, including `v21_chemical_vs_clinical_translation.png` and `v21_clinical_translation_heatmap.png`, `pipeline/build_validation_plan_v2.py`, and `pipeline/summarize_v2.py`.
 
 All unpublished inputs and compound-specific outputs remain local until the compounds are published and the author explicitly approves a new repository release.

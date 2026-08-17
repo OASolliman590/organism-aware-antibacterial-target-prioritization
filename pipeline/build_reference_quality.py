@@ -15,10 +15,13 @@ from rdkit.Chem.Scaffolds import MurckoScaffold
 ROOT=Path(__file__).resolve().parents[1]
 REF=ROOT/'data'/'reference_ligands'
 ONTO=ROOT/'data'/'target_ontology_v2.csv'
+ONTO_SUB=ROOT/'data'/'target_subtype_ontology_v21.csv'
 OUT=ROOT/'data'/'reference_quality'
 OUT.mkdir(parents=True,exist_ok=True)
 
 ontology=pd.read_csv(ONTO)
+if ONTO_SUB.exists():
+    ontology=pd.concat([ontology,pd.read_csv(ONTO_SUB)],ignore_index=True).drop_duplicates('target_class',keep='first')
 all_rows=[]
 for path in sorted(REF.glob('ref_ligands_*.json')):
     if path.stem.endswith('summary'): continue
