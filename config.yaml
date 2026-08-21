@@ -74,6 +74,7 @@ chem3d:
   prune_rms: 0.5
   energy_window_kcal: 10.0
   o3a_shortlist_top: 25
+  aggregate_top_k: 5
   max_iterations: 500
   num_threads: 1
   cache_dir: .cache/oatp/conformers

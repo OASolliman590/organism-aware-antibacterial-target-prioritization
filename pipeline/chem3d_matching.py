@@ -14,8 +14,10 @@ import os
 from pathlib import Path
 from typing import Any
 
+import numpy as np
+import pandas as pd
 from rdkit import Chem, rdBase
-from rdkit.Chem import AllChem
+from rdkit.Chem import AllChem, rdMolDescriptors
 
 try:
     from pipeline.config import ProjectConfig
@@ -243,3 +245,97 @@ def generate_conformer_ensemble(
         status=round_tripped.status,
         n_embedded=n_embedded,
     )
+
+
+def usrcat_descriptors(ensemble: ConformerEnsemble) -> tuple[tuple[float, ...], ...]:
+    """Return one 60-dimensional USRCAT descriptor per available conformer."""
+
+    if ensemble.molecule is None:
+        return ()
+    return tuple(
+        tuple(
+            float(value)
+            for value in rdMolDescriptors.GetUSRCAT(
+                ensemble.molecule, confId=conformer.GetId()
+            )
+        )
+        for conformer in ensemble.molecule.GetConformers()
+    )
+
+
+def usrcat_similarity(
+    query: ConformerEnsemble, reference: ConformerEnsemble
+) -> float | None:
+    """Maximum USRCAT score across the two conformer ensembles."""
+
+    query_descriptors = usrcat_descriptors(query)
+    reference_descriptors = usrcat_descriptors(reference)
+    if not query_descriptors or not reference_descriptors:
+        return None
+    return max(
+        float(rdMolDescriptors.GetUSRScore(query_descriptor, reference_descriptor))
+        for query_descriptor in query_descriptors
+        for reference_descriptor in reference_descriptors
+    )
+
+
+def _record_molecule(record: dict[str, Any]) -> Chem.Mol | None:
+    existing = record.get("_mol") or record.get("mol")
+    if existing is not None:
+        return Chem.Mol(existing)
+    smiles = record.get("canonical_smiles_standardized") or record.get(
+        "canonical_smiles"
+    )
+    return Chem.MolFromSmiles(str(smiles)) if smiles else None
+
+
+def score_usrcat_by_target(
+    query_id: str,
+    query_molecule: Chem.Mol,
+    references: dict[str, list[dict[str, Any]]],
+    config: ProjectConfig,
+    *,
+    cache_dir: str | Path | None = None,
+) -> pd.DataFrame:
+    """Score every query×target class, retaining missingness and coverage fields."""
+
+    query_ensemble = generate_conformer_ensemble(
+        query_molecule, config, cache_dir=cache_dir
+    )
+    top_k = int(config.value("chem3d.aggregate_top_k"))
+    rows: list[dict[str, Any]] = []
+    for target_class in sorted(references):
+        reference_scores: list[float] = []
+        failures = 0
+        invalid_structures = 0
+        for record in references[target_class]:
+            reference_molecule = _record_molecule(record)
+            if reference_molecule is None:
+                invalid_structures += 1
+                continue
+            reference_ensemble = generate_conformer_ensemble(
+                reference_molecule, config, cache_dir=cache_dir
+            )
+            score = usrcat_similarity(query_ensemble, reference_ensemble)
+            if score is None:
+                failures += 1
+            else:
+                reference_scores.append(score)
+        ordered = sorted(reference_scores, reverse=True)
+        rows.append(
+            {
+                "query_id": query_id,
+                "target_class": target_class,
+                "usrcat_max": max(ordered) if ordered else np.nan,
+                "usrcat_top5_mean": (
+                    float(np.mean(ordered[:top_k])) if ordered else np.nan
+                ),
+                "n_usrcat_references_scored": len(ordered),
+                "n_reference_ligands_3d": len(references[target_class]),
+                "n_invalid_reference_structures_3d": invalid_structures,
+                "n_reference_conformer_failures": failures,
+                "query_conformer_status": query_ensemble.status,
+                "query_conformer_count": query_ensemble.n_conformers,
+            }
+        )
+    return pd.DataFrame(rows)
