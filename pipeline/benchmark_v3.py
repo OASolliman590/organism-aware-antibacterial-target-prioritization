@@ -357,6 +357,19 @@ def query_level_metrics(
     missing = sorted(required - set(scores.columns))
     if missing:
         raise ValueError(f"Benchmark scores are missing columns: {missing}")
+    metric_names = [
+        "auroc",
+        *[
+            f"bedroc_alpha_{str(float(alpha)).replace('.', '_')}"
+            for alpha in bedroc_alphas
+        ],
+        *[
+            f"ef_{int(round(float(fraction) * 100))}pct"
+            for fraction in enrichment_fractions
+        ],
+        "mrr",
+        "coverage",
+    ]
     rows: list[dict[str, Any]] = []
     for query_id, group in scores.groupby("query_id", sort=True):
         numeric_scores = pd.to_numeric(group[score_column], errors="coerce")
@@ -394,7 +407,16 @@ def query_level_metrics(
             name = f"ef_{int(round(float(fraction) * 100))}pct"
             row[name] = _tie_aware_enrichment(labels, values, float(fraction))
         rows.append(row)
-    return pd.DataFrame(rows)
+    return pd.DataFrame(
+        rows,
+        columns=[
+            "query_id",
+            "n_candidates",
+            "n_positive",
+            "n_negative",
+            *metric_names,
+        ],
+    )
 
 
 def _provenance_summary(provenance: pd.DataFrame) -> dict[str, Any]:
@@ -510,3 +532,254 @@ def aggregate_metrics_with_bootstrap(
             }
         )
     return pd.DataFrame(rows)
+
+
+SCORE_MODES = {
+    "2d_only": "chemical_evidence_score",
+    "3d_only": "chemical_evidence_score_3d_only",
+    "fusion": "chemical_evidence_score_v3",
+}
+
+
+def add_3d_only_score(scores: pd.DataFrame, config: ProjectConfig) -> pd.DataFrame:
+    """Rank-fuse only the declared non-2D components, split by split."""
+
+    try:
+        from pipeline.evidence_fusion import reciprocal_rank_fusion
+    except ModuleNotFoundError:  # direct module execution/import compatibility
+        from evidence_fusion import reciprocal_rank_fusion
+
+    three_dimensional = [
+        component
+        for component in config.value("fusion.components")
+        if component not in {"ecfp4_max", "maccs_max"}
+    ]
+    if not three_dimensional:
+        raise ValueError("No 3D/pharmacophore fusion components are configured")
+    required = {"split_type", "query_id", "target_class", *three_dimensional}
+    missing = sorted(required - set(scores.columns))
+    if missing:
+        raise ValueError(f"Scores are missing 3D-only fields: {missing}")
+    if scores.empty:
+        result = scores.copy()
+        result["chemical_evidence_score_3d_only"] = np.nan
+        result["chemical_evidence_score_3d_only_is_probability"] = False
+        return result
+
+    pieces = []
+    for _, group in scores.groupby("split_type", sort=True):
+        source = group[["query_id", "target_class", *three_dimensional]].copy()
+        fused = reciprocal_rank_fusion(
+            source,
+            components=three_dimensional,
+            reciprocal_rank_constant=float(
+                config.value("fusion.reciprocal_rank_constant")
+            ),
+        )
+        addition = fused[
+            ["query_id", "target_class", "chemical_evidence_score_v3"]
+        ].rename(
+            columns={
+                "chemical_evidence_score_v3": "chemical_evidence_score_3d_only"
+            }
+        )
+        piece = group.merge(
+            addition,
+            on=["query_id", "target_class"],
+            how="left",
+            validate="one_to_one",
+        )
+        pieces.append(piece)
+    result = pd.concat(pieces, ignore_index=True)
+    result["chemical_evidence_score_3d_only_is_probability"] = False
+    return result
+
+
+def compare_score_modes(
+    scores: pd.DataFrame, split_provenance: pd.DataFrame, config: ProjectConfig
+) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Return query-level metrics and one honest split×mode comparison table."""
+
+    query_tables = []
+    aggregate_tables = []
+    for split_type in config.value("benchmark.splits"):
+        split_scores = scores[scores["split_type"] == split_type]
+        provenance = split_provenance[
+            split_provenance["split_type"] == split_type
+        ]
+        for mode, score_column in SCORE_MODES.items():
+            query_table = query_level_metrics(
+                split_scores,
+                score_column=score_column,
+                bedroc_alphas=tuple(
+                    float(value) for value in config.value("benchmark.bedroc_alphas")
+                ),
+                enrichment_fractions=tuple(
+                    float(value)
+                    for value in config.value("benchmark.enrichment_fractions")
+                ),
+            )
+            query_table["split_type"] = split_type
+            query_table["score_mode"] = mode
+            query_tables.append(query_table)
+            aggregate_tables.append(
+                aggregate_metrics_with_bootstrap(
+                    query_table,
+                    split_type=split_type,
+                    score_mode=mode,
+                    split_provenance=provenance,
+                    config=config,
+                )
+            )
+    query_metrics = pd.concat(query_tables, ignore_index=True)
+    comparison = pd.concat(aggregate_tables, ignore_index=True)
+    reference = comparison[comparison.score_mode == "2d_only"][
+        ["split_type", "metric", "estimate"]
+    ].rename(columns={"estimate": "estimate_2d_reference"})
+    comparison = comparison.merge(
+        reference,
+        on=["split_type", "metric"],
+        how="left",
+        validate="many_to_one",
+    )
+    comparison["delta_vs_2d"] = (
+        comparison["estimate"] - comparison["estimate_2d_reference"]
+    )
+    available = comparison["estimate"].notna() & comparison[
+        "estimate_2d_reference"
+    ].notna()
+    comparison["performance_vs_2d"] = np.select(
+        [
+            ~available,
+            comparison["score_mode"] == "2d_only",
+            comparison["delta_vs_2d"] > 0,
+            comparison["delta_vs_2d"] < 0,
+        ],
+        ["unavailable", "reference", "improved", "worse"],
+        default="equal",
+    )
+    return query_metrics, comparison
+
+
+def score_split_results(
+    split_results: list[SplitResult],
+    queries: list[dict[str, Any]],
+    ontology: pd.DataFrame,
+    quality: pd.DataFrame,
+    config: ProjectConfig,
+) -> pd.DataFrame:
+    """Compute additive 2D/3D/fusion target scores for available split rows."""
+
+    try:
+        from pipeline import open_target_discovery_v2 as discovery
+    except ModuleNotFoundError:  # direct module execution/import compatibility
+        import open_target_discovery_v2 as discovery
+
+    _, classes_by_alias = ontology_family_maps(ontology)
+    query_by_id = {
+        str(query.get("query_id") or query.get("drug")): query for query in queries
+    }
+    rows = []
+    for split in split_results:
+        if split.provenance["status"] != "available" or not split.references:
+            continue
+        source = query_by_id[split.query_id]
+        molecule = _molecule(source)
+        if molecule is None:
+            continue
+        query = {
+            **source,
+            "query_id": split.query_id,
+            "mol": molecule,
+            "fp": discovery.fp(molecule),
+            "maccs": discovery.maccs(molecule),
+            "source": "public_benchmark_v3",
+        }
+        frame = discovery.score_query_v3(
+            query,
+            split.references,
+            quality,
+            pd.DataFrame(),
+            ontology,
+            config=config,
+            exclude_close=False,
+        )
+        if frame.empty:
+            continue
+        label = str(source.get("target_class") or source.get("query_target_label") or "")
+        accepted = set(classes_by_alias.get(label, {label} if label else set()))
+        frame["is_active"] = frame["target_class"].isin(accepted).astype(int)
+        frame["query_target_label"] = label
+        frame["split_type"] = split.split_type
+        rows.append(frame)
+    if not rows:
+        return pd.DataFrame(
+            columns=[
+                "query_id",
+                "target_class",
+                "split_type",
+                "is_active",
+                *config.value("fusion.components"),
+                "chemical_evidence_score",
+                "chemical_evidence_score_v3",
+            ]
+        )
+    return add_3d_only_score(pd.concat(rows, ignore_index=True), config)
+
+
+def main() -> None:
+    """Run the pinned v3 benchmark and write auditable split/comparison tables."""
+
+    try:
+        from pipeline import benchmark_v2
+        from pipeline.benchmark_decoys import load_property_matched_decoys
+        from pipeline.config import load_config, set_global_seed
+        from pipeline.snapshots import verify_snapshot
+    except ModuleNotFoundError:  # direct module execution/import compatibility
+        import benchmark_v2
+        from benchmark_decoys import load_property_matched_decoys
+        from config import load_config, set_global_seed
+        from snapshots import verify_snapshot
+
+    config = load_config()
+    set_global_seed(config)
+    if bool(config.value("snapshots.verify_on_load")):
+        verify_snapshot(config)
+    results_dir = config.path_for("results")
+    results_dir.mkdir(parents=True, exist_ok=True)
+    ontology = pd.read_csv(config.path_for("target_ontology"))
+    subtype_path = config.path_for("target_subtype_ontology")
+    if subtype_path.exists():
+        ontology = pd.concat(
+            [ontology, pd.read_csv(subtype_path)], ignore_index=True
+        ).drop_duplicates("target_class", keep="first")
+    queries = benchmark_v2.load_bench()
+    references = benchmark_v2.load_refs()
+    split_results, provenance = generate_splits(
+        queries, references, ontology, config
+    )
+    provenance.to_csv(results_dir / "benchmark_split_provenance_v3.csv", index=False)
+    decoy_result = load_property_matched_decoys(
+        config.path_for("property_matched_decoys")
+    )
+    pd.DataFrame([decoy_result.status]).to_csv(
+        results_dir / "benchmark_decoy_status_v3.csv", index=False
+    )
+    quality_path = config.path_for("reference_quality")
+    quality = (
+        pd.read_csv(quality_path)
+        if quality_path.exists()
+        else pd.DataFrame(columns=["target_class"])
+    )
+    scores = score_split_results(
+        split_results, queries, ontology, quality, config
+    )
+    scores.to_csv(results_dir / "benchmark_target_scores_by_split_v3.csv", index=False)
+    query_metrics, comparison = compare_score_modes(scores, provenance, config)
+    query_metrics.to_csv(results_dir / "benchmark_query_metrics_v3.csv", index=False)
+    comparison.to_csv(results_dir / "benchmark_mode_comparison_v3.csv", index=False)
+    print(comparison.to_string(index=False))
+
+
+if __name__ == "__main__":
+    main()

@@ -41,7 +41,7 @@ phase's tasks pass. Never fabricate data (constitution I). Report negative resul
       **STATUS: PENDING —** the pinned snapshot has no property-matched decoy artifact. Cross-target ligands remain
       specificity-only and are not relabelled inactive. The official DUD-E arbitrary-ligand generator requires an
       interactive CAPTCHA/email workflow, so no decoys were simulated or silently substituted.
-- [ ] **T2.4** Compare 2D-only vs 3D-only vs fusion under each split. **AC:** a single table; honest reporting even
+- [x] **T2.4** Compare 2D-only vs 3D-only vs fusion under each split. **AC:** a single table; honest reporting even
       if 3D does not help (constitution III).
 
 ## Phase 3 — External baseline
