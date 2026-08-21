@@ -87,6 +87,8 @@ def _validate(config: ProjectConfig) -> None:
         "chem3d.prune_rms",
         "chem3d.energy_window_kcal",
         "chem3d.o3a_shortlist_top",
+        "chem3d.max_iterations",
+        "chem3d.num_threads",
         "benchmark.bootstrap_n",
         "benchmark.time_cutoff",
         "applicability_domain.tanimoto_in",
@@ -113,6 +115,9 @@ def _validate(config: ProjectConfig) -> None:
     _require_number(config, "chem3d.prune_rms", minimum=0)
     _require_number(config, "chem3d.energy_window_kcal", minimum=0)
     _require_number(config, "chem3d.o3a_shortlist_top", minimum=1)
+    _require_number(config, "chem3d.max_iterations", minimum=1)
+    if int(_require_number(config, "chem3d.num_threads", minimum=1)) != 1:
+        raise ConfigError("chem3d.num_threads must be 1 for deterministic runs")
     _require_number(config, "benchmark.bootstrap_n", minimum=1)
     tanimoto_in = _require_number(
         config, "applicability_domain.tanimoto_in", minimum=0, maximum=1

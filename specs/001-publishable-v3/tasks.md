@@ -16,7 +16,7 @@ phase's tasks pass. Never fabricate data (constitution I). Report negative resul
       green; golden test fails if v2 numbers change.
 
 ## Phase 1 — 3D matching layer (the core new science)
-- [ ] **T1.1** `pipeline/chem3d_matching.py`: ETKDGv3 conformer generation (seeded, N/energy/RMS pruning per config),
+- [x] **T1.1** `pipeline/chem3d_matching.py`: ETKDGv3 conformer generation (seeded, N/energy/RMS pruning per config),
       disk cache keyed by canonical SMILES+params. **AC:** deterministic conformers; cache hit on rerun.
 - [ ] **T1.2** USRCAT descriptor + score per (query, reference); aggregate `usrcat_max`, `usrcat_top5_mean` per
       (query, target_class). **AC:** fields present for all query×class pairs; runtime acceptable via caching.
