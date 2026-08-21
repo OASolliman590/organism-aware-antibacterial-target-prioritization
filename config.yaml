@@ -39,6 +39,10 @@ paths:
   benchmark: data/benchmark/eskape_benchmark_drugs.csv
   benchmark_structures: data/benchmark/benchmark_structures.sdf
   property_matched_decoys: data/benchmark/property_matched_decoys.csv
+  pidgin_code: external/PIDGINv4
+  pidgin_models: external/PIDGINv4/no_ortho
+  external_baseline_target_map: data/benchmark/pidginv4_target_map.csv
+  external_baseline_cache: .cache/oatp/external_baseline
   snapshot_manifest: data/snapshots/SNAPSHOT_VERSIONS.json
 
 snapshots:
@@ -112,6 +116,14 @@ benchmark:
 applicability_domain:
   tanimoto_in: 0.4
   tanimoto_out: 0.25
+
+external_baseline:
+  provider: PIDGINv4
+  repository: BenderGroup/PIDGINv4
+  code_commit: df0f6068a8aa16e2278e3779a1ad5e6d552731dc
+  model_release: https://doi.org/10.6084/m9.figshare.19108382.v1
+  python_executable: python2
+  applicability_domain_percentile: 90
 
 refresh:
   chembl:

@@ -103,6 +103,12 @@ def _validate(config: ProjectConfig) -> None:
         "benchmark.time_cutoff",
         "applicability_domain.tanimoto_in",
         "applicability_domain.tanimoto_out",
+        "external_baseline.provider",
+        "external_baseline.repository",
+        "external_baseline.code_commit",
+        "external_baseline.model_release",
+        "external_baseline.python_executable",
+        "external_baseline.applicability_domain_percentile",
     ]
     for key in required:
         config.value(key)
@@ -179,6 +185,14 @@ def _validate(config: ProjectConfig) -> None:
         raise ConfigError(
             "applicability_domain.tanimoto_out must be below tanimoto_in"
         )
+    if config.value("external_baseline.provider") != "PIDGINv4":
+        raise ConfigError("external_baseline.provider must be PIDGINv4")
+    _require_number(
+        config,
+        "external_baseline.applicability_domain_percentile",
+        minimum=0,
+        maximum=100,
+    )
 
     weights = config.value("v2_scoring.chemical.weights")
     if not isinstance(weights, dict) or any(float(v) < 0 for v in weights.values()):

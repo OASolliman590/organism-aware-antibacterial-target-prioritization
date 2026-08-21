@@ -48,6 +48,9 @@ phase's tasks pass. Never fabricate data (constitution I). Report negative resul
 - [ ] **T3.1** `pipeline/baseline_external.py`: run one of SEA / SwissTargetPrediction / PIDGINv4 on the benchmark
       queries; cache results. **AC:** head-to-head table vs our method on identical queries; if the service is
       unavailable, mark **pending**, do not fabricate.
+      **STATUS: PENDING —** PIDGINv4 is pinned at commit `df0f6068...` and model DOI `19108382.v1`, but its official
+      runtime requires Python 2.7/legacy RDKit/scikit-learn, no compatible runtime or model archive is installed,
+      and no versioned PIDGIN-target→project-ontology mapping exists. Empty status/head-to-head outputs are emitted.
 
 ## Phase 4 — Calibration / combiner + sensitivity
 - [ ] **T4.1** `pipeline/scoring_model.py`: learned combiner (regularised logistic or LGBMRanker) trained under the
