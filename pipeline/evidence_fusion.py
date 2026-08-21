@@ -105,7 +105,7 @@ def reciprocal_rank_fusion(
     )
     raw = fused[contribution_columns].sum(axis=1, min_count=1)
     ideal = len(selected) / (float(reciprocal_rank_constant) + 1.0)
-    fused["chemical_evidence_score_v3"] = (raw / ideal).where(
+    fused["chemical_evidence_score_v3"] = (raw / ideal).clip(0.0, 1.0).where(
         fused["fusion_component_count"] > 0
     )
     fused["chemical_evidence_score_v3_is_probability"] = False
