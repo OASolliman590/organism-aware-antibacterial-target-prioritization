@@ -19,6 +19,7 @@ import pandas as pd
 from rdkit import Chem, DataStructs, rdBase
 from rdkit.Chem import (
     AllChem,
+    MACCSkeys,
     rdMolAlign,
     rdMolDescriptors,
     rdShapeAlign,
@@ -560,6 +561,220 @@ def score_pharmacophore_by_target(
                 "pharmacophore_status": (
                     "ok" if scores else "unavailable_no_valid_fingerprint"
                 ),
+            }
+        )
+    return pd.DataFrame(rows)
+
+
+def _reference_identifier(record: dict[str, Any], molecule: Chem.Mol | None) -> str:
+    for key in ("molecule_chembl_id", "reference_id", "compound_id"):
+        if record.get(key):
+            return str(record[key])
+    if molecule is None:
+        payload = json.dumps(record, sort_keys=True, default=str).encode("utf-8")
+    else:
+        payload = _canonical_smiles(molecule).encode("utf-8")
+    return f"sha256:{hashlib.sha256(payload).hexdigest()}"
+
+
+def score_reference_evidence_by_target(
+    query_id: str,
+    query_molecule: Chem.Mol,
+    references: dict[str, list[dict[str, Any]]],
+    config: ProjectConfig,
+    *,
+    cache_dir: str | Path | None = None,
+) -> pd.DataFrame:
+    """Retain each reference-ligand score used by the aggregate v3 layer."""
+
+    query_ensemble = generate_conformer_ensemble(
+        query_molecule, config, cache_dir=cache_dir
+    )
+    fingerprint_generator = AllChem.GetMorganGenerator(
+        radius=int(config.value("chem2d.fingerprint_radius")),
+        fpSize=int(config.value("chem2d.fingerprint_bits")),
+    )
+    query_ecfp = fingerprint_generator.GetFingerprint(query_molecule)
+    query_maccs = MACCSkeys.GenMACCSKeys(query_molecule)
+    try:
+        query_pharmacophore = gobbi_pharmacophore_fingerprint(query_molecule)
+        if query_pharmacophore.GetNumOnBits() == 0:
+            query_pharmacophore = None
+    except (RuntimeError, ValueError):
+        query_pharmacophore = None
+
+    rows: list[dict[str, Any]] = []
+    ensembles: dict[int, ConformerEnsemble] = {}
+    for target_class in sorted(references):
+        for record in references[target_class]:
+            molecule = _record_molecule(record)
+            base = {
+                "query_id": query_id,
+                "target_class": target_class,
+                "reference_id": _reference_identifier(record, molecule),
+                "reference_canonical_smiles": (
+                    _canonical_smiles(molecule) if molecule is not None else None
+                ),
+                "query_conformer_status": query_ensemble.status,
+                "query_conformer_count": query_ensemble.n_conformers,
+                "o3a_was_shortlisted": False,
+                "o3a_shape_tanimoto": np.nan,
+                "o3a_color": np.nan,
+                "n_o3a_overlays_scored": 0,
+                "n_o3a_overlay_failures": 0,
+            }
+            if molecule is None:
+                rows.append(
+                    {
+                        **base,
+                        "ecfp4_similarity": np.nan,
+                        "maccs_similarity": np.nan,
+                        "usrcat_similarity": np.nan,
+                        "pharmacophore_similarity": np.nan,
+                        "reference_conformer_status": "invalid_structure",
+                        "reference_evidence_status": "invalid_structure",
+                    }
+                )
+                continue
+            ensemble = generate_conformer_ensemble(
+                molecule, config, cache_dir=cache_dir
+            )
+            ecfp_similarity = float(
+                DataStructs.TanimotoSimilarity(
+                    query_ecfp, fingerprint_generator.GetFingerprint(molecule)
+                )
+            )
+            maccs_similarity = float(
+                DataStructs.TanimotoSimilarity(
+                    query_maccs, MACCSkeys.GenMACCSKeys(molecule)
+                )
+            )
+            usr_similarity = usrcat_similarity(query_ensemble, ensemble)
+            try:
+                reference_pharmacophore = gobbi_pharmacophore_fingerprint(molecule)
+                if (
+                    query_pharmacophore is None
+                    or reference_pharmacophore.GetNumOnBits() == 0
+                ):
+                    pharmacophore_similarity = None
+                else:
+                    pharmacophore_similarity = _bounded_similarity(
+                        float(
+                            DataStructs.TanimotoSimilarity(
+                                query_pharmacophore, reference_pharmacophore
+                            )
+                        )
+                    )
+            except (RuntimeError, ValueError):
+                pharmacophore_similarity = None
+            row_index = len(rows)
+            rows.append(
+                {
+                    **base,
+                    "ecfp4_similarity": ecfp_similarity,
+                    "maccs_similarity": maccs_similarity,
+                    "usrcat_similarity": (
+                        usr_similarity if usr_similarity is not None else np.nan
+                    ),
+                    "pharmacophore_similarity": (
+                        pharmacophore_similarity
+                        if pharmacophore_similarity is not None
+                        else np.nan
+                    ),
+                    "reference_conformer_status": ensemble.status,
+                    "reference_evidence_status": (
+                        "ok" if usr_similarity is not None else "3d_unavailable"
+                    ),
+                }
+            )
+            ensembles[row_index] = ensemble
+
+    evidence = pd.DataFrame(rows)
+    shortlist_size = int(config.value("chem3d.o3a_shortlist_top"))
+    for _, group in evidence.groupby("target_class", sort=True):
+        candidates = group[np.isfinite(group["usrcat_similarity"])].sort_values(
+            ["usrcat_similarity", "reference_id"],
+            ascending=[False, True],
+            kind="mergesort",
+        )
+        for row_index in candidates.head(shortlist_size).index:
+            evidence.loc[row_index, "o3a_was_shortlisted"] = True
+            shape, color, successes, failures = o3a_shape_color_similarity(
+                query_ensemble, ensembles[int(row_index)], config
+            )
+            evidence.loc[row_index, "o3a_shape_tanimoto"] = (
+                shape if shape is not None else np.nan
+            )
+            evidence.loc[row_index, "o3a_color"] = (
+                color if color is not None else np.nan
+            )
+            evidence.loc[row_index, "n_o3a_overlays_scored"] = successes
+            evidence.loc[row_index, "n_o3a_overlay_failures"] = failures
+    return evidence
+
+
+def aggregate_reference_evidence(
+    reference_evidence: pd.DataFrame, config: ProjectConfig
+) -> pd.DataFrame:
+    """Derive the public per-query×target v3 fields from reference-level rows."""
+
+    required = {
+        "query_id",
+        "target_class",
+        "ecfp4_similarity",
+        "maccs_similarity",
+        "usrcat_similarity",
+        "o3a_shape_tanimoto",
+        "o3a_color",
+        "pharmacophore_similarity",
+    }
+    missing = sorted(required - set(reference_evidence.columns))
+    if missing:
+        raise ValueError(f"Reference evidence is missing fields: {missing}")
+    top_k = int(config.value("chem3d.aggregate_top_k"))
+    rows = []
+    for (query_id, target_class), group in reference_evidence.groupby(
+        ["query_id", "target_class"], sort=True
+    ):
+        usrcat = pd.to_numeric(group["usrcat_similarity"], errors="coerce").dropna()
+        ordered_usrcat = usrcat.sort_values(ascending=False)
+        shapes = pd.to_numeric(group["o3a_shape_tanimoto"], errors="coerce").dropna()
+        colors = pd.to_numeric(group["o3a_color"], errors="coerce").dropna()
+        pharmacophores = pd.to_numeric(
+            group["pharmacophore_similarity"], errors="coerce"
+        ).dropna()
+        valid_structures = group["reference_conformer_status"] != "invalid_structure"
+        reference_3d_failures = valid_structures & group["usrcat_similarity"].isna()
+        rows.append(
+            {
+                "query_id": query_id,
+                "target_class": target_class,
+                "usrcat_max": float(ordered_usrcat.iloc[0]) if len(ordered_usrcat) else np.nan,
+                "usrcat_top5_mean": (
+                    float(ordered_usrcat.head(top_k).mean())
+                    if len(ordered_usrcat)
+                    else np.nan
+                ),
+                "n_usrcat_references_scored": len(ordered_usrcat),
+                "n_reference_ligands_3d": len(group),
+                "n_invalid_reference_structures_3d": int((~valid_structures).sum()),
+                "n_reference_conformer_failures": int(reference_3d_failures.sum()),
+                "query_conformer_status": str(group["query_conformer_status"].iloc[0]),
+                "query_conformer_count": int(group["query_conformer_count"].iloc[0]),
+                "o3a_shape_tanimoto_max": float(shapes.max()) if len(shapes) else np.nan,
+                "o3a_color_max": float(colors.max()) if len(colors) else np.nan,
+                "n_o3a_references_shortlisted": int(group["o3a_was_shortlisted"].sum()),
+                "n_o3a_overlays_scored": int(group["n_o3a_overlays_scored"].sum()),
+                "n_o3a_overlay_failures": int(group["n_o3a_overlay_failures"].sum()),
+                "n_o3a_reference_failures": int((~valid_structures | group["usrcat_similarity"].isna()).sum()),
+                "o3a_status": "ok" if len(shapes) and len(colors) else "unavailable_no_valid_overlay",
+                "pharmacophore_sim_max": (
+                    float(pharmacophores.max()) if len(pharmacophores) else np.nan
+                ),
+                "n_pharmacophore_references_scored": len(pharmacophores),
+                "n_pharmacophore_failures": int(len(group) - len(pharmacophores)),
+                "pharmacophore_method": "Gobbi_Pharm2D",
+                "pharmacophore_status": "ok" if len(pharmacophores) else "unavailable_no_valid_fingerprint",
             }
         )
     return pd.DataFrame(rows)

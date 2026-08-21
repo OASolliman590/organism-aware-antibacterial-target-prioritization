@@ -667,6 +667,8 @@ def score_split_results(
     ontology: pd.DataFrame,
     quality: pd.DataFrame,
     config: ProjectConfig,
+    *,
+    reference_evidence_sink: list[pd.DataFrame] | None = None,
 ) -> pd.DataFrame:
     """Compute additive 2D/3D/fusion target scores for available split rows."""
 
@@ -695,7 +697,7 @@ def score_split_results(
             "maccs": discovery.maccs(molecule),
             "source": "public_benchmark_v3",
         }
-        frame = discovery.score_query_v3(
+        scored = discovery.score_query_v3(
             query,
             split.references,
             quality,
@@ -703,7 +705,15 @@ def score_split_results(
             ontology,
             config=config,
             exclude_close=False,
+            return_reference_evidence=reference_evidence_sink is not None,
         )
+        if reference_evidence_sink is not None:
+            frame, reference_evidence = scored
+            reference_evidence = reference_evidence.copy()
+            reference_evidence["split_type"] = split.split_type
+            reference_evidence_sink.append(reference_evidence)
+        else:
+            frame = scored
         if frame.empty:
             continue
         label = str(source.get("target_class") or source.get("query_target_label") or "")
@@ -771,10 +781,24 @@ def main() -> None:
         if quality_path.exists()
         else pd.DataFrame(columns=["target_class"])
     )
+    reference_evidence_tables: list[pd.DataFrame] = []
     scores = score_split_results(
-        split_results, queries, ontology, quality, config
+        split_results,
+        queries,
+        ontology,
+        quality,
+        config,
+        reference_evidence_sink=reference_evidence_tables,
     )
     scores.to_csv(results_dir / "benchmark_target_scores_by_split_v3.csv", index=False)
+    reference_evidence = (
+        pd.concat(reference_evidence_tables, ignore_index=True)
+        if reference_evidence_tables
+        else pd.DataFrame()
+    )
+    reference_evidence.to_csv(
+        results_dir / "benchmark_reference_evidence_by_split_v3.csv", index=False
+    )
     query_metrics, comparison = compare_score_modes(scores, provenance, config)
     query_metrics.to_csv(results_dir / "benchmark_query_metrics_v3.csv", index=False)
     comparison.to_csv(results_dir / "benchmark_mode_comparison_v3.csv", index=False)

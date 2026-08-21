@@ -116,6 +116,10 @@ def _validate(config: ProjectConfig) -> None:
         "model.minimum_class_count",
         "model.max_iterations",
         "model.reliability_bins",
+        "sensitivity.weight_factors",
+        "sensitivity.top_k",
+        "sensitivity.rbo_persistence",
+        "sensitivity.bootstrap_n",
     ]
     for key in required:
         config.value(key)
@@ -214,6 +218,18 @@ def _validate(config: ProjectConfig) -> None:
     _require_number(config, "model.minimum_class_count", minimum=2)
     _require_number(config, "model.max_iterations", minimum=1)
     _require_number(config, "model.reliability_bins", minimum=2)
+    sensitivity_factors = config.value("sensitivity.weight_factors")
+    if not isinstance(sensitivity_factors, list) or {
+        float(value) for value in sensitivity_factors
+    } != {0.5, 0.75, 1.25, 1.5}:
+        raise ConfigError(
+            "sensitivity.weight_factors must contain 0.5, 0.75, 1.25, and 1.5"
+        )
+    _require_number(config, "sensitivity.top_k", minimum=1)
+    _require_number(
+        config, "sensitivity.rbo_persistence", minimum=1e-12, maximum=0.999999
+    )
+    _require_number(config, "sensitivity.bootstrap_n", minimum=1)
 
     weights = config.value("v2_scoring.chemical.weights")
     if not isinstance(weights, dict) or any(float(v) < 0 for v in weights.values()):

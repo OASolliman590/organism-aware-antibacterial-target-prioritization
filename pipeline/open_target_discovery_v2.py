@@ -13,9 +13,8 @@ from rdkit.Chem import AllChem, MACCSkeys
 
 try:
     from pipeline.chem3d_matching import (
-        score_o3a_by_target,
-        score_pharmacophore_by_target,
-        score_usrcat_by_target,
+        aggregate_reference_evidence,
+        score_reference_evidence_by_target,
     )
     from pipeline.config import load_config
     from pipeline.disagreement_report import build_disagreement_report
@@ -23,9 +22,8 @@ try:
     from pipeline.snapshots import verify_snapshot
 except ModuleNotFoundError:  # direct ``python pipeline/<script>.py`` execution
     from chem3d_matching import (
-        score_o3a_by_target,
-        score_pharmacophore_by_target,
-        score_usrcat_by_target,
+        aggregate_reference_evidence,
+        score_reference_evidence_by_target,
     )
     from config import load_config
     from disagreement_report import build_disagreement_report
@@ -269,6 +267,7 @@ def score_query_v3(
     exclude_close=False,
     cutoff=None,
     cache_dir=None,
+    return_reference_evidence=False,
 ):
     """Add 3D/pharmacophore evidence and deterministic fusion to one v2 frame."""
 
@@ -285,27 +284,13 @@ def score_query_v3(
         q, refs, exclude_close=exclude_close, cutoff=cutoff
     )
     if chem2d.empty or not selected_refs:
+        if return_reference_evidence:
+            return chem2d, pd.DataFrame()
         return chem2d
-    usrcat = score_usrcat_by_target(
+    reference_evidence = score_reference_evidence_by_target(
         q["query_id"], q["mol"], selected_refs, config, cache_dir=cache_dir
     )
-    o3a = score_o3a_by_target(
-        q["query_id"], q["mol"], selected_refs, config, cache_dir=cache_dir
-    )
-    pharmacophore = score_pharmacophore_by_target(
-        q["query_id"], q["mol"], selected_refs
-    )
-    chem3d = usrcat.merge(
-        o3a,
-        on=["query_id", "target_class"],
-        how="outer",
-        validate="one_to_one",
-    ).merge(
-        pharmacophore,
-        on=["query_id", "target_class"],
-        how="outer",
-        validate="one_to_one",
-    )
+    chem3d = aggregate_reference_evidence(reference_evidence, config)
     fused = fuse_evidence(chem2d, chem3d, config)
     fused["chemical_quality_adjusted_score_v3"] = (
         fused["chemical_evidence_score_v3"]
@@ -313,7 +298,7 @@ def score_query_v3(
         * fused["target_specificity_score"]
     )
     fused["chemical_quality_adjusted_score_v3_is_probability"] = False
-    return fused
+    return (fused, reference_evidence) if return_reference_evidence else fused
 
 def add_unscored_classes(scored,q,ontology):
     """Keep the broad ontology visible: missing references are explicit, not absent targets."""

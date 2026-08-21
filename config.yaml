@@ -140,6 +140,12 @@ model:
   max_iterations: 2000
   reliability_bins: 5
 
+sensitivity:
+  weight_factors: [0.5, 0.75, 1.25, 1.5]
+  top_k: 10
+  rbo_persistence: 0.9
+  bootstrap_n: 100
+
 refresh:
   chembl:
     source_release: unrecorded

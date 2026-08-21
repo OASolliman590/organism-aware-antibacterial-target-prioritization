@@ -60,7 +60,7 @@ phase's tasks pass. Never fabricate data (constitution I). Report negative resul
       **STATUS: PENDING SCIENTIFIC FIT —** the calibrated path is implemented, but the pinned benchmark lacks a
       valid temporal test set, property-matched decoys, and disjoint train/calibration/test roles. Empty readiness,
       held-out-metric, and reliability outputs are emitted; no model is fit to inadequate labels.
-- [ ] **T4.2** `pipeline/sensitivity_analysis.py`: if labels too sparse for T4.1, or as a complement, perturb weights
+- [x] **T4.2** `pipeline/sensitivity_analysis.py`: if labels too sparse for T4.1, or as a complement, perturb weights
       (±25–50%, leave-one-layer-out) and report rank stability (Kendall τ, RBO, bootstrap over references). **AC:**
       stability of top hypotheses quantified and plotted.
 

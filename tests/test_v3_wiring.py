@@ -83,8 +83,19 @@ def test_v3_query_scoring_is_additive_and_deterministic(tmp_path) -> None:
         config=config,
         cache_dir=tmp_path / "conformers",
     )
+    third, reference_evidence = discovery.score_query_v3(
+        query,
+        references,
+        quality,
+        empty,
+        ontology,
+        config=config,
+        cache_dir=tmp_path / "conformers",
+        return_reference_evidence=True,
+    )
 
     pd.testing.assert_frame_equal(first, second, check_exact=True)
+    pd.testing.assert_frame_equal(first, third, check_exact=True)
     expected = {
         "chemical_evidence_score",
         "usrcat_max",
@@ -98,6 +109,14 @@ def test_v3_query_scoring_is_additive_and_deterministic(tmp_path) -> None:
     assert expected.issubset(first.columns)
     assert len(first) == 2
     assert first["chemical_evidence_score_v3"].between(0, 1).all()
+    assert len(reference_evidence) == 2
+    assert {
+        "reference_id",
+        "ecfp4_similarity",
+        "usrcat_similarity",
+        "o3a_was_shortlisted",
+        "pharmacophore_similarity",
+    }.issubset(reference_evidence.columns)
 
 
 def test_emit_v3_outputs_writes_suffix_without_touching_v2_files(tmp_path) -> None:
