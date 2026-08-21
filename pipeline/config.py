@@ -93,6 +93,7 @@ def _validate(config: ProjectConfig) -> None:
         "chem3d.max_iterations",
         "chem3d.num_threads",
         "fusion.reciprocal_rank_constant",
+        "fusion.disagreement_min_absolute_rank_shift",
         "fusion.components",
         "benchmark.bootstrap_n",
         "benchmark.time_cutoff",
@@ -128,6 +129,9 @@ def _validate(config: ProjectConfig) -> None:
     if int(_require_number(config, "chem3d.num_threads", minimum=1)) != 1:
         raise ConfigError("chem3d.num_threads must be 1 for deterministic runs")
     _require_number(config, "fusion.reciprocal_rank_constant", minimum=1e-12)
+    _require_number(
+        config, "fusion.disagreement_min_absolute_rank_shift", minimum=1e-12
+    )
     fusion_components = config.value("fusion.components")
     if (
         not isinstance(fusion_components, list)

@@ -119,6 +119,7 @@ def test_emit_v3_outputs_writes_suffix_without_touching_v2_files(tmp_path) -> No
 
     assert {path.name for path in written} == {
         "benchmark_open_target_scores_v3.csv",
+        "chemical_evidence_disagreements_v3.csv",
         "open_target_reference_coverage_v3.csv",
     }
     assert all(path.is_file() and path.name.endswith("_v3.csv") for path in written)

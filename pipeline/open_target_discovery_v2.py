@@ -18,6 +18,7 @@ try:
         score_usrcat_by_target,
     )
     from pipeline.config import load_config
+    from pipeline.disagreement_report import build_disagreement_report
     from pipeline.evidence_fusion import fuse_evidence
     from pipeline.snapshots import verify_snapshot
 except ModuleNotFoundError:  # direct ``python pipeline/<script>.py`` execution
@@ -27,6 +28,7 @@ except ModuleNotFoundError:  # direct ``python pipeline/<script>.py`` execution
         score_usrcat_by_target,
     )
     from config import load_config
+    from disagreement_report import build_disagreement_report
     from evidence_fusion import fuse_evidence
     from snapshots import verify_snapshot
 
@@ -508,6 +510,7 @@ def emit_v3_outputs(
         raise ValueError("v3 output currently requires run.fusion_mode=rank_fusion")
     result_dir.mkdir(parents=True, exist_ok=True)
     written = []
+    disagreement_reports = []
 
     private_scores = []
     for query in private:
@@ -530,6 +533,17 @@ def emit_v3_outputs(
         path = result_dir / "open_target_scores_private_v3.csv"
         raw.to_csv(path, index=False)
         written.append(path)
+        private_for_report = raw.copy()
+        private_for_report["dataset_scope"] = "private_local"
+        disagreement_reports.append(
+            build_disagreement_report(
+                private_for_report,
+                component_columns=list(config.value("fusion.components")),
+                minimum_absolute_rank_shift=float(
+                    config.value("fusion.disagreement_min_absolute_rank_shift")
+                ),
+            )
+        )
         if str(config.value("run.combiner")) == "heuristic":
             ranked = apply_biology(
                 raw,
@@ -584,6 +598,41 @@ def emit_v3_outputs(
         path = result_dir / "benchmark_open_target_scores_v3.csv"
         benchmark.to_csv(path, index=False)
         written.append(path)
+        benchmark_for_report = benchmark.copy()
+        benchmark_for_report["dataset_scope"] = "public_benchmark"
+        disagreement_reports.append(
+            build_disagreement_report(
+                benchmark_for_report,
+                component_columns=list(config.value("fusion.components")),
+                minimum_absolute_rank_shift=float(
+                    config.value("fusion.disagreement_min_absolute_rank_shift")
+                ),
+            )
+        )
+
+    if disagreement_reports:
+        disagreements = pd.concat(disagreement_reports, ignore_index=True)
+    else:
+        empty_columns = [
+            "query_id",
+            "target_class",
+            "dataset_scope",
+            "chemical_evidence_score",
+            "chemical_evidence_score_v3",
+            *list(config.value("fusion.components")),
+            "fusion_component_count",
+            "fusion_missing_components",
+        ]
+        disagreements = build_disagreement_report(
+            pd.DataFrame(columns=empty_columns),
+            component_columns=list(config.value("fusion.components")),
+            minimum_absolute_rank_shift=float(
+                config.value("fusion.disagreement_min_absolute_rank_shift")
+            ),
+        )
+    path = result_dir / "chemical_evidence_disagreements_v3.csv"
+    disagreements.to_csv(path, index=False)
+    written.append(path)
 
     coverage = pd.DataFrame(
         {

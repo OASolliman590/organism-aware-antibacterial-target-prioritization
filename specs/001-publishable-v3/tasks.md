@@ -27,7 +27,7 @@ phase's tasks pass. Never fabricate data (constitution I). Report negative resul
       component columns (constitution VI). **AC:** components auditable; fusion deterministic.
 - [x] **T1.6** Wire v3 chemical evidence into `open_target_discovery_v2.py` behind `combiner`/`fusion_mode` config,
       leaving the v2 path intact. **AC:** golden v2 test still green; new `*_v3.csv` outputs produced.
-- [ ] **T1.7** Emit a **2D-vs-3D disagreement report** (cases where 3D materially changes a target's rank, e.g. a
+- [x] **T1.7** Emit a **2D-vs-3D disagreement report** (cases where 3D materially changes a target's rank, e.g. a
       scaffold hop). **AC:** report file lists ≥ the cases found, with per-component scores.
 
 ## Phase 2 — Leakage-controlled benchmark

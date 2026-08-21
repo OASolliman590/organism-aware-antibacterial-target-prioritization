@@ -83,6 +83,7 @@ chem3d:
 
 fusion:
   reciprocal_rank_constant: 60.0
+  disagreement_min_absolute_rank_shift: 3.0
   components:
     - ecfp4_max
     - maccs_max
