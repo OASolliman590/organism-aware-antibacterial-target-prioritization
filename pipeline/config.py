@@ -92,6 +92,8 @@ def _validate(config: ProjectConfig) -> None:
         "chem3d.o3a_max_iterations",
         "chem3d.max_iterations",
         "chem3d.num_threads",
+        "fusion.reciprocal_rank_constant",
+        "fusion.components",
         "benchmark.bootstrap_n",
         "benchmark.time_cutoff",
         "applicability_domain.tanimoto_in",
@@ -125,6 +127,15 @@ def _validate(config: ProjectConfig) -> None:
     _require_number(config, "chem3d.max_iterations", minimum=1)
     if int(_require_number(config, "chem3d.num_threads", minimum=1)) != 1:
         raise ConfigError("chem3d.num_threads must be 1 for deterministic runs")
+    _require_number(config, "fusion.reciprocal_rank_constant", minimum=1e-12)
+    fusion_components = config.value("fusion.components")
+    if (
+        not isinstance(fusion_components, list)
+        or not fusion_components
+        or not all(isinstance(component, str) and component for component in fusion_components)
+        or len(fusion_components) != len(set(fusion_components))
+    ):
+        raise ConfigError("fusion.components must be a non-empty unique string list")
     _require_number(config, "benchmark.bootstrap_n", minimum=1)
     tanimoto_in = _require_number(
         config, "applicability_domain.tanimoto_in", minimum=0, maximum=1
