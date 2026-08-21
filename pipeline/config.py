@@ -96,6 +96,8 @@ def _validate(config: ProjectConfig) -> None:
         "fusion.disagreement_min_absolute_rank_shift",
         "fusion.components",
         "benchmark.bootstrap_n",
+        "benchmark.bedroc_alphas",
+        "benchmark.enrichment_fractions",
         "benchmark.splits",
         "benchmark.analogue_exclusion_threshold",
         "benchmark.time_cutoff",
@@ -143,6 +145,18 @@ def _validate(config: ProjectConfig) -> None:
     ):
         raise ConfigError("fusion.components must be a non-empty unique string list")
     _require_number(config, "benchmark.bootstrap_n", minimum=1)
+    bedroc_alphas = config.value("benchmark.bedroc_alphas")
+    if not isinstance(bedroc_alphas, list) or {
+        float(value) for value in bedroc_alphas
+    } != {20.0, 80.5}:
+        raise ConfigError("benchmark.bedroc_alphas must contain 20.0 and 80.5")
+    enrichment_fractions = config.value("benchmark.enrichment_fractions")
+    if not isinstance(enrichment_fractions, list) or {
+        float(value) for value in enrichment_fractions
+    } != {0.01, 0.05}:
+        raise ConfigError(
+            "benchmark.enrichment_fractions must contain 0.01 and 0.05"
+        )
     benchmark_splits = config.value("benchmark.splits")
     if (
         not isinstance(benchmark_splits, list)

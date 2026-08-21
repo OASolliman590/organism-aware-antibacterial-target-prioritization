@@ -8,6 +8,8 @@ cannot accidentally report them as a valid benchmark.
 from __future__ import annotations
 
 from dataclasses import dataclass
+import json
+import math
 from typing import Any
 
 import numpy as np
@@ -15,6 +17,7 @@ import pandas as pd
 from rdkit import Chem, DataStructs
 from rdkit.Chem import AllChem
 from rdkit.Chem.Scaffolds.MurckoScaffold import MurckoScaffoldSmiles
+from sklearn.metrics import roc_auc_score
 
 try:
     from pipeline.config import ProjectConfig
@@ -294,3 +297,216 @@ def generate_splits(
             )
     provenance = pd.DataFrame([result.provenance for result in results])
     return results, provenance
+
+
+def _bedroc(labels: np.ndarray, scores: np.ndarray, alpha: float) -> float:
+    """Tie-aware BEDROC using average score ranks (rank 1 is best)."""
+
+    n_molecules = len(labels)
+    n_actives = int(labels.sum())
+    if n_molecules == 0 or n_actives == 0 or n_actives == n_molecules:
+        return np.nan
+    ranks = pd.Series(scores).rank(method="average", ascending=False).to_numpy()
+    denominator = (1.0 / n_molecules) * (
+        (1.0 - math.exp(-alpha)) / (math.exp(alpha / n_molecules) - 1.0)
+    )
+    rie = float(np.exp(-(alpha * ranks[labels == 1]) / n_molecules).sum()) / (
+        n_actives * denominator
+    )
+    ratio = n_actives / n_molecules
+    rie_max = (1.0 - math.exp(-alpha * ratio)) / (
+        ratio * (1.0 - math.exp(-alpha))
+    )
+    rie_min = (1.0 - math.exp(alpha * ratio)) / (
+        ratio * (1.0 - math.exp(alpha))
+    )
+    return float((rie - rie_min) / (rie_max - rie_min))
+
+
+def _tie_aware_enrichment(
+    labels: np.ndarray, scores: np.ndarray, fraction: float
+) -> float:
+    n_molecules = len(labels)
+    n_actives = int(labels.sum())
+    if n_molecules == 0 or n_actives == 0 or n_actives == n_molecules:
+        return np.nan
+    top_n = max(1, int(math.ceil(n_molecules * fraction)))
+    ordered = np.sort(scores)[::-1]
+    boundary = ordered[top_n - 1]
+    above = scores > boundary
+    tied = scores == boundary
+    slots_at_boundary = top_n - int(above.sum())
+    expected_boundary_hits = (
+        slots_at_boundary * float(labels[tied].mean()) if tied.any() else 0.0
+    )
+    expected_hits = float(labels[above].sum()) + expected_boundary_hits
+    return float((expected_hits / top_n) / (n_actives / n_molecules))
+
+
+def query_level_metrics(
+    scores: pd.DataFrame,
+    *,
+    score_column: str,
+    label_column: str = "is_active",
+    bedroc_alphas: tuple[float, ...] = (20.0, 80.5),
+    enrichment_fractions: tuple[float, ...] = (0.01, 0.05),
+) -> pd.DataFrame:
+    """Compute retrieval metrics per query before any cross-query aggregation."""
+
+    required = {"query_id", "target_class", score_column, label_column}
+    missing = sorted(required - set(scores.columns))
+    if missing:
+        raise ValueError(f"Benchmark scores are missing columns: {missing}")
+    rows: list[dict[str, Any]] = []
+    for query_id, group in scores.groupby("query_id", sort=True):
+        numeric_scores = pd.to_numeric(group[score_column], errors="coerce")
+        labels_all = pd.to_numeric(group[label_column], errors="coerce")
+        valid = np.isfinite(numeric_scores) & labels_all.isin([0, 1])
+        labels = labels_all[valid].astype(int).to_numpy()
+        values = numeric_scores[valid].astype(float).to_numpy()
+        n_positive = int(labels.sum())
+        n_negative = int(len(labels) - n_positive)
+        covered = int(n_positive > 0)
+        if covered:
+            ranks = pd.Series(values).rank(
+                method="average", ascending=False
+            ).to_numpy()
+            reciprocal_rank = float(1.0 / ranks[labels == 1].min())
+        else:
+            reciprocal_rank = 0.0
+        row: dict[str, Any] = {
+            "query_id": query_id,
+            "n_candidates": len(labels),
+            "n_positive": n_positive,
+            "n_negative": n_negative,
+            "coverage": float(covered),
+            "mrr": reciprocal_rank,
+            "auroc": (
+                float(roc_auc_score(labels, values))
+                if n_positive > 0 and n_negative > 0
+                else np.nan
+            ),
+        }
+        for alpha in bedroc_alphas:
+            name = f"bedroc_alpha_{str(alpha).replace('.', '_')}"
+            row[name] = _bedroc(labels, values, float(alpha))
+        for fraction in enrichment_fractions:
+            name = f"ef_{int(round(float(fraction) * 100))}pct"
+            row[name] = _tie_aware_enrichment(labels, values, float(fraction))
+        rows.append(row)
+    return pd.DataFrame(rows)
+
+
+def _provenance_summary(provenance: pd.DataFrame) -> dict[str, Any]:
+    if provenance.empty:
+        return {
+            "split_status_counts": "{}",
+            "n_references_input": 0,
+            "n_references_after_split": 0,
+            "n_removed_close_analogue": 0,
+            "n_removed_same_scaffold": 0,
+            "n_removed_target_family": 0,
+            "n_removed_post_cutoff": 0,
+            "n_removed_missing_date": 0,
+        }
+    count_columns = [
+        "n_references_input",
+        "n_references_after_split",
+        "n_removed_close_analogue",
+        "n_removed_same_scaffold",
+        "n_removed_target_family",
+        "n_removed_post_cutoff",
+        "n_removed_missing_date",
+    ]
+    summary: dict[str, Any] = {
+        "split_status_counts": json.dumps(
+            provenance["status"].value_counts().sort_index().to_dict(),
+            sort_keys=True,
+        )
+    }
+    for column in count_columns:
+        summary[column] = (
+            int(pd.to_numeric(provenance[column], errors="coerce").sum())
+            if column in provenance
+            else 0
+        )
+    return summary
+
+
+def aggregate_metrics_with_bootstrap(
+    query_metrics: pd.DataFrame,
+    *,
+    split_type: str,
+    score_mode: str,
+    split_provenance: pd.DataFrame,
+    config: ProjectConfig,
+) -> pd.DataFrame:
+    """Aggregate query metrics with deterministic query-level bootstrap CIs."""
+
+    metric_columns = [
+        "auroc",
+        *[
+            f"bedroc_alpha_{str(float(alpha)).replace('.', '_')}"
+            for alpha in config.value("benchmark.bedroc_alphas")
+        ],
+        *[
+            f"ef_{int(round(float(fraction) * 100))}pct"
+            for fraction in config.value("benchmark.enrichment_fractions")
+        ],
+        "mrr",
+        "coverage",
+    ]
+    missing = sorted(set(metric_columns) - set(query_metrics.columns))
+    if missing:
+        raise ValueError(f"Query metrics are missing configured metrics: {missing}")
+    bootstrap_n = int(config.value("benchmark.bootstrap_n"))
+    bootstrap_seed = int(config.value("seeds.bootstrap"))
+    rng = np.random.default_rng(bootstrap_seed)
+    n_queries = len(query_metrics)
+    bootstrap_indices = (
+        rng.integers(0, n_queries, size=(bootstrap_n, n_queries))
+        if n_queries
+        else np.empty((bootstrap_n, 0), dtype=int)
+    )
+    provenance_summary = _provenance_summary(split_provenance)
+    rows: list[dict[str, Any]] = []
+    for metric in metric_columns:
+        values = pd.to_numeric(query_metrics[metric], errors="coerce").to_numpy(
+            dtype=float
+        )
+        finite = np.isfinite(values)
+        estimate = float(np.mean(values[finite])) if finite.any() else np.nan
+        samples: list[float] = []
+        for indices in bootstrap_indices:
+            sampled = values[indices]
+            sampled = sampled[np.isfinite(sampled)]
+            if len(sampled):
+                samples.append(float(np.mean(sampled)))
+        if samples:
+            ci_lower, ci_upper = np.quantile(samples, [0.025, 0.975]).tolist()
+        else:
+            ci_lower, ci_upper = np.nan, np.nan
+        status = "available" if finite.any() else "unavailable_no_evaluable_queries"
+        rows.append(
+            {
+                "split_type": split_type,
+                "score_mode": score_mode,
+                "metric": metric,
+                "estimate": estimate,
+                "ci_lower_95": ci_lower,
+                "ci_upper_95": ci_upper,
+                "n_queries": n_queries,
+                "n_evaluable_queries": int(finite.sum()),
+                "bootstrap_unit": "query_id",
+                "bootstrap_n": bootstrap_n,
+                "bootstrap_seed": bootstrap_seed,
+                "status": status,
+                "snapshot_id": str(config.value("snapshots.snapshot_id")),
+                "time_cutoff": str(config.value("benchmark.time_cutoff")),
+                "analogue_exclusion_threshold": float(
+                    config.value("benchmark.analogue_exclusion_threshold")
+                ),
+                **provenance_summary,
+            }
+        )
+    return pd.DataFrame(rows)
