@@ -30,6 +30,7 @@ ANALYSIS_STEPS = [
     'pipeline/baseline_external.py',
     'pipeline/scoring_model.py',
     'pipeline/sensitivity_analysis.py',
+    'pipeline/v3_figures.py',
     'pipeline/benchmark_v2.py',
     'pipeline/calibrate_uncertainty_v2.py',
     'pipeline/build_validation_plan_v2.py',

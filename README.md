@@ -1,4 +1,4 @@
-# Organism-Aware Antibacterial Open Target Discovery (v2)
+# Organism-Aware Antibacterial Open Target Discovery (v3)
 
 This repository contains a reproducible cheminformatics framework for **open target discovery** from small molecules, followed by organism-specific biological and clinical annotation. It is designed for antibacterial research involving the ESKAPE pathogens and related organisms.
 
@@ -8,11 +8,13 @@ This repository contains a reproducible cheminformatics framework for **open tar
 
 The pipeline does not force a compound into a preselected target panel. It first searches a broad public target universe using chemical evidence, then annotates each chemically plausible target with species-specific protein mapping, sequence transfer, clinical and essentiality context, cellular accessibility, resistance biology, structure-pocket precedent, anti-target risk, and uncertainty. The output is a ranked set of **testable target hypotheses**, not proof of binding or target engagement.
 
-The v2 workflow separates the following evidence layers:
+The workflow separates the following evidence layers:
 
 | Layer | Examples | Scientific interpretation |
 |---|---|---|
 | Chemical | ECFP4/Morgan, MACCS, nearest-neighbour consistency | Ligand-space support |
+| 3D shape | ETKDGv3, USRCAT, O3A shape/color | Conformer-dependent shape/feature support |
+| Pharmacophore | Gobbi/Poppe feature-pair similarity | Scaffold-independent feature support |
 | Specificity | Cross-target decoys, target-specificity margin | Whether the signal is target-specific |
 | Reference quality | Reference count, scaffold diversity, evidence grade | Stability of public support |
 | Species transfer | UniProt accession, mapping status, sequence similarity/coverage | Transferability to the organism protein |
@@ -39,7 +41,15 @@ The v2 workflow separates the following evidence layers:
 | `data/compounds/` | Local-only normalized compound structures; ignored by Git |
 | `results/` | Local-only private prediction tables, figures, and reports; ignored by Git |
 | `run_pipeline.py` | Local end-to-end runner |
-| `requirements.txt` | Python dependencies |
+| `config.yaml` | Single declarative source for paths, thresholds, modes, and seeds |
+| `requirements.lock` | Exact transitive Python environment |
+
+The full v3 protocol, formulas, failure semantics, and current data gaps are in
+[`docs/v3_method_supplement.md`](docs/v3_method_supplement.md). V3 preserves the
+v2 engine and adds deterministic 3D/pharmacophore evidence, query-local rank
+fusion, target/scaffold/temporal split machinery, bootstrap uncertainty,
+sensitivity analysis, and applicability-domain annotations. Scores are not
+probabilities unless a held-out calibrated field explicitly says so.
 
 ## Local execution with authorized unpublished inputs
 
