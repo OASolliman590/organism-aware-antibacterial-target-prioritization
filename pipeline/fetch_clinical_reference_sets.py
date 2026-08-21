@@ -4,12 +4,20 @@ The target IDs were selected from ChEMBL target search results and are recorded 
  data/additional_target_hits.json. The resulting files are public reference data;
 no unpublished compound structures are used.
 """
-from pathlib import Path
 import json, math, time
 import requests
 
-ROOT=Path(__file__).resolve().parents[1]
-OUT=ROOT/'data'/'reference_ligands'; OUT.mkdir(parents=True,exist_ok=True)
+try:
+    from pipeline.config import load_config
+    from pipeline.snapshots import require_refresh_output, refresh_snapshot_root, write_text_exclusive
+except ModuleNotFoundError:
+    from config import load_config
+    from snapshots import require_refresh_output, refresh_snapshot_root, write_text_exclusive
+
+
+CONFIG = load_config()
+OUT = CONFIG.path_for("reference_ligands")
+CHEMBL_CONFIG = CONFIG.value("refresh.chembl")
 TARGETS={
  'RpoB':['CHEMBL1852','CHEMBL2006'],
  'LeuRS':['CHEMBL4295566','CHEMBL4295595','CHEMBL4662935','CHEMBL4105844'],
@@ -37,7 +45,7 @@ def fetch_target(tid):
     out=[]; offset=0
     while True:
         url='https://www.ebi.ac.uk/chembl/api/data/activity.json'
-        r=requests.get(url,params={'target_chembl_id':tid,'limit':1000,'offset':offset},timeout=60)
+        r=requests.get(url,params={'target_chembl_id':tid,'limit':1000,'offset':offset},timeout=int(CHEMBL_CONFIG["http_timeout_seconds"]))
         r.raise_for_status(); d=r.json(); acts=d.get('activities',[])
         if not acts: break
         out.extend(acts)
@@ -45,6 +53,14 @@ def fetch_target(tid):
         if len(acts)<1000 or offset+len(acts)>=int(meta.get('total_count',offset+len(acts))): break
         offset += len(acts); time.sleep(.2)
     return out
+
+refresh_snapshot_root(CONFIG)
+if str(CHEMBL_CONFIG["source_release"]).lower() == "unrecorded":
+    raise RuntimeError(
+        "refresh.chembl.source_release must name the ChEMBL release before refresh"
+    )
+for cls in TARGETS:
+    require_refresh_output(CONFIG, OUT/f'ref_ligands_{cls}.json')
 
 for cls,ids in TARGETS.items():
     records=[]; seen=set()
@@ -55,7 +71,7 @@ for cls,ids in TARGETS.items():
         for a in acts:
             if a.get('canonical_smiles') in (None,'') or a.get('molecule_chembl_id') in (None,''): continue
             pc=pchembl(a)
-            if pc is None or pc<4.5: continue
+            if pc is None or pc<float(CHEMBL_CONFIG["min_pchembl"]): continue
             smi=a.get('canonical_smiles')
             key=(a.get('molecule_chembl_id'),tid)
             if key in seen: continue
@@ -69,6 +85,10 @@ for cls,ids in TARGETS.items():
     for r in records:
         key=(r['molecule_chembl_id'],r['canonical_smiles'])
         if key not in best or r['pchembl_value']>best[key]['pchembl_value']: best[key]=r
-    out=sorted(best.values(),key=lambda x:-x['pchembl_value'])[:2000]
-    (OUT/f'ref_ligands_{cls}.json').write_text(json.dumps(out,indent=2))
+    out=sorted(best.values(),key=lambda x:-x['pchembl_value'])[:int(CHEMBL_CONFIG["max_per_subtype"])]
+    write_text_exclusive(
+        CONFIG,
+        OUT/f'ref_ligands_{cls}.json',
+        json.dumps(out,indent=2) + "\n",
+    )
     print(cls,'records',len(out))

@@ -47,10 +47,19 @@ Copy authorized input structures into the local `inputs/` directory. Do not comm
 
 ```bash
 python -m pip install -r requirements.txt
-PROJECT_ROOT=/path/to/clone python run_pipeline.py
+python run_pipeline.py --config config.yaml
 ```
 
 The private workflow writes normalized structures and compound-specific outputs to ignored directories. Public-only benchmark and annotation modules can be run without private inputs when their public data are present.
+
+The default config is analysis-only: it verifies the immutable public snapshot in
+`data/snapshots/SNAPSHOT_VERSIONS.json`, never calls a live external API, and writes a
+provenance manifest for the run. Live refresh requires a separate config with
+`run.refresh_external_data: true`, a date-prefixed snapshot ID, explicit ChEMBL/CARD/
+UniProt releases, and every refreshed output path located under
+`data/snapshots/<snapshot-id>/`. Refresh writers use create-only files and refuse to
+overwrite an existing snapshot. A raw refresh is marked `analysis_ready: false` until
+all derived layers have been rebuilt and independently pinned.
 
 ## V2 target-discovery workflow
 
@@ -120,4 +129,7 @@ The strongest next validation is a staged experiment: purified target or target-
 
 The main v2.1 modules are `pipeline/open_target_discovery_v2.py`, `pipeline/benchmark_v2.py`, `pipeline/fetch_chembl_reference_subtypes_v21.py`, `pipeline/calibrate_uncertainty_v2.py`, `pipeline/fetch_species_targets.py`, `pipeline/sequence_compatibility.py`, `pipeline/build_reference_quality.py`, `pipeline/build_card_resistance_annotations.py`, `pipeline/parse_card_snps_v2.py`, `pipeline/fetch_structure_catalog_v2.py`, `pipeline/v2_figures.py`, including `v21_chemical_vs_clinical_translation.png` and `v21_clinical_translation_heatmap.png`, `pipeline/build_validation_plan_v2.py`, and `pipeline/summarize_v2.py`.
 
-All unpublished inputs and compound-specific outputs remain local until the compounds are published and the author explicitly approves a new repository release.
+All unpublished inputs and compound-specific outputs remain local until the compounds are published and the author explicitly approves a new repository release. The frozen
+legacy v2 snapshot records CARD 4.0.2; the original ChEMBL release, UniProt release/query
+date, PubChem query date, and RCSB query date were not retained by v2 and are therefore
+recorded as explicit provenance gaps rather than inferred.

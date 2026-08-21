@@ -13,8 +13,10 @@ from rdkit.Chem import AllChem, MACCSkeys
 
 try:
     from pipeline.config import load_config
+    from pipeline.snapshots import verify_snapshot
 except ModuleNotFoundError:  # direct ``python pipeline/<script>.py`` execution
     from config import load_config
+    from snapshots import verify_snapshot
 
 
 CONFIG = load_config()
@@ -348,6 +350,8 @@ def apply_biology(raw,ontology,compat,card_summary=None,snp_summary=None,snp_org
     return pd.DataFrame(rows)
 
 def main():
+    if bool(CONFIG.value("snapshots.verify_on_load")):
+        verify_snapshot(CONFIG)
     refs=load_refs(); quality=pd.read_csv(QUALITY) if QUALITY.exists() else pd.DataFrame()
     ontology=load_ontology(); compat=pd.read_csv(COMPAT) if COMPAT.exists() else pd.DataFrame()
     card_summary=pd.read_csv(CARD_SUM) if CARD_SUM.exists() else pd.DataFrame()

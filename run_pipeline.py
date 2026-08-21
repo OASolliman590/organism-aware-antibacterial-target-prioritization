@@ -13,18 +13,18 @@ import sys
 
 from pipeline.config import ProjectConfig, load_config, set_global_seed
 from pipeline.provenance import start_run, utc_now, write_run_manifest
+from pipeline.snapshots import finalize_refresh_snapshot, refresh_snapshot_root, verify_snapshot
 
 
-STEPS = [
+REFRESH_STEPS = [
     'pipeline/fetch_benchmark_structures.py',
     'pipeline/fetch_chembl_reference_subtypes_v21.py',
-    'pipeline/build_reference_quality.py',
     'pipeline/fetch_card_data.py',
     'pipeline/fetch_species_targets.py',
-    'pipeline/sequence_compatibility.py',
-    'pipeline/build_card_resistance_annotations.py',
-    'pipeline/parse_card_snps_v2.py',
     'pipeline/fetch_structure_catalog_v2.py',
+]
+
+ANALYSIS_STEPS = [
     'pipeline/open_target_discovery_v2.py',
     'pipeline/benchmark_v2.py',
     'pipeline/calibrate_uncertainty_v2.py',
@@ -72,9 +72,17 @@ def main(argv: list[str] | None = None) -> None:
     set_global_seed(config)
     run_context = start_run(config)
     try:
-        for relative_path in STEPS:
+        if bool(config.value("run.refresh_external_data")):
+            refresh_snapshot_root(config)
+            steps = REFRESH_STEPS
+        else:
+            verify_snapshot(config)
+            steps = ANALYSIS_STEPS
+        for relative_path in steps:
             if (config.root / relative_path).exists():
                 run_step(relative_path, config=config)
+        if bool(config.value("run.refresh_external_data")):
+            finalize_refresh_snapshot(config)
     except Exception as exc:
         write_run_manifest(
             config,

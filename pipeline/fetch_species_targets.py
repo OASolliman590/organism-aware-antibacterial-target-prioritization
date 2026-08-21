@@ -5,14 +5,25 @@ mapper uses canonical gene symbols first and protein-name fallback terms second,
 because bacterial resistance alleles and fragmented annotations often omit the
 canonical gene symbol.
 """
-from pathlib import Path
-import csv, json, time
+import csv, io, json, time
 import requests
 from requests.exceptions import RequestException
 
-ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / "data" / "species_targets"
-OUT.mkdir(parents=True, exist_ok=True)
+try:
+    from pipeline.config import load_config
+    from pipeline.provenance import utc_now
+    from pipeline.snapshots import require_refresh_output, refresh_snapshot_root, write_text_exclusive
+except ModuleNotFoundError:  # direct ``python pipeline/<script>.py`` execution
+    from config import load_config
+    from provenance import utc_now
+    from snapshots import require_refresh_output, refresh_snapshot_root, write_text_exclusive
+
+
+CONFIG = load_config()
+CSV_OUT = CONFIG.path_for("species_proteins")
+FASTA_OUT = CONFIG.path_for("species_fasta")
+METADATA_OUT = CONFIG.path_for("species_metadata")
+UNIPROT_CONFIG = CONFIG.value("refresh.uniprot")
 
 ORGANISMS = {
     "Bacillus cereus": 1396,
@@ -77,17 +88,17 @@ def fetch_batch(organism, taxid):
     query = f"organism_id:{taxid} AND (" + " OR ".join(pieces) + ")"
     url = "https://rest.uniprot.org/uniprotkb/search"
     try:
-        r = requests.get(url, params={"query": query, "format": "tsv", "fields": FIELDS, "size": 500}, timeout=(10, 60))
+        r = requests.get(url, params={"query": query, "format": "tsv", "fields": FIELDS, "size": 500}, timeout=(10, int(UNIPROT_CONFIG["request_timeout_seconds"])))
         r.raise_for_status()
     except RequestException as e:
         print(f"WARN {organism}: {e}")
-        return [], ""
+        return [], "", "retrieval_failed"
     lines = r.text.splitlines()
     if len(lines) <= 1:
-        return [], r.url
+        return [], r.url, "empty_response"
     header = lines[0].split("\t")
     records = [dict(zip(header, line.split("\t"))) for line in lines[1:] if line.strip()]
-    return records, r.url
+    return records, r.url, "retrieved"
 
 
 def choose_record(records, target, genes):
@@ -108,32 +119,71 @@ def choose_record(records, target, genes):
     return None, ""
 
 
-rows=[]
-for organism, taxid in ORGANISMS.items():
-    records, source_url = fetch_batch(organism, taxid)
-    print(f"{organism}: {len(records)} candidate records")
-    for target, primary_gene in TARGET_GENES.items():
-        genes = GENE_ALIASES.get((organism, target), [primary_gene])
-        rec, method = choose_record(records, target, genes)
-        if rec is None:
-            rows.append(blank_row(organism, taxid, target, "/".join(genes)))
-        else:
-            rows.append({"organism": organism, "taxid": taxid, "target_class": target,
-                         "gene_query": "/".join(genes), "accession": rec.get("Entry", ""),
-                         "protein_id": rec.get("Entry Name", ""), "protein_name": rec.get("Protein names", ""),
-                         "organism_name": rec.get("Organism", ""), "organism_id": rec.get("Organism (ID)", ""),
-                         "gene_names": rec.get("Gene Names", ""), "length": rec.get("Length", ""),
-                         "sequence": rec.get("Sequence", ""), "reviewed": rec.get("Reviewed", ""),
-                         "annotation_score": rec.get("Annotation", ""), "mapping_method": method,
-                         "source_url": source_url, "status": "mapped"})
-    time.sleep(0.25)
+def main():
+    refresh_snapshot_root(CONFIG)
+    if str(UNIPROT_CONFIG["source_release"]).lower() == "unrecorded":
+        raise RuntimeError(
+            "refresh.uniprot.source_release must name the UniProt release before refresh"
+        )
+    for path in (CSV_OUT, FASTA_OUT, METADATA_OUT):
+        require_refresh_output(CONFIG, path)
 
-with open(OUT / "species_target_proteins.csv", "w", newline="") as f:
-    w = csv.DictWriter(f, fieldnames=rows[0].keys()); w.writeheader(); w.writerows(rows)
-with open(OUT / "species_target_proteins.fasta", "w") as f:
-    for row in rows:
-        if row["sequence"]:
-            f.write(f">{row['organism'].replace(' ', '_')}|{row['target_class']}|{row['accession']}\n{row['sequence']}\n")
-with open(OUT / "species_target_fetch_metadata.json", "w") as f:
-    json.dump({"organisms": ORGANISMS, "target_genes": TARGET_GENES, "protein_name_terms": PROTEIN_TERMS, "n_rows": len(rows), "n_mapped": sum(r['status']=='mapped' for r in rows), "source": "UniProt REST API"}, f, indent=2)
-print(f"Wrote {len(rows)} species-target rows; mapped {sum(r['status']=='mapped' for r in rows)}")
+    queried_at = utc_now()
+    rows=[]
+    retrieval_statuses = {}
+    for organism, taxid in ORGANISMS.items():
+        records, source_url, retrieval_status = fetch_batch(organism, taxid)
+        retrieval_statuses[organism] = retrieval_status
+        print(f"{organism}: {len(records)} candidate records")
+        for target, primary_gene in TARGET_GENES.items():
+            genes = GENE_ALIASES.get((organism, target), [primary_gene])
+            rec, method = choose_record(records, target, genes)
+            if rec is None:
+                missing_status = (
+                    "not_found" if retrieval_status == "retrieved" else retrieval_status
+                )
+                rows.append(blank_row(organism, taxid, target, "/".join(genes), missing_status))
+            else:
+                rows.append({"organism": organism, "taxid": taxid, "target_class": target,
+                             "gene_query": "/".join(genes), "accession": rec.get("Entry", ""),
+                             "protein_id": rec.get("Entry Name", ""), "protein_name": rec.get("Protein names", ""),
+                             "organism_name": rec.get("Organism", ""), "organism_id": rec.get("Organism (ID)", ""),
+                             "gene_names": rec.get("Gene Names", ""), "length": rec.get("Length", ""),
+                             "sequence": rec.get("Sequence", ""), "reviewed": rec.get("Reviewed", ""),
+                             "annotation_score": rec.get("Annotation", ""), "mapping_method": method,
+                             "source_url": source_url, "status": "mapped"})
+        time.sleep(0.25)
+
+    csv_buffer = io.StringIO(newline="")
+    writer = csv.DictWriter(csv_buffer, fieldnames=rows[0].keys())
+    writer.writeheader(); writer.writerows(rows)
+    write_text_exclusive(CONFIG, CSV_OUT, csv_buffer.getvalue())
+    fasta = "".join(
+        f">{row['organism'].replace(' ', '_')}|{row['target_class']}|{row['accession']}\n{row['sequence']}\n"
+        for row in rows
+        if row["sequence"]
+    )
+    write_text_exclusive(CONFIG, FASTA_OUT, fasta)
+    write_text_exclusive(
+        CONFIG,
+        METADATA_OUT,
+        json.dumps(
+            {
+                "organisms": ORGANISMS,
+                "target_genes": TARGET_GENES,
+                "protein_name_terms": PROTEIN_TERMS,
+                "n_rows": len(rows),
+                "n_mapped": sum(r['status']=='mapped' for r in rows),
+                "source": "UniProt REST API",
+                "source_release": UNIPROT_CONFIG["source_release"],
+                "queried_at_utc": queried_at,
+                "retrieval_status_by_organism": retrieval_statuses,
+            },
+            indent=2,
+        ) + "\n",
+    )
+    print(f"Wrote {len(rows)} species-target rows; mapped {sum(r['status']=='mapped' for r in rows)}")
+
+
+if __name__ == "__main__":
+    main()

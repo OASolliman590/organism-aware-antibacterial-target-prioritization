@@ -1,11 +1,21 @@
-"""Fetch public PubChem structures for the ESKAPE benchmark drugs."""
-from pathlib import Path
-import csv, json, time, argparse
+"""Refresh public PubChem benchmark structures into a new dated snapshot."""
+import csv, io, json, time
 import requests
 
-ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / 'data' / 'benchmark'
-OUT.mkdir(parents=True, exist_ok=True)
+try:
+    from pipeline.config import load_config
+    from pipeline.provenance import utc_now
+    from pipeline.snapshots import require_refresh_output, write_text_exclusive
+except ModuleNotFoundError:  # direct ``python pipeline/<script>.py`` execution
+    from config import load_config
+    from provenance import utc_now
+    from snapshots import require_refresh_output, write_text_exclusive
+
+
+CONFIG = load_config()
+CSV_OUT = CONFIG.path_for("benchmark")
+JSON_OUT = CSV_OUT.with_name("eskape_benchmark_sources.json")
+TIMEOUT = int(CONFIG.value("refresh.pubchem.request_timeout_seconds"))
 
 # Target labels are mechanism-level and intentionally conservative.
 # Reference URLs are retained for every row for auditability.
@@ -28,34 +38,49 @@ rows = [
     ('colistin','lipid A / membrane','membrane-active antibiotic','Klebsiella pneumoniae;Acinetobacter baumannii;Escherichia coli;Proteus mirabilis'),
 ]
 
-parser=argparse.ArgumentParser()
-parser.add_argument('--refresh',action='store_true',help='refresh the public PubChem structure cache')
-args=parser.parse_args()
-if (OUT/'eskape_benchmark_drugs.csv').exists() and not args.refresh:
-    print(f'Using cached benchmark structures in {OUT}')
-    raise SystemExit(0)
+def main():
+    # All destinations are validated before the first network request.
+    require_refresh_output(CONFIG, CSV_OUT)
+    require_refresh_output(CONFIG, JSON_OUT)
+    queried_at = utc_now()
+    out=[]
+    for name, target, mechanism, organisms in rows:
+        url = f'https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/{name}/property/CanonicalSMILES,IsomericSMILES,InChIKey/JSON'
+        response = requests.get(url, timeout=TIMEOUT)
+        response.raise_for_status()
+        props = response.json()['PropertyTable']['Properties'][0]
+        out.append({
+            'drug': name,
+            'target_class': target,
+            'mechanism_class': mechanism,
+            'organisms': organisms,
+            'canonical_smiles': props.get('ConnectivitySMILES') or props.get('CanonicalSMILES'),
+            'isomeric_smiles': props.get('SMILES') or props.get('IsomericSMILES'),
+            'inchikey': props.get('InChIKey',''),
+            'pubchem_url': url,
+            'target_label_source': 'Mechanism-level curated label; see benchmark README and primary label sources',
+        })
+        time.sleep(0.25)
 
-out=[]
-for name, target, mechanism, organisms in rows:
-    url = f'https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/{name}/property/CanonicalSMILES,IsomericSMILES,InChIKey/JSON'
-    r = requests.get(url, timeout=45)
-    r.raise_for_status()
-    props = r.json()['PropertyTable']['Properties'][0]
-    out.append({
-        'drug': name,
-        'target_class': target,
-        'mechanism_class': mechanism,
-        'organisms': organisms,
-        'canonical_smiles': props.get('ConnectivitySMILES') or props.get('CanonicalSMILES'),
-        'isomeric_smiles': props.get('SMILES') or props.get('IsomericSMILES'),
-        'inchikey': props.get('InChIKey',''),
-        'pubchem_url': url,
-        'target_label_source': 'Mechanism-level curated label; see benchmark README and primary label sources',
-    })
-    time.sleep(0.25)
+    csv_buffer = io.StringIO(newline="")
+    writer=csv.DictWriter(csv_buffer, fieldnames=out[0].keys())
+    writer.writeheader(); writer.writerows(out)
+    write_text_exclusive(CONFIG, CSV_OUT, csv_buffer.getvalue())
+    write_text_exclusive(
+        CONFIG,
+        JSON_OUT,
+        json.dumps(
+            {
+                'description':'Public PubChem structures with conservative mechanism-level target labels for leakage-aware benchmarking.',
+                'queried_at_utc': queried_at,
+                'source_version': None,
+                'rows':out,
+            },
+            indent=2,
+        ) + "\n",
+    )
+    print(f'Wrote {len(out)} benchmark drugs to {CSV_OUT.parent}')
 
-with open(OUT/'eskape_benchmark_drugs.csv','w',newline='') as f:
-    w=csv.DictWriter(f, fieldnames=out[0].keys()); w.writeheader(); w.writerows(out)
-with open(OUT/'eskape_benchmark_sources.json','w') as f:
-    json.dump({'description':'Public PubChem structures with conservative mechanism-level target labels for leakage-aware benchmarking.','rows':out},f,indent=2)
-print(f'Wrote {len(out)} benchmark drugs to {OUT}')
+
+if __name__ == "__main__":
+    main()

@@ -21,18 +21,18 @@ from rdkit.Chem.MolStandardize import rdMolStandardize
 
 try:
     from pipeline.config import load_config
+    from pipeline.snapshots import require_refresh_output, refresh_snapshot_root, write_text_exclusive
 except ModuleNotFoundError:  # direct ``python pipeline/<script>.py`` execution
     from config import load_config
+    from snapshots import require_refresh_output, refresh_snapshot_root, write_text_exclusive
 
 
 RUN_CONFIG = load_config()
 ROOT = RUN_CONFIG.root
-CONFIG = ROOT / "data" / "chembl_target_aliases_v21.json"
-ONTO = ROOT / "data" / "target_subtype_ontology_v21.csv"
-OUT = ROOT / "data" / "reference_ligands"
-CACHE = ROOT / "data" / "reference_quality" / "chembl_v21_cache"
-OUT.mkdir(parents=True, exist_ok=True)
-CACHE.mkdir(parents=True, exist_ok=True)
+ALIAS_CONFIG = ROOT / "data" / "chembl_target_aliases_v21.json"
+ONTO = RUN_CONFIG.path_for("target_subtype_ontology")
+OUT = RUN_CONFIG.path_for("reference_ligands")
+CACHE = RUN_CONFIG.path_for("chembl_cache")
 BASE = "https://www.ebi.ac.uk/chembl/api/data"
 CHEMBL_CONFIG = RUN_CONFIG.value("refresh.chembl")
 OFFLINE = bool(CHEMBL_CONFIG["offline"])
@@ -65,7 +65,7 @@ def cached_json(path: Path, url: str, params: dict[str, Any] | None = None) -> d
     if path.exists():
         return json.loads(path.read_text())
     data = get_json(url, params)
-    path.write_text(json.dumps(data, indent=2))
+    write_text_exclusive(RUN_CONFIG, path, json.dumps(data, indent=2) + "\n")
     return data
 
 
@@ -197,7 +197,9 @@ def fetch_activities(tid: str) -> list[dict[str, Any]]:
 
 def curate(subtype: str, cfg: dict[str, Any]) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     ids = discover_ids(cfg)
-    (CACHE / f"ids_{subtype}.json").write_text(json.dumps(ids, indent=2))
+    write_text_exclusive(
+        RUN_CONFIG, CACHE / f"ids_{subtype}.json", json.dumps(ids, indent=2) + "\n"
+    )
     rows: list[dict[str, Any]] = []
     for tid in ids:
         meta = target_metadata(tid)
@@ -248,7 +250,19 @@ def curate(subtype: str, cfg: dict[str, Any]) -> tuple[list[dict[str, Any]], lis
 
 
 def main() -> None:
-    cfg = json.loads(CONFIG.read_text())
+    refresh_snapshot_root(RUN_CONFIG)
+    if str(CHEMBL_CONFIG["source_release"]).lower() == "unrecorded":
+        raise RuntimeError(
+            "refresh.chembl.source_release must name the ChEMBL release before refresh"
+        )
+    cfg = json.loads(ALIAS_CONFIG.read_text())
+    output_paths = [
+        OUT / f"ref_ligands_{subtype}.json"
+        for subtype in cfg
+        if not SUBTYPE_FILTER or subtype in SUBTYPE_FILTER
+    ]
+    for output_path in output_paths:
+        require_refresh_output(RUN_CONFIG, output_path)
     manifest = []
     for subtype, spec in cfg.items():
         if SUBTYPE_FILTER and subtype not in SUBTYPE_FILTER:
@@ -257,10 +271,18 @@ def main() -> None:
             curated, raw = curate(subtype, spec)
         except Exception as exc:
             print("FAILED", subtype, repr(exc)); curated, raw = [], []
-        (OUT / f"ref_ligands_{subtype}.json").write_text(json.dumps(curated, indent=2))
+        write_text_exclusive(
+            RUN_CONFIG,
+            OUT / f"ref_ligands_{subtype}.json",
+            json.dumps(curated, indent=2) + "\n",
+        )
         manifest.append({"target_subtype": subtype, "n_curated_ligands": len(curated), "n_raw_qualifying_records": len(raw), "manual_target_ids": spec.get("manual_target_ids", []), "offline": OFFLINE, "min_pchembl": MIN_PCHEMBL})
         print(subtype, "curated", len(curated), "raw", len(raw))
-    (CACHE / "manifest_v21.json").write_text(json.dumps(manifest, indent=2))
+    write_text_exclusive(
+        RUN_CONFIG,
+        CACHE / "manifest_v21.json",
+        json.dumps(manifest, indent=2) + "\n",
+    )
 
 
 if __name__ == "__main__": main()

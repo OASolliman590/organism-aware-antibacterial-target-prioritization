@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "snapshot_id": "v2-public-baseline-2ed4684",
+  "analysis_ready": true,
+  "snapshot_recorded_at": "2026-08-21",
+  "pinned_at_git_commit": "2ed4684",
+  "hash_algorithm": "sha256-tree-v1",
+  "hash_definition": "SHA-256 over sorted project-relative UTF-8 paths, NUL, each file's SHA-256 digest, and LF",
+  "provenance_warning": "This manifest freezes the legacy public files exactly. Source release or acquisition metadata absent from those files remains null and is not inferred from commit dates.",
+  "datasets": {
+    "chembl_reference_ligands": {
+      "source": "ChEMBL",
+      "source_version": null,
+      "acquisition_date": null,
+      "provenance_status": "source_release_and_acquisition_date_unrecorded",
+      "paths": [
+        "data/reference_ligands"
+      ],
+      "sha256": "60d92404d69888bf285386fcebf7006806c1ed9c6252687fe02cc194d177a418",
+      "file_count": 21,
+      "total_bytes": 841275
+    },
+    "reference_quality": {
+      "source": "Derived from the pinned ChEMBL reference-ligand files",
+      "source_version": null,
+      "acquisition_date": null,
+      "provenance_status": "derived_snapshot_pinned; upstream release unrecorded",
+      "paths": [
+        "data/reference_quality/target_reference_quality_v2.csv",
+        "data/reference_quality/reference_ligands_v2.csv",
+        "data/reference_quality/cross_target_decoys_v2.csv"
+      ],
+      "sha256": "fef6450e710278a199eecbc399234a932f6b63b62af1d69658d50a541591ef4c",
+      "file_count": 3,
+      "total_bytes": 1077025
+    },
+    "pubchem_benchmark": {
+      "source": "PubChem PUG REST plus curated mechanism labels",
+      "source_version": null,
+      "acquisition_date": null,
+      "provenance_status": "query_date_unrecorded",
+      "paths": [
+        "data/benchmark"
+      ],
+      "sha256": "16cff6c3150a28b9dcf1f8d4c551b27c0f4569de46bbfcad5c675a5bcb8a9b7d",
+      "file_count": 3,
+      "total_bytes": 23716
+    },
+    "uniprot_species_targets": {
+      "source": "UniProt REST API",
+      "source_version": null,
+      "acquisition_date": null,
+      "provenance_status": "release_and_query_date_unrecorded",
+      "paths": [
+        "data/species_targets"
+      ],
+      "sha256": "c0b73cf99c95a16bd919fbf3f681847f2389c3537e85886fc11744e7d7b7ded2",
+      "file_count": 4,
+      "total_bytes": 248794
+    },
+    "card_derived_annotations": {
+      "source": "CARD data archive",
+      "source_version": "4.0.2",
+      "acquisition_date": null,
+      "provenance_status": "release_recorded_in_rows; acquisition_date_unrecorded",
+      "paths": [
+        "data/resistance_v2"
+      ],
+      "sha256": "e4dad57fcea0ecbefe26c827245852b47e0d4976a7f6bb82a42364446af29399",
+      "file_count": 5,
+      "total_bytes": 2546175
+    },
+    "rcsb_structure_catalog": {
+      "source": "RCSB PDB search and data APIs",
+      "source_version": null,
+      "acquisition_date": null,
+      "provenance_status": "query_date_unrecorded",
+      "paths": [
+        "data/structures_v2"
+      ],
+      "sha256": "b39172ad774543a3673fc63ed20aec041bd3b0cd9071a40e7ed9153574d27373",
+      "file_count": 2,
+      "total_bytes": 8699
+    },
+    "curated_ontologies": {
+      "source": "Repository-curated target ontologies and aliases",
+      "source_version": "git:2ed4684",
+      "acquisition_date": null,
+      "provenance_status": "repository_versioned",
+      "paths": [
+        "data/target_ontology_v2.csv",
+        "data/target_subtype_ontology_v21.csv",
+        "data/chembl_target_aliases_v21.json",
+        "data/target_annotations.csv"
+      ],
+      "sha256": "4c9654ee031b7ca23710ce5504c6fff1be2c8852abf26938c126509ab41bf8b2",
+      "file_count": 4,
+      "total_bytes": 23110
+    }
+  }
+}

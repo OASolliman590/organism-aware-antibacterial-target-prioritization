@@ -57,7 +57,8 @@ def test_configured_runner_emits_a_completed_manifest(
     tmp_path: Path, monkeypatch
 ) -> None:
     config = _temporary_config(tmp_path)
-    monkeypatch.setattr(run_pipeline, "STEPS", [])
+    monkeypatch.setattr(run_pipeline, "ANALYSIS_STEPS", [])
+    monkeypatch.setattr(run_pipeline, "verify_snapshot", lambda unused: {})
 
     run_pipeline.main(["--config", str(config.path)])
 

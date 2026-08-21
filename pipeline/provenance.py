@@ -14,7 +14,10 @@ import subprocess
 import sys
 from typing import Any
 
-from pipeline.config import ProjectConfig
+try:
+    from pipeline.config import ProjectConfig
+except ModuleNotFoundError:  # imported by direct ``python pipeline/<script>.py`` execution
+    from config import ProjectConfig
 
 
 PACKAGE_DISTRIBUTIONS = (

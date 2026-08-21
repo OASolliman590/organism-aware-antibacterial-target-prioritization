@@ -13,9 +13,11 @@ from rdkit.Chem import AllChem, MACCSkeys
 try:
     from pipeline.config import load_config
     from pipeline.open_target_discovery_v2 import chemical_evidence_score
+    from pipeline.snapshots import verify_snapshot
 except ModuleNotFoundError:  # direct ``python pipeline/<script>.py`` execution
     from config import load_config
     from open_target_discovery_v2 import chemical_evidence_score
+    from snapshots import verify_snapshot
 
 
 CONFIG = load_config()
@@ -69,6 +71,8 @@ def class_score(qfp,qmac,items,rng):
     return chemical_evidence_score(float(ef.max()),float(top),float(mc.max()))
 
 def main():
+    if bool(CONFIG.value("snapshots.verify_on_load")):
+        verify_snapshot(CONFIG)
     refs=load_refs(); queries=load_private(); rng=np.random.default_rng(SEED); rows=[]
     for qid,qfp,qmac in queries:
         boot_scores={c:[] for c in refs}

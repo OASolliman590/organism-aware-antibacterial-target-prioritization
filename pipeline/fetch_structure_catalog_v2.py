@@ -4,10 +4,22 @@ Text search hits are marked as candidates, not as validated species-specific str
 A co-crystallized non-solvent ligand is recorded as active-site evidence for future user
 controlled docking. This module does not download or prepare PDB files and does not dock.
 """
-from pathlib import Path
 import time, requests, pandas as pd
 
-ROOT=Path(__file__).resolve().parents[1]; OUT=ROOT/'data'/'structures_v2'; OUT.mkdir(parents=True,exist_ok=True)
+try:
+    from pipeline.config import load_config
+    from pipeline.provenance import utc_now
+    from pipeline.snapshots import require_refresh_output, refresh_snapshot_root, write_text_exclusive
+except ModuleNotFoundError:  # direct ``python pipeline/<script>.py`` execution
+    from config import load_config
+    from provenance import utc_now
+    from snapshots import require_refresh_output, refresh_snapshot_root, write_text_exclusive
+
+
+CONFIG = load_config()
+CANDIDATES_OUT = CONFIG.path_for("structure_candidates")
+SUMMARY_OUT = CONFIG.path_for("structure_summary")
+RCSB_CONFIG = CONFIG.value("refresh.rcsb")
 TERMS={
 'DHFR':'dihydrofolate reductase bacterial','DHPS':'dihydropteroate synthase bacterial','FabI':'enoyl ACP reductase FabI bacterial',
 'FabH':'beta-ketoacyl ACP synthase III FabH','FtsZ':'FtsZ bacterial','GyrB':'DNA gyrase B bacterial ATPase',
@@ -21,21 +33,24 @@ SOLVENT={'HOH','DOD','WAT','SOL','SO4','PO4','CL','NA','K','MG','CA','GOL','EDO'
 
 def search(term):
     payload={'query':{'type':'terminal','service':'full_text','parameters':{'value':term}},'return_type':'entry','request_options':{'paginate':{'start':0,'rows':20},'results_content_type':['experimental']}}
-    r=requests.post('https://search.rcsb.org/rcsbsearch/v2/query',json=payload,timeout=10)
+    r=requests.post('https://search.rcsb.org/rcsbsearch/v2/query',json=payload,timeout=int(RCSB_CONFIG["search_timeout_seconds"]))
     r.raise_for_status(); return [x.get('identifier') for x in r.json().get('result_set',[]) if x.get('identifier')]
 
 def entry(pdb):
-    r=requests.get(f'https://data.rcsb.org/rest/v1/core/entry/{pdb}',timeout=8); r.raise_for_status(); return r.json()
+    r=requests.get(f'https://data.rcsb.org/rest/v1/core/entry/{pdb}',timeout=int(RCSB_CONFIG["entry_timeout_seconds"])); r.raise_for_status(); return r.json()
 
 def main():
+    refresh_snapshot_root(CONFIG)
+    require_refresh_output(CONFIG, CANDIDATES_OUT)
+    require_refresh_output(CONFIG, SUMMARY_OUT)
+    queried_at = utc_now()
     rows=[]
-    out_path=OUT/'rcsb_structure_candidates_v2.csv'
     for cls,term in TERMS.items():
         ids=[]; error=''
         try: ids=search(term)
         except Exception as e: error=repr(e)
-        for pdb in ids[:2]:
-            row={'target_class':cls,'search_term':term,'pdb_id':pdb,'source_url':f'https://www.rcsb.org/structure/{pdb}','search_status':'text_search_candidate','search_error':error}
+        for pdb in ids[:int(RCSB_CONFIG["max_candidates_per_target"])]:
+            row={'target_class':cls,'search_term':term,'pdb_id':pdb,'source_url':f'https://www.rcsb.org/structure/{pdb}','search_status':'text_search_candidate','search_error':error,'snapshot_query_timestamp_utc':queried_at}
             try:
                 d=entry(pdb); info=d.get('rcsb_entry_info',{}); lig_raw=info.get('nonpolymer_bound_components') or []
                 lig=[]
@@ -54,11 +69,10 @@ def main():
                             'structure_metadata_status':'retrieved'})
             except Exception as e: row.update({'structure_metadata_status':'not_retrieved','structure_error':repr(e),'co_crystal_ligand_present':False})
             rows.append(row); time.sleep(.05)
-        # checkpoint after every target class so a remote timeout never loses all progress
-        pd.DataFrame(rows).to_csv(out_path,index=False)
     df=pd.DataFrame(rows)
     summ=df.groupby('target_class').agg(n_search_candidates=('pdb_id','nunique'),n_with_co_crystal_ligand=('co_crystal_ligand_present','sum')).reset_index() if len(df) else pd.DataFrame(columns=['target_class','n_search_candidates','n_with_co_crystal_ligand'])
-    summ.to_csv(OUT/'rcsb_structure_summary_v2.csv',index=False)
+    write_text_exclusive(CONFIG, CANDIDATES_OUT, df.to_csv(index=False,lineterminator="\n"))
+    write_text_exclusive(CONFIG, SUMMARY_OUT, summ.to_csv(index=False,lineterminator="\n"))
     print(summ.to_string(index=False))
 
 if __name__=='__main__': main()

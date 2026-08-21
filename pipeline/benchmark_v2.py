@@ -16,8 +16,10 @@ from rdkit.Chem.Scaffolds.MurckoScaffold import MurckoScaffoldSmiles
 
 try:
     from pipeline.config import load_config
+    from pipeline.snapshots import verify_snapshot
 except ModuleNotFoundError:  # direct ``python pipeline/<script>.py`` execution
     from config import load_config
+    from snapshots import verify_snapshot
 
 
 CONFIG = load_config()
@@ -134,6 +136,8 @@ def summary(metrics):
     return pd.DataFrame(rows)
 
 def main():
+    if bool(CONFIG.value("snapshots.verify_on_load")):
+        verify_snapshot(CONFIG)
     refs=load_refs(); bench=load_bench(); all_rows=[]; query_rows=[]
     for split in V2_BENCHMARK["splits"]:
         for q in bench:

@@ -20,15 +20,22 @@ paths:
   results: results
   cache: .cache/oatp
   reference_ligands: data/reference_ligands
+  chembl_cache: data/reference_quality/chembl_v21_cache
   reference_quality: data/reference_quality/target_reference_quality_v2.csv
   cross_target_decoys: data/reference_quality/cross_target_decoys_v2.csv
+  additional_target_hits: data/additional_target_hits.json
   target_ontology: data/target_ontology_v2.csv
   target_subtype_ontology: data/target_subtype_ontology_v21.csv
   species_compatibility: data/species_targets/species_target_compatibility.csv
+  species_proteins: data/species_targets/species_target_proteins.csv
+  species_fasta: data/species_targets/species_target_proteins.fasta
+  species_metadata: data/species_targets/species_target_fetch_metadata.json
+  card_raw: data/card
   card_resistance_summary: data/resistance_v2/card_resistance_family_summary_v2.csv
   card_snp_summary: data/resistance_v2/card_snp_family_summary_v2.csv
   card_snp_organism_summary: data/resistance_v2/card_snp_organism_family_summary_v2.csv
   structure_summary: data/structures_v2/rcsb_structure_summary_v2.csv
+  structure_candidates: data/structures_v2/rcsb_structure_candidates_v2.csv
   benchmark: data/benchmark/eskape_benchmark_drugs.csv
   benchmark_structures: data/benchmark/benchmark_structures.sdf
   snapshot_manifest: data/snapshots/SNAPSHOT_VERSIONS.json
@@ -114,7 +121,11 @@ refresh:
     max_candidates_per_target: 2
     search_timeout_seconds: 10
     entry_timeout_seconds: 8
+  card:
+    source_version: unrecorded
+    request_timeout_seconds: 60
   uniprot:
+    source_release: unrecorded
     request_timeout_seconds: 60
   pubchem:
     request_timeout_seconds: 45
