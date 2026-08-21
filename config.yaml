@@ -1,0 +1,230 @@
+schema_version: 1
+
+run:
+  seed: 20260817
+  fusion_mode: rank_fusion
+  combiner: heuristic
+  refresh_external_data: false
+  log_level: INFO
+
+seeds:
+  conformer: 20240601
+  bootstrap: 20260817
+  model: 20240601
+  figure_sampling: 7
+  umap: 17
+
+paths:
+  inputs: inputs
+  private_compounds: data/compounds/compounds_normalized.sdf
+  results: results
+  cache: .cache/oatp
+  reference_ligands: data/reference_ligands
+  reference_quality: data/reference_quality/target_reference_quality_v2.csv
+  cross_target_decoys: data/reference_quality/cross_target_decoys_v2.csv
+  target_ontology: data/target_ontology_v2.csv
+  target_subtype_ontology: data/target_subtype_ontology_v21.csv
+  species_compatibility: data/species_targets/species_target_compatibility.csv
+  card_resistance_summary: data/resistance_v2/card_resistance_family_summary_v2.csv
+  card_snp_summary: data/resistance_v2/card_snp_family_summary_v2.csv
+  card_snp_organism_summary: data/resistance_v2/card_snp_organism_family_summary_v2.csv
+  structure_summary: data/structures_v2/rcsb_structure_summary_v2.csv
+  benchmark: data/benchmark/eskape_benchmark_drugs.csv
+  benchmark_structures: data/benchmark/benchmark_structures.sdf
+  snapshot_manifest: data/snapshots/SNAPSHOT_VERSIONS.json
+
+snapshots:
+  snapshot_id: v2-public-baseline-2ed4684
+  verify_on_load: true
+
+organisms:
+  names:
+    - Klebsiella pneumoniae
+    - Bacillus cereus
+    - Escherichia coli
+    - Proteus mirabilis
+    - Acinetobacter baumannii
+    - Staphylococcus aureus
+  aliases:
+    MRSA / Staphylococcus aureus: Staphylococcus aureus
+  gram_negative:
+    - Klebsiella pneumoniae
+    - Escherichia coli
+    - Proteus mirabilis
+    - Acinetobacter baumannii
+  gram_positive:
+    - Bacillus cereus
+    - Staphylococcus aureus
+
+chem2d:
+  fingerprint_radius: 2
+  fingerprint_bits: 2048
+  close_analogue_cutoff: 0.85
+  top_k: 5
+
+chem3d:
+  n_confs: 30
+  prune_rms: 0.5
+  energy_window_kcal: 10.0
+  o3a_shortlist_top: 25
+  cache_dir: .cache/oatp/conformers
+
+fusion:
+  reciprocal_rank_constant: 60.0
+  components:
+    - ecfp4_max
+    - maccs_max
+    - usrcat_max
+    - o3a_shape_tanimoto_max
+    - o3a_color_max
+    - pharmacophore_sim_max
+
+benchmark:
+  splits:
+    - target_family
+    - scaffold
+    - temporal
+  time_cutoff: "2018-01-01"
+  bootstrap_n: 1000
+  decoys: property_matched
+  analogue_exclusion_threshold: 0.85
+  bedroc_alphas:
+    - 20.0
+    - 80.5
+  enrichment_fractions:
+    - 0.01
+    - 0.05
+
+applicability_domain:
+  tanimoto_in: 0.4
+  tanimoto_out: 0.25
+
+refresh:
+  chembl:
+    source_release: unrecorded
+    offline: false
+    discover: true
+    subtype_filter: []
+    min_pchembl: 5.0
+    max_per_subtype: 4000
+    http_timeout_seconds: 30
+    retry_total: 4
+    retry_backoff_seconds: 0.7
+  rcsb:
+    max_candidates_per_target: 2
+    search_timeout_seconds: 10
+    entry_timeout_seconds: 8
+  uniprot:
+    request_timeout_seconds: 60
+  pubchem:
+    request_timeout_seconds: 45
+
+v2_uncertainty:
+  bootstrap_n: 100
+  confidence_downgrade:
+    high_stability_min: 0.55
+    high_decoy_p_max: 0.35
+    moderate_stability_min: 0.35
+    moderate_decoy_p_max: 0.60
+
+v2_benchmark:
+  splits:
+    - close_analogue
+    - scaffold
+  ensemble_weights:
+    ecfp4: 0.6
+    maccs: 0.4
+
+reference_quality:
+  molecular_weight_bins: [0, 250, 350, 450, 600, 800, 10000]
+  max_decoys_per_bin: 25
+  scaffold_grade:
+    minimum_unique: 3
+    maximum_unique: 10
+    ligand_divisor: 5
+
+v2_scoring:
+  chemical:
+    normalization:
+      ecfp4_max: {offset: 0.10, scale: 0.55}
+      ecfp4_top5_mean: {offset: 0.08, scale: 0.45}
+      maccs_max: {offset: 0.10, scale: 0.70}
+    weights:
+      ecfp4_max: 0.50
+      ecfp4_top5_mean: 0.25
+      maccs_max: 0.15
+  specificity:
+    baseline: 0.50
+    margin_weight: 0.50
+    margin_scale: 0.25
+  context:
+    card_model_weight: 0.50
+    card_snp_weight: 0.50
+    pocket_with_cocrystal: 1.0
+    pocket_with_structure: 0.60
+    pocket_missing: 0.0
+    resistance_burden_discount: 0.50
+  uncertainty_reasons:
+    weak_transfer_below: 0.50
+    weak_specificity_below: 0.50
+    anti_target_at_least: 0.50
+  reference_quality:
+    A: 1.0
+    B: 0.85
+    C: 0.60
+    D: 0.25
+    usable: 1.0
+    moderate_redundancy: 0.85
+    low: 0.60
+    insufficient: 0.0
+  clinical:
+    approved: 1.0
+    clinical: 0.75
+    validated: 0.65
+    preclinical: 0.40
+    default: 0.20
+  ordinal:
+    high: 1.0
+    medium: 0.65
+    variable: 0.45
+    low: 0.30
+    default: 0.45
+  accessibility:
+    cytosolic: 0.70
+    periplasmic: 0.90
+    outer_membrane: 0.55
+    membrane: 0.45
+    extracellular_or_periplasmic: 0.85
+    default: 0.50
+  organism_scope:
+    incompatible_pbp2a: 0.05
+    exact_or_group_match: 1.0
+    broad_bacterial: 0.85
+    default: 0.25
+  anti_target:
+    high: 0.75
+    medium: 0.50
+    default: 0.10
+  biology_weights:
+    organism_scope: 0.25
+    clinical: 0.20
+    essentiality: 0.20
+    accessibility: 0.15
+    resistance: 0.10
+    card_context: 0.10
+  clinical_translation_weights:
+    clinical: 0.25
+    organism_scope: 0.20
+    essentiality: 0.20
+    accessibility: 0.15
+    pocket: 0.10
+    resistance_or_card: 0.10
+  overall_factors:
+    transfer: {base: 0.65, weight: 0.35}
+    pocket: {base: 0.75, weight: 0.25}
+    biology: {base: 0.50, weight: 0.50}
+    anti_target_penalty: 0.20
+  confidence:
+    high: {overall_min: 0.50, chemical_quality_min: 0.45, transfer_min: 0.70}
+    moderate: {overall_min: 0.25, chemical_quality_min: 0.25}
+    low_chemical_min: 0.20

@@ -4,26 +4,40 @@ These are uncertainty/stability measures, not probabilities of target binding. B
 sampling quantifies dependence on the public reference set; decoy p-values quantify
 whether the target class is more similar than unrelated public target classes.
 """
-from pathlib import Path
-import os, json
+import json
 import numpy as np
 import pandas as pd
 from rdkit import Chem, DataStructs
 from rdkit.Chem import AllChem, MACCSkeys
 
-ROOT=Path(os.environ.get('PROJECT_ROOT',Path(__file__).resolve().parents[1]))
-REF=ROOT/'data'/'reference_ligands'; RES=ROOT/'results'
-N_BOOT=100; SEED=20260817
+try:
+    from pipeline.config import load_config
+    from pipeline.open_target_discovery_v2 import chemical_evidence_score
+except ModuleNotFoundError:  # direct ``python pipeline/<script>.py`` execution
+    from config import load_config
+    from open_target_discovery_v2 import chemical_evidence_score
+
+
+CONFIG = load_config()
+ROOT = CONFIG.root
+REF = CONFIG.path_for("reference_ligands")
+RES = CONFIG.path_for("results")
+PRIVATE_COMPOUNDS = CONFIG.path_for("private_compounds")
+CHEM2D = CONFIG.value("chem2d")
+N_BOOT = int(CONFIG.value("v2_uncertainty.bootstrap_n"))
+SEED = int(CONFIG.value("seeds.bootstrap"))
+DOWNGRADE = CONFIG.value("v2_uncertainty.confidence_downgrade")
 
 def mol(s):
     m=Chem.MolFromSmiles(str(s)) if s and str(s)!='nan' else None
     return Chem.RemoveHs(m) if m else None
-def fp(m): return AllChem.GetMorganGenerator(radius=2,fpSize=2048).GetFingerprint(m)
+def fp(m):
+    return AllChem.GetMorganGenerator(
+        radius=int(CHEM2D["fingerprint_radius"]),
+        fpSize=int(CHEM2D["fingerprint_bits"]),
+    ).GetFingerprint(m)
 def maccs(m): return MACCSkeys.GenMACCSKeys(m)
 def sim(a,b): return float(DataStructs.TanimotoSimilarity(a,b))
-def chem_score(ecfp_max,top5,maccs_max):
-    return float(np.clip(.50*np.clip((ecfp_max-.10)/.55,0,1)+.25*np.clip((top5-.08)/.45,0,1)+.15*np.clip((maccs_max-.10)/.70,0,1),0,1))
-
 def load_refs():
     refs={}
     for p in sorted(REF.glob('ref_ligands_*.json')):
@@ -39,7 +53,7 @@ def load_refs():
     return refs
 
 def load_private():
-    out=[]; path=ROOT/'data'/'compounds'/'compounds_normalized.sdf'
+    out=[]; path=PRIVATE_COMPOUNDS
     if not path.exists(): return out
     for m in Chem.SDMolSupplier(str(path),removeHs=True):
         if m is None: continue
@@ -51,8 +65,8 @@ def class_score(qfp,qmac,items,rng):
     if not items: return 0.0
     idx=rng.integers(0,len(items),size=len(items))
     ef=np.array([sim(qfp,items[i][0]) for i in idx]); mc=np.array([sim(qmac,items[i][1]) for i in idx])
-    order=np.argsort(-ef); top=ef[order[:min(5,len(ef))]].mean()
-    return chem_score(float(ef.max()),float(top),float(mc.max()))
+    order=np.argsort(-ef); top=ef[order[:min(int(CHEM2D["top_k"]),len(ef))]].mean()
+    return chemical_evidence_score(float(ef.max()),float(top),float(mc.max()))
 
 def main():
     refs=load_refs(); queries=load_private(); rng=np.random.default_rng(SEED); rows=[]
@@ -84,8 +98,8 @@ def main():
             old=row.get('confidence_class','Insufficient')
             st=row.get('bootstrap_stability_score',0); p=row.get('empirical_decoy_p_value',1)
             if pd.isna(st): return old
-            if old=='High' and (st<.55 or p>.35): return 'Moderate'
-            if old=='Moderate' and (st<.35 or p>.60): return 'Low'
+            if old=='High' and (st<float(DOWNGRADE["high_stability_min"]) or p>float(DOWNGRADE["high_decoy_p_max"])): return 'Moderate'
+            if old=='Moderate' and (st<float(DOWNGRADE["moderate_stability_min"]) or p>float(DOWNGRADE["moderate_decoy_p_max"])): return 'Low'
             return old
         ranked['confidence_class_calibrated']=ranked.apply(recal,axis=1)
         ranked['calibration_note']='Confidence downgraded when bootstrap target ranking was unstable or empirical decoy specificity was weak; not a binding probability.'

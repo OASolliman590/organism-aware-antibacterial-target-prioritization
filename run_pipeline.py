@@ -1,24 +1,20 @@
-"""Run the v2 open-target-discovery workflow.
+"""Run the configured open-target-discovery workflow.
 
 Private structures are optional and are read only from local ignored paths.
-Public benchmark/reference/annotation modules remain reproducible without private
-inputs when their public data are available.
+Public benchmark/reference/annotation modules use paths declared in config.yaml.
 """
+from __future__ import annotations
+
+import argparse
 from pathlib import Path
 import os
 import subprocess
 import sys
 
-ROOT = Path(os.environ.get('PROJECT_ROOT', Path(__file__).resolve().parent))
-os.environ.setdefault('PROJECT_ROOT', str(ROOT))
-os.environ.setdefault('INPUT_DIR', str(ROOT / 'inputs'))
+from pipeline.config import ProjectConfig, load_config, set_global_seed
 
-def run(rel):
-    step=ROOT/rel
-    print(f'\n=== {step.name} ===',flush=True)
-    subprocess.run([sys.executable,str(step)],check=True,cwd=ROOT,env=os.environ.copy())
 
-steps=[
+STEPS = [
     'pipeline/fetch_benchmark_structures.py',
     'pipeline/fetch_chembl_reference_subtypes_v21.py',
     'pipeline/build_reference_quality.py',
@@ -35,6 +31,53 @@ steps=[
     'pipeline/v2_figures.py',
     'pipeline/summarize_v2.py',
 ]
-for rel in steps:
-    if (ROOT/rel).exists(): run(rel)
-print('\nV2.1 open-target-discovery pipeline completed. See results/ for local outputs and data/ for public annotations.')
+
+
+def child_environment(config: ProjectConfig) -> dict[str, str]:
+    """Pass one config path; legacy variables carry paths only, never parameters."""
+
+    env = os.environ.copy()
+    env["OATP_CONFIG"] = str(config.path)
+    env["PROJECT_ROOT"] = str(config.root)
+    env["INPUT_DIR"] = str(config.path_for("inputs"))
+    return env
+
+
+def run_step(relative_path: str, *, config: ProjectConfig) -> None:
+    step = config.root / relative_path
+    print(f"\n=== {step.name} ===", flush=True)
+    subprocess.run(
+        [sys.executable, str(step)],
+        check=True,
+        cwd=config.root,
+        env=child_environment(config),
+    )
+
+
+def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--config",
+        type=Path,
+        default=None,
+        help="Single YAML run configuration (default: config.yaml)",
+    )
+    return parser.parse_args(argv)
+
+
+def main(argv: list[str] | None = None) -> None:
+    args = parse_args(argv)
+    config = load_config(args.config)
+    set_global_seed(config)
+    for relative_path in STEPS:
+        if (config.root / relative_path).exists():
+            run_step(relative_path, config=config)
+    print(
+        "\nConfigured open-target-discovery pipeline completed. "
+        f"Snapshot: {config.value('snapshots.snapshot_id')}. "
+        f"See {config.path_for('results')} for outputs."
+    )
+
+
+if __name__ == "__main__":
+    main()

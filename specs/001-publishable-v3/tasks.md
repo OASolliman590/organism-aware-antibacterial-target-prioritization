@@ -4,7 +4,7 @@ Rules: obey `memory/constitution.md`. Each task lists acceptance criteria. Do no
 phase's tasks pass. Never fabricate data (constitution I). Report negative results honestly (constitution III).
 
 ## Phase 0 — Reproducibility spine (do first)
-- [ ] **T0.1** Add `pipeline/config.py` + `config.yaml` (keys per plan §4). All thresholds/seeds/paths read from
+- [x] **T0.1** Add `pipeline/config.py` + `config.yaml` (keys per plan §4). All thresholds/seeds/paths read from
       config; remove reliance on ad-hoc env vars for scientific params. **AC:** engine runs from a single config; no
       scientific constant is hard-coded in two places.
 - [ ] **T0.2** Add `pipeline/provenance.py` emitting `results/run_manifest.json` (data snapshot versions, git commit,

@@ -4,7 +4,6 @@ Positive ChEMBL records are kept separate from negative evidence. Cross-target
 molecules are labelled as *decoys* and are never treated as experimentally inactive;
 this prevents a common but serious target-prediction error.
 """
-from pathlib import Path
 import json, re
 import numpy as np
 import pandas as pd
@@ -12,11 +11,20 @@ from rdkit import Chem
 from rdkit.Chem import Descriptors, Lipinski
 from rdkit.Chem.Scaffolds import MurckoScaffold
 
-ROOT=Path(__file__).resolve().parents[1]
-REF=ROOT/'data'/'reference_ligands'
-ONTO=ROOT/'data'/'target_ontology_v2.csv'
-ONTO_SUB=ROOT/'data'/'target_subtype_ontology_v21.csv'
-OUT=ROOT/'data'/'reference_quality'
+try:
+    from pipeline.config import load_config
+except ModuleNotFoundError:  # direct ``python pipeline/<script>.py`` execution
+    from config import load_config
+
+
+CONFIG = load_config()
+ROOT = CONFIG.root
+REF = CONFIG.path_for("reference_ligands")
+ONTO = CONFIG.path_for("target_ontology")
+ONTO_SUB = CONFIG.path_for("target_subtype_ontology")
+OUT = CONFIG.path_for("reference_quality").parent
+SEED = int(CONFIG.value("run.seed"))
+QUALITY_CONFIG = CONFIG.value("reference_quality")
 OUT.mkdir(parents=True,exist_ok=True)
 
 ontology=pd.read_csv(ONTO)
@@ -56,7 +64,13 @@ for _,ann in ontology.iterrows():
     min_ref=float(ann.min_reference_ligands)
     if n==0: grade='insufficient'
     elif n < min_ref: grade='low'
-    elif n_scaf < max(3,min(10,n//5)): grade='moderate_redundancy'
+    elif n_scaf < max(
+        int(QUALITY_CONFIG["scaffold_grade"]["minimum_unique"]),
+        min(
+            int(QUALITY_CONFIG["scaffold_grade"]["maximum_unique"]),
+            n//int(QUALITY_CONFIG["scaffold_grade"]["ligand_divisor"]),
+        ),
+    ): grade='moderate_redundancy'
     else: grade='usable'
     rows.append({
         'target_class':target,'n_valid_ligands':n,'n_unique_scaffolds':n_scaf,
@@ -73,18 +87,18 @@ quality.to_csv(OUT/'target_reference_quality_v2.csv',index=False)
 
 # Decoys are sampled from public ligands assigned to other classes, matched only by
 # coarse molecular-weight bins. They are labelled decoys, not inactive measurements.
-rng=np.random.default_rng(20260817)
 decoy_rows=[]
+mw_bins = QUALITY_CONFIG["molecular_weight_bins"]
 for target in sorted(refs.reference_class.unique()):
     pos=refs[refs.reference_class==target]
     pool=refs[refs.reference_class!=target].copy()
     if len(pos)==0 or len(pool)==0: continue
-    pos_bins=pd.cut(pos.mw,bins=[0,250,350,450,600,800,10000],include_lowest=True)
+    pos_bins=pd.cut(pos.mw,bins=mw_bins,include_lowest=True)
     for bin_value,group in pos.groupby(pos_bins,observed=True):
-        candidates=pool[pd.cut(pool.mw,bins=[0,250,350,450,600,800,10000],include_lowest=True)==bin_value]
+        candidates=pool[pd.cut(pool.mw,bins=mw_bins,include_lowest=True)==bin_value]
         if len(candidates)==0: continue
-        n=min(len(group),len(candidates),25)
-        pick=candidates.sample(n=n,random_state=20260817+len(decoy_rows))
+        n=min(len(group),len(candidates),int(QUALITY_CONFIG["max_decoys_per_bin"]))
+        pick=candidates.sample(n=n,random_state=SEED+len(decoy_rows))
         for _,r in pick.iterrows():
             decoy_rows.append({'query_target_class':target,'decoy_reference_class':r.reference_class,
                                'molecule_chembl_id':r.get('molecule_chembl_id',''),'canonical_smiles':r.canonical_smiles_rdkit,

@@ -1,12 +1,19 @@
-from pathlib import Path
-import os
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-from pathlib import Path
+try:
+    from pipeline.config import load_config
+except ModuleNotFoundError:  # direct ``python pipeline/<script>.py`` execution
+    from config import load_config
 
-ROOT=Path(os.environ.get('PROJECT_ROOT',Path(__file__).resolve().parents[1])); RES=ROOT/'results'; FIG=RES/'figures_v2'; FIG.mkdir(parents=True,exist_ok=True)
+
+CONFIG = load_config()
+ROOT = CONFIG.root
+RES = CONFIG.path_for("results")
+FIG=RES/'figures_v2'; FIG.mkdir(parents=True,exist_ok=True)
+FIGURE_SAMPLE_SEED = int(CONFIG.value("seeds.figure_sampling"))
+SPECIES_COMPATIBILITY = CONFIG.path_for("species_compatibility")
 sns.set_theme(style='whitegrid',context='talk')
 
 
@@ -29,18 +36,18 @@ def main():
     c=pd.crosstab(df.organism,df.confidence_class).reindex(columns=['High','Moderate','Low','Insufficient'],fill_value=0)
     c.plot(kind='bar',stacked=True,figsize=(16,7),color=['#16a34a','#eab308','#f97316','#9ca3af']); plt.ylabel('Number of compound-target hypotheses'); plt.xlabel('Organism'); plt.xticks(rotation=35,ha='right'); plt.legend(title='Confidence'); savefig('v2_confidence_by_organism.png')
     # Sequence transfer heatmap, deduplicated target classes.
-    if (ROOT/'data/species_targets/species_target_compatibility.csv').exists():
-        s=pd.read_csv(ROOT/'data/species_targets/species_target_compatibility.csv'); s['species_transfer_score']=pd.to_numeric(s.species_transfer_score,errors='coerce').fillna(0)
+    if SPECIES_COMPATIBILITY.exists():
+        s=pd.read_csv(SPECIES_COMPATIBILITY); s['species_transfer_score']=pd.to_numeric(s.species_transfer_score,errors='coerce').fillna(0)
         sm=s.pivot_table(index='organism',columns='target_class',values='species_transfer_score',aggfunc='max',fill_value=0)
         plt.figure(figsize=(18,7)); sns.heatmap(sm,cmap='viridis',vmin=0,vmax=1,cbar_kws={'label':'Species transfer score'}); plt.xlabel('Target class'); plt.ylabel('Organism'); plt.xticks(rotation=60,ha='right'); savefig('v2_species_transfer_heatmap.png')
     # Resistance/pocket context.
     ctx=df.groupby('target_class').agg(card_models=('card_model_count','max'),card_snp_rows=('card_snp_row_count','max'),co_crystal=('rcsb_co_crystal_ligand_count','max'),structure_candidates=('rcsb_structure_candidate_count','max')).sort_values('card_snp_rows',ascending=False).head(20)
     ax=ctx[['card_snp_rows','card_models','co_crystal']].plot(kind='bar',figsize=(18,7),logy=True,color=['#dc2626','#2563eb','#f59e0b']); ax.set_ylabel('Count (log scale)'); ax.set_xlabel('Target class'); plt.xticks(rotation=60,ha='right'); plt.legend(['CARD SNP rows','CARD models','RCSB co-crystal entries']); savefig('v2_resistance_structure_context.png')
     # Uncertainty: chemical quality vs calibrated overall score, colored by confidence.
-    plt.figure(figsize=(11,8)); sns.scatterplot(data=df.sample(min(3000,len(df)),random_state=7),x='chemical_quality_adjusted_score',y='overall_priority_score',hue='confidence_class',style='organism',alpha=.65); plt.xlabel('Quality-adjusted chemical evidence'); plt.ylabel('Overall priority'); plt.title('Chemical evidence versus organism-aware priority'); savefig('v2_uncertainty_priority_scatter.png')
+    plt.figure(figsize=(11,8)); sns.scatterplot(data=df.sample(min(3000,len(df)),random_state=FIGURE_SAMPLE_SEED),x='chemical_quality_adjusted_score',y='overall_priority_score',hue='confidence_class',style='organism',alpha=.65); plt.xlabel('Quality-adjusted chemical evidence'); plt.ylabel('Overall priority'); plt.title('Chemical evidence versus organism-aware priority'); savefig('v2_uncertainty_priority_scatter.png')
     # v2.1 parallel chemical-versus-clinical-translational diagnostic.
     if {'chemical_hypothesis_score','clinical_translation_score'}.issubset(df.columns):
-        plt.figure(figsize=(12,8)); sns.scatterplot(data=df.sample(min(3000,len(df)),random_state=7),x='chemical_hypothesis_score',y='clinical_translation_score',hue='confidence_class',style='organism',alpha=.65)
+        plt.figure(figsize=(12,8)); sns.scatterplot(data=df.sample(min(3000,len(df)),random_state=FIGURE_SAMPLE_SEED),x='chemical_hypothesis_score',y='clinical_translation_score',hue='confidence_class',style='organism',alpha=.65)
         plt.xlim(0,1); plt.ylim(0,1); plt.xlabel('Chemical hypothesis score'); plt.ylabel('Clinical-translational score'); plt.title('v2.1: chemical compatibility versus clinical translation'); savefig('v21_chemical_vs_clinical_translation.png')
         hm=df.groupby(['organism','target_class'])['clinical_translation_score'].mean().unstack(fill_value=0)
         plt.figure(figsize=(18,7)); sns.heatmap(hm,cmap='crest',vmin=0,vmax=1,cbar_kws={'label':'Mean clinical-translational score'}); plt.xlabel('Target class / subtype'); plt.ylabel('Bacterial organism'); plt.xticks(rotation=60,ha='right'); savefig('v21_clinical_translation_heatmap.png')

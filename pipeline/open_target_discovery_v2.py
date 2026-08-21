@@ -5,34 +5,48 @@ priority, anti-target risk, and overall prioritization as separate auditable fie
 Cross-target molecules are decoys for specificity analysis only; they are not called
 experimentally inactive.
 """
-from pathlib import Path
-import os, json, math
+import json
 import numpy as np
 import pandas as pd
 from rdkit import Chem, DataStructs
 from rdkit.Chem import AllChem, MACCSkeys
 
-ROOT=Path(os.environ.get('PROJECT_ROOT',Path(__file__).resolve().parents[1]))
-REF=ROOT/'data'/'reference_ligands'
-ONTO=ROOT/'data'/'target_ontology_v2.csv'
-ONTO_SUB=ROOT/'data'/'target_subtype_ontology_v21.csv'
-QUALITY=ROOT/'data'/'reference_quality'/'target_reference_quality_v2.csv'
-COMPAT=ROOT/'data'/'species_targets'/'species_target_compatibility.csv'
-CARD_SUM=ROOT/'data'/'resistance_v2'/'card_resistance_family_summary_v2.csv'
-CARD_SNP=ROOT/'data'/'resistance_v2'/'card_snp_family_summary_v2.csv'
-CARD_SNP_ORG=ROOT/'data'/'resistance_v2'/'card_snp_organism_family_summary_v2.csv'
-STRUCT_SUM=ROOT/'data'/'structures_v2'/'rcsb_structure_summary_v2.csv'
+try:
+    from pipeline.config import load_config
+except ModuleNotFoundError:  # direct ``python pipeline/<script>.py`` execution
+    from config import load_config
+
+
+CONFIG = load_config()
+ROOT = CONFIG.root
+REF = CONFIG.path_for("reference_ligands")
+ONTO = CONFIG.path_for("target_ontology")
+ONTO_SUB = CONFIG.path_for("target_subtype_ontology")
+QUALITY = CONFIG.path_for("reference_quality")
+COMPAT = CONFIG.path_for("species_compatibility")
+CARD_SUM = CONFIG.path_for("card_resistance_summary")
+CARD_SNP = CONFIG.path_for("card_snp_summary")
+CARD_SNP_ORG = CONFIG.path_for("card_snp_organism_summary")
+STRUCT_SUM = CONFIG.path_for("structure_summary")
 ANN_OLD=ROOT/'data'/'target_annotations.csv'
-BENCH=ROOT/'data'/'benchmark'/'eskape_benchmark_drugs.csv'
-RES=ROOT/'results'; RES.mkdir(exist_ok=True)
+BENCH = CONFIG.path_for("benchmark")
+BENCH_STRUCTURES = CONFIG.path_for("benchmark_structures")
+PRIVATE_COMPOUNDS = CONFIG.path_for("private_compounds")
+RES = CONFIG.path_for("results"); RES.mkdir(parents=True, exist_ok=True)
 
-ORGANISMS=['Klebsiella pneumoniae','Bacillus cereus','Escherichia coli','Proteus mirabilis','Acinetobacter baumannii','Staphylococcus aureus']
-ORGANISM_ALIASES={'MRSA / Staphylococcus aureus':'Staphylococcus aureus'}
-GRAM_NEG={'Klebsiella pneumoniae','Escherichia coli','Proteus mirabilis','Acinetobacter baumannii'}
-GRAM_POS={'Bacillus cereus','Staphylococcus aureus'}
+ORGANISMS = list(CONFIG.value("organisms.names"))
+ORGANISM_ALIASES = dict(CONFIG.value("organisms.aliases"))
+GRAM_NEG = set(CONFIG.value("organisms.gram_negative"))
+GRAM_POS = set(CONFIG.value("organisms.gram_positive"))
+CHEM2D = CONFIG.value("chem2d")
+V2_SCORING = CONFIG.value("v2_scoring")
 
 
-def fp(m): return AllChem.GetMorganGenerator(radius=2,fpSize=2048).GetFingerprint(m)
+def fp(m):
+    return AllChem.GetMorganGenerator(
+        radius=int(CHEM2D["fingerprint_radius"]),
+        fpSize=int(CHEM2D["fingerprint_bits"]),
+    ).GetFingerprint(m)
 def maccs(m): return MACCSkeys.GenMACCSKeys(m)
 def sim(a,b): return float(DataStructs.TanimotoSimilarity(a,b))
 def mol(s):
@@ -84,38 +98,45 @@ def parent_class(target, ann):
 
 
 def quality_score(grade):
-    return {'A':1.0,'B':0.85,'C':0.60,'D':0.25,'usable':1.0,'moderate_redundancy':0.85,'low':0.60,'insufficient':0.0}.get(str(grade),0.0)
+    return float(V2_SCORING["reference_quality"].get(str(grade), 0.0))
 
 def clinical_value(x):
     x=str(x).lower()
-    if 'approved' in x: return 1.0
-    if 'clinical' in x: return .75
-    if 'validated' in x: return .65
-    if 'preclinical' in x: return .40
-    return .20
+    values = V2_SCORING["clinical"]
+    if 'approved' in x: return float(values["approved"])
+    if 'clinical' in x: return float(values["clinical"])
+    if 'validated' in x: return float(values["validated"])
+    if 'preclinical' in x: return float(values["preclinical"])
+    return float(values["default"])
 
-def ordinal(x): return {'high':1.0,'medium':.65,'variable':.45,'low':.30}.get(str(x).lower(),.45)
+def ordinal(x):
+    values = V2_SCORING["ordinal"]
+    return float(values.get(str(x).lower(), values["default"]))
 
-def access_value(x): return {'cytosolic':.70,'periplasmic':.90,'outer_membrane':.55,'membrane':.45,'extracellular_or_periplasmic':.85}.get(str(x).lower(),.50)
+def access_value(x):
+    values = V2_SCORING["accessibility"]
+    return float(values.get(str(x).lower(), values["default"]))
 
 def scope_score(scope,org,target):
+    values = V2_SCORING["organism_scope"]
     s=str(scope).lower()
-    if target=='PBP2a' and org!='Staphylococcus aureus': return 0.05
-    if 'mrsa' in s and org=='Staphylococcus aureus': return 1.0
-    if 'gram-negative' in s and org in GRAM_NEG: return 1.0
-    if 'gram-positive' in s and org in GRAM_POS: return 1.0
-    if 'broad' in s or 'bacteria' in s: return .85
-    if 'staphylococci' in s and org=='Staphylococcus aureus': return 1.0
-    if org in s: return 1.0
-    return .25
+    if target=='PBP2a' and org!='Staphylococcus aureus': return float(values["incompatible_pbp2a"])
+    if 'mrsa' in s and org=='Staphylococcus aureus': return float(values["exact_or_group_match"])
+    if 'gram-negative' in s and org in GRAM_NEG: return float(values["exact_or_group_match"])
+    if 'gram-positive' in s and org in GRAM_POS: return float(values["exact_or_group_match"])
+    if 'broad' in s or 'bacteria' in s: return float(values["broad_bacterial"])
+    if 'staphylococci' in s and org=='Staphylococcus aureus': return float(values["exact_or_group_match"])
+    if org in s: return float(values["exact_or_group_match"])
+    return float(values["default"])
 
 def anti_target_annotation(target):
     # Annotation-only risk prior; no claim of measured human off-target activity.
+    values = V2_SCORING["anti_target"]
     high={'DHFR':('human DHFR homolog; inspect selectivity','high'),'LeuRS':('human LARS homolog; inspect selectivity','high'),'70S_ribosome':('mitochondrial translation selectivity','medium'),'30S_ribosome':('mitochondrial translation selectivity','medium'),'50S_ribosome':('mitochondrial translation selectivity','medium')}
     if target.startswith('30S_') or target.startswith('50S_'):
-        return (0.50,'mitochondrial translation selectivity; annotation-only risk','annotation_only')
-    if target in high: note,r=high[target]; return (0.75 if r=='high' else 0.50,note,'annotation_only')
-    return (0.10,'no direct human orthologue risk assigned in ontology; safety remains untested','annotation_only')
+        return (float(values["medium"]),'mitochondrial translation selectivity; annotation-only risk','annotation_only')
+    if target in high: note,r=high[target]; return (float(values[r]),note,'annotation_only')
+    return (float(values["default"]),'no direct human orthologue risk assigned in ontology; safety remains untested','annotation_only')
 
 def validation_plan(target,role):
     direct={'GyrB','TopoIV','FtsZ','DHFR','FabI','FabH','MurA','MurC','MurE','LpxA','LpxC','LpxH','RpoB','LeuRS','PBP','PBP2a','PBP1A','PBP1B','PBP2','PBP2B','PBP2X','PBP3','PBP4'}
@@ -127,7 +148,38 @@ def validation_plan(target,role):
         return 'target-complex binding or biochemical translation assay; cell-based target-dependence experiment'
     return 'phenotypic assay followed by mechanism-specific orthogonal validation'
 
-def score_query(q,refs,quality,compat,ontology,exclude_close=False,cutoff=.85):
+def chemical_evidence_score(ecfp4_max, ecfp4_top5_mean, maccs_max):
+    """Compute the legacy v2 ranking score from declarative parameters."""
+    chemical = V2_SCORING["chemical"]
+    normalization = chemical["normalization"]
+    weights = chemical["weights"]
+    values = {
+        "ecfp4_max": ecfp4_max,
+        "ecfp4_top5_mean": ecfp4_top5_mean,
+        "maccs_max": maccs_max,
+    }
+    components = {
+        name: np.clip(
+            (float(values[name]) - float(params["offset"]))
+            / float(params["scale"]),
+            0,
+            1,
+        )
+        for name, params in normalization.items()
+    }
+    return float(
+        np.clip(
+            sum(float(weights[name]) * components[name] for name in weights),
+            0,
+            1,
+        )
+    )
+
+
+def score_query(q,refs,quality,compat,ontology,exclude_close=False,cutoff=None):
+    cutoff = (
+        float(CHEM2D["close_analogue_cutoff"]) if cutoff is None else float(cutoff)
+    )
     rows=[]
     for cls,rs in refs.items():
         kept=[]; excluded=0
@@ -136,7 +188,7 @@ def score_query(q,refs,quality,compat,ontology,exclude_close=False,cutoff=.85):
             else: kept.append(r)
         if not kept: continue
         e=np.array([sim(q['fp'],r['_fp']) for r in kept]); k=np.array([sim(q['maccs'],r['_maccs']) for r in kept])
-        order=np.argsort(-e); topn=min(5,len(e)); best=kept[int(order[0])]
+        order=np.argsort(-e); topn=min(int(CHEM2D["top_k"]),len(e)); best=kept[int(order[0])]
         # Cross-target molecules are decoys for specificity only.
         other=[]
         for other_cls,other_rs in refs.items():
@@ -147,9 +199,16 @@ def score_query(q,refs,quality,compat,ontology,exclude_close=False,cutoff=.85):
         qrow=quality[quality.target_class==cls]
         if len(qrow): qr=qrow.iloc[0]; qscore=quality_score(qr.quality_grade); nref=int(qr.n_valid_ligands); nscaf=int(qr.n_unique_scaffolds); grade=qr.quality_grade
         else: qscore=0.0; nref=len(kept); nscaf=0; grade='insufficient'
-        ec=(float(e[order[0]])-.10)/.55; top=(float(e[order[:topn]].mean())-.08)/.45; mc=(float(k.max())-.10)/.70
-        chem=float(np.clip(.50*np.clip(ec,0,1)+.25*np.clip(top,0,1)+.15*np.clip(mc,0,1),0,1))
-        specificity=float(np.clip(.5+.5*margin/.25,0,1))
+        chem=chemical_evidence_score(float(e[order[0]]),float(e[order[:topn]].mean()),float(k.max()))
+        specificity_config = V2_SCORING["specificity"]
+        specificity=float(np.clip(
+            float(specificity_config["baseline"])
+            + float(specificity_config["margin_weight"])
+            * margin
+            / float(specificity_config["margin_scale"]),
+            0,
+            1,
+        ))
         chem_quality=float(chem*qscore*specificity)
         rows.append({'query_id':q['query_id'],'source':q['source'],'target_class':cls,
                      'ecfp4_max':float(e[order[0]]),'ecfp4_top5_mean':float(e[order[:topn]].mean()),'maccs_max':float(k.max()),
@@ -207,30 +266,74 @@ def apply_biology(raw,ontology,compat,card_summary=None,snp_summary=None,snp_org
             if snp_org is not None and resistance_family:
                 z=snp_org[(snp_org.resistance_family==resistance_family)&(snp_org.organism.str.contains(org.split()[0],case=False,na=False))]
                 org_snp_rows=int(z.n_snp_rows.sum()) if len(z) else 0
-            card_context=float(np.clip(.50*(1 if card_models else 0)+.50*(1 if snp_rows else 0),0,1))
+            context = V2_SCORING["context"]
+            card_context=float(np.clip(
+                float(context["card_model_weight"])*(1 if card_models else 0)
+                +float(context["card_snp_weight"])*(1 if snp_rows else 0),0,1))
             if struct_summary is not None:
                 z=struct_summary[struct_summary.target_class==r.target_class]
                 if z.empty and parent != r.target_class: z=struct_summary[struct_summary.target_class==parent]
                 struct_candidates=int(z.n_search_candidates.iloc[0]) if len(z) else 0; co_crystal=int(z.n_with_co_crystal_ligand.iloc[0]) if len(z) else 0
             else: struct_candidates=0; co_crystal=0
-            pocket=float(1.0 if co_crystal else .60 if struct_candidates else 0.0)
-            biological=.25*scope+.20*clinical+.20*essential+.15*access+.10*resistance+.10*card_context
-            resistance_burden=float(np.clip(.50*(1 if card_models else 0)+.50*(1 if snp_rows else 0),0,1))
+            pocket=float(
+                context["pocket_with_cocrystal"] if co_crystal
+                else context["pocket_with_structure"] if struct_candidates
+                else context["pocket_missing"]
+            )
+            biology_weights = V2_SCORING["biology_weights"]
+            biological=(
+                float(biology_weights["organism_scope"])*scope
+                +float(biology_weights["clinical"])*clinical
+                +float(biology_weights["essentiality"])*essential
+                +float(biology_weights["accessibility"])*access
+                +float(biology_weights["resistance"])*resistance
+                +float(biology_weights["card_context"])*card_context
+            )
+            resistance_burden=float(np.clip(
+                float(context["card_model_weight"])*(1 if card_models else 0)
+                +float(context["card_snp_weight"])*(1 if snp_rows else 0),0,1))
+            translation_weights = V2_SCORING["clinical_translation_weights"]
             if r.target_class.startswith('Beta-lactamase_'):
-                clinical_translation=float(np.clip(.25*clinical+.20*scope+.20*essential+.15*access+.10*pocket+.10*card_context,0,1))
+                clinical_translation=float(np.clip(
+                    float(translation_weights["clinical"])*clinical
+                    +float(translation_weights["organism_scope"])*scope
+                    +float(translation_weights["essentiality"])*essential
+                    +float(translation_weights["accessibility"])*access
+                    +float(translation_weights["pocket"])*pocket
+                    +float(translation_weights["resistance_or_card"])*card_context,
+                    0,1))
             else:
-                clinical_translation=float(np.clip(.25*clinical+.20*scope+.20*essential+.15*access+.10*pocket+.10*(1-.5*resistance_burden),0,1))
+                clinical_translation=float(np.clip(
+                    float(translation_weights["clinical"])*clinical
+                    +float(translation_weights["organism_scope"])*scope
+                    +float(translation_weights["essentiality"])*essential
+                    +float(translation_weights["accessibility"])*access
+                    +float(translation_weights["pocket"])*pocket
+                    +float(translation_weights["resistance_or_card"])*(1-float(context["resistance_burden_discount"])*resistance_burden),
+                    0,1))
             anti,anti_note,anti_status=anti_target_annotation(r.target_class)
-            overall=float(r.chemical_quality_adjusted_score*(.65+.35*transfer)*(.75+.25*pocket)*(.50+.50*biological)*(1-.20*anti))
+            factors = V2_SCORING["overall_factors"]
+            overall=float(
+                r.chemical_quality_adjusted_score
+                *(float(factors["transfer"]["base"])+float(factors["transfer"]["weight"])*transfer)
+                *(float(factors["pocket"]["base"])+float(factors["pocket"]["weight"])*pocket)
+                *(float(factors["biology"]["base"])+float(factors["biology"]["weight"])*biological)
+                *(1-float(factors["anti_target_penalty"])*anti)
+            )
             reasons=[]
             if r.reference_quality_grade in {'low','insufficient'}: reasons.append('reference coverage limited')
-            if mapping_status!='mapped' or transfer<.5: reasons.append('species sequence mapping unresolved or weak')
-            if r.target_specificity_score<.5: reasons.append('similarity is not target-specific versus cross-target decoys')
-            if anti>=.5: reasons.append('human-homologue or mitochondrial selectivity risk is annotation-only')
+            reason_thresholds = V2_SCORING["uncertainty_reasons"]
+            if mapping_status!='mapped' or transfer<float(reason_thresholds["weak_transfer_below"]): reasons.append('species sequence mapping unresolved or weak')
+            if r.target_specificity_score<float(reason_thresholds["weak_specificity_below"]): reasons.append('similarity is not target-specific versus cross-target decoys')
+            if anti>=float(reason_thresholds["anti_target_at_least"]): reasons.append('human-homologue or mitochondrial selectivity risk is annotation-only')
             if pocket==0: reasons.append('no RCSB co-crystal/pocket evidence in bounded public catalog')
-            if overall>=.50 and r.chemical_quality_adjusted_score>=.45 and transfer>=.70: conf='High'
-            elif overall>=.25 and r.chemical_quality_adjusted_score>=.25: conf='Moderate'
-            elif r.chemical_evidence_score>=.20: conf='Low'
+            confidence = V2_SCORING["confidence"]
+            if (overall>=float(confidence["high"]["overall_min"])
+                    and r.chemical_quality_adjusted_score>=float(confidence["high"]["chemical_quality_min"])
+                    and transfer>=float(confidence["high"]["transfer_min"])): conf='High'
+            elif (overall>=float(confidence["moderate"]["overall_min"])
+                    and r.chemical_quality_adjusted_score>=float(confidence["moderate"]["chemical_quality_min"])): conf='Moderate'
+            elif r.chemical_evidence_score>=float(confidence["low_chemical_min"]): conf='Low'
             else: conf='Insufficient'
             rr=r.to_dict(); rr.update({'organism':org,'parent_target_class':parent,'target_subtype':a.get('target_subtype',r.target_class),'binding_site_or_mechanism':a.get('binding_site_or_mechanism',a.get('mechanism_granularity','')),'organism_transfer_source':transfer_source,'species_transfer_score':transfer,'sequence_mapping_status':mapping_status,
                 'organism_scope_score':scope,'clinical_priority_score':clinical,'essentiality_score':essential,'cellular_access_score':access,
@@ -251,8 +354,8 @@ def main():
     snp_summary=pd.read_csv(CARD_SNP) if CARD_SNP.exists() else pd.DataFrame()
     snp_org=pd.read_csv(CARD_SNP_ORG) if CARD_SNP_ORG.exists() else pd.DataFrame(columns=['organism','resistance_family','n_snp_rows'])
     struct_summary=pd.read_csv(STRUCT_SUM) if STRUCT_SUM.exists() else pd.DataFrame()
-    private=load_queries(ROOT/'data'/'compounds'/'compounds_normalized.sdf')
-    bench=load_queries(ROOT/'data'/'benchmark'/'benchmark_structures.sdf')
+    private=load_queries(PRIVATE_COMPOUNDS)
+    bench=load_queries(BENCH_STRUCTURES)
     if not bench and BENCH.exists():
         bdf=pd.read_csv(BENCH)
         for _,b in bdf.iterrows():

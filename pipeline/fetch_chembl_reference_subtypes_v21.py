@@ -11,7 +11,7 @@ CHEMBL_V21_OFFLINE=1 after the first successful retrieval.
 """
 from __future__ import annotations
 from pathlib import Path
-import json, math, os, re, time
+import json, math, re, time
 from typing import Any
 import requests
 from requests.adapters import HTTPAdapter
@@ -19,7 +19,14 @@ from urllib3.util.retry import Retry
 from rdkit import Chem
 from rdkit.Chem.MolStandardize import rdMolStandardize
 
-ROOT = Path(os.environ.get("PROJECT_ROOT", Path(__file__).resolve().parents[1]))
+try:
+    from pipeline.config import load_config
+except ModuleNotFoundError:  # direct ``python pipeline/<script>.py`` execution
+    from config import load_config
+
+
+RUN_CONFIG = load_config()
+ROOT = RUN_CONFIG.root
 CONFIG = ROOT / "data" / "chembl_target_aliases_v21.json"
 ONTO = ROOT / "data" / "target_subtype_ontology_v21.csv"
 OUT = ROOT / "data" / "reference_ligands"
@@ -27,15 +34,21 @@ CACHE = ROOT / "data" / "reference_quality" / "chembl_v21_cache"
 OUT.mkdir(parents=True, exist_ok=True)
 CACHE.mkdir(parents=True, exist_ok=True)
 BASE = "https://www.ebi.ac.uk/chembl/api/data"
-OFFLINE = os.environ.get("CHEMBL_V21_OFFLINE", "0") == "1"
-DISCOVER = os.environ.get("CHEMBL_V21_DISCOVER", "1") == "1"
-SUBTYPE_FILTER = {x.strip() for x in os.environ.get("CHEMBL_V21_SUBTYPES", "").split(",") if x.strip()}
-MIN_PCHEMBL = float(os.environ.get("CHEMBL_V21_MIN_PCHEMBL", "5.0"))
-MAX_PER_SUBTYPE = int(os.environ.get("CHEMBL_V21_MAX_PER_SUBTYPE", "4000"))
-HTTP_TIMEOUT = int(os.environ.get("CHEMBL_V21_HTTP_TIMEOUT", "30"))
+CHEMBL_CONFIG = RUN_CONFIG.value("refresh.chembl")
+OFFLINE = bool(CHEMBL_CONFIG["offline"])
+DISCOVER = bool(CHEMBL_CONFIG["discover"])
+SUBTYPE_FILTER = {str(x).strip() for x in CHEMBL_CONFIG["subtype_filter"] if str(x).strip()}
+MIN_PCHEMBL = float(CHEMBL_CONFIG["min_pchembl"])
+MAX_PER_SUBTYPE = int(CHEMBL_CONFIG["max_per_subtype"])
+HTTP_TIMEOUT = int(CHEMBL_CONFIG["http_timeout_seconds"])
 
 session = requests.Session()
-retry = Retry(total=4, backoff_factor=0.7, status_forcelist=[429, 500, 502, 503, 504], allowed_methods=["GET"])
+retry = Retry(
+    total=int(CHEMBL_CONFIG["retry_total"]),
+    backoff_factor=float(CHEMBL_CONFIG["retry_backoff_seconds"]),
+    status_forcelist=[429, 500, 502, 503, 504],
+    allowed_methods=["GET"],
+)
 session.mount("https://", HTTPAdapter(max_retries=retry))
 
 
@@ -215,7 +228,7 @@ def curate(subtype: str, cfg: dict[str, Any]) -> tuple[list[dict[str, Any]], lis
                 "target_organism": meta.get("organism", ""), "target_type": meta.get("target_type", ""),
                 "document_chembl_id": a.get("document_chembl_id"),
                 "assay_chembl_id": a.get("assay_chembl_id"), "reference_source": "ChEMBL",
-                "source_release": os.environ.get("CHEMBL_RELEASE", "runtime_api"),
+                "source_release": str(CHEMBL_CONFIG["source_release"]),
                 "quality_grade": grade, "quality_included": use,
             })
     # Keep each molecule once per subtype, retaining the best potency but preserving

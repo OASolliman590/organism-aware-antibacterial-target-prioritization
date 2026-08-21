@@ -29,3 +29,5 @@ pipeline/probe_*.py
 
 # Local virtualenv (spec-kit tooling)
 .venv/
+.pytest_cache/
+.pytest_tmp/

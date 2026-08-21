@@ -5,7 +5,6 @@ MACCS-only, ensemble, random and prevalence baselines. Target-family and tempora
 splits are explicit diagnostics; if the public records lack the required metadata,
 the result is reported as unavailable rather than fabricated.
 """
-from pathlib import Path
 import json, math
 import numpy as np
 import pandas as pd
@@ -15,10 +14,20 @@ from rdkit import Chem, DataStructs
 from rdkit.Chem import AllChem, MACCSkeys
 from rdkit.Chem.Scaffolds.MurckoScaffold import MurckoScaffoldSmiles
 
-ROOT=Path(__file__).resolve().parents[1]
-REF=ROOT/'data'/'reference_ligands'; BENCH=ROOT/'data'/'benchmark'/'eskape_benchmark_drugs.csv'
-SUBTYPE_ONTO=ROOT/'data'/'target_subtype_ontology_v21.csv'
-RES=ROOT/'results'; FIG=RES/'figures'; RES.mkdir(exist_ok=True); FIG.mkdir(exist_ok=True)
+try:
+    from pipeline.config import load_config
+except ModuleNotFoundError:  # direct ``python pipeline/<script>.py`` execution
+    from config import load_config
+
+
+CONFIG = load_config()
+ROOT = CONFIG.root
+REF = CONFIG.path_for("reference_ligands")
+BENCH = CONFIG.path_for("benchmark")
+SUBTYPE_ONTO = CONFIG.path_for("target_subtype_ontology")
+RES = CONFIG.path_for("results"); FIG=RES/'figures'; RES.mkdir(parents=True, exist_ok=True); FIG.mkdir(exist_ok=True)
+CHEM2D = CONFIG.value("chem2d")
+V2_BENCHMARK = CONFIG.value("v2_benchmark")
 
 ALIASES={
  'Gyrase/TopoIV':{'GyrB','TopoIV'},'Ribosome':{'70S_ribosome','30S_ribosome','50S_ribosome'},
@@ -31,7 +40,11 @@ ALIASES={
 def mol(s):
     m=Chem.MolFromSmiles(str(s)) if s and str(s)!='nan' else None
     return Chem.RemoveHs(m) if m else None
-def fp(m): return AllChem.GetMorganGenerator(radius=2,fpSize=2048).GetFingerprint(m)
+def fp(m):
+    return AllChem.GetMorganGenerator(
+        radius=int(CHEM2D["fingerprint_radius"]),
+        fpSize=int(CHEM2D["fingerprint_bits"]),
+    ).GetFingerprint(m)
 def maccs(m): return MACCSkeys.GenMACCSKeys(m)
 def sim(a,b): return float(DataStructs.TanimotoSimilarity(a,b))
 def load_refs():
@@ -59,11 +72,13 @@ def load_bench():
     return out
 
 def score(q,refs,split):
+    close_cutoff = float(CHEM2D["close_analogue_cutoff"])
+    ensemble_weights = V2_BENCHMARK["ensemble_weights"]
     rows=[]
     for cls,rs in refs.items():
         keep=[]; excluded=0
         for r in rs:
-            close=sim(q['_fp'],r['_fp'])>=.85
+            close=sim(q['_fp'],r['_fp'])>=close_cutoff
             same_scaf=(q['_scaffold'] and r['_scaffold'] and q['_scaffold']==r['_scaffold'])
             remove=close if split=='close_analogue' else same_scaf if split=='scaffold' else False
             if remove: excluded+=1
@@ -71,7 +86,7 @@ def score(q,refs,split):
         if not keep: continue
         ef=np.array([sim(q['_fp'],r['_fp']) for r in keep]); mc=np.array([sim(q['_maccs'],r['_maccs']) for r in keep])
         rows.append({'query_id':q['drug'],'target_class':cls,'ecfp4_score':float(ef.max()),'maccs_score':float(mc.max()),
-                     'ensemble_score':float(.6*ef.max()+.4*mc.max()),'n_refs_after_split':len(keep),'n_excluded':excluded})
+                     'ensemble_score':float(float(ensemble_weights["ecfp4"])*ef.max()+float(ensemble_weights["maccs"])*mc.max()),'n_refs_after_split':len(keep),'n_excluded':excluded})
     return pd.DataFrame(rows)
 
 def accepted(label):
@@ -120,7 +135,7 @@ def summary(metrics):
 
 def main():
     refs=load_refs(); bench=load_bench(); all_rows=[]; query_rows=[]
-    for split in ['close_analogue','scaffold']:
+    for split in V2_BENCHMARK["splits"]:
         for q in bench:
             p=score(q,refs,split)
             if p.empty: continue
