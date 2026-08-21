@@ -26,3 +26,6 @@ data/card/ontology/*
 
 # Development-only diagnostics.
 pipeline/probe_*.py
+
+# Local virtualenv (spec-kit tooling)
+.venv/
