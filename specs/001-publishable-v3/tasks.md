@@ -7,7 +7,7 @@ phase's tasks pass. Never fabricate data (constitution I). Report negative resul
 - [x] **T0.1** Add `pipeline/config.py` + `config.yaml` (keys per plan §4). All thresholds/seeds/paths read from
       config; remove reliance on ad-hoc env vars for scientific params. **AC:** engine runs from a single config; no
       scientific constant is hard-coded in two places.
-- [ ] **T0.2** Add `pipeline/provenance.py` emitting `results/run_manifest.json` (data snapshot versions, git commit,
+- [x] **T0.2** Add `pipeline/provenance.py` emitting `results/run_manifest.json` (data snapshot versions, git commit,
       config hash, seeds, timestamps, package versions). **AC:** manifest written on every run.
 - [ ] **T0.3** Create `data/snapshots/SNAPSHOT_VERSIONS.json` and repoint loaders to pinned snapshots; live fetch is
       refresh-only and writes a new dated snapshot, never overwrites. **AC:** a reported run cites a snapshot id.

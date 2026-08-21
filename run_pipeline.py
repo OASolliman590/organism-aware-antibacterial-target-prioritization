@@ -12,6 +12,7 @@ import subprocess
 import sys
 
 from pipeline.config import ProjectConfig, load_config, set_global_seed
+from pipeline.provenance import start_run, utc_now, write_run_manifest
 
 
 STEPS = [
@@ -69,9 +70,23 @@ def main(argv: list[str] | None = None) -> None:
     args = parse_args(argv)
     config = load_config(args.config)
     set_global_seed(config)
-    for relative_path in STEPS:
-        if (config.root / relative_path).exists():
-            run_step(relative_path, config=config)
+    run_context = start_run(config)
+    try:
+        for relative_path in STEPS:
+            if (config.root / relative_path).exists():
+                run_step(relative_path, config=config)
+    except Exception as exc:
+        write_run_manifest(
+            config,
+            run_context,
+            status="failed",
+            completed_at=utc_now(),
+            error=exc,
+        )
+        raise
+    write_run_manifest(
+        config, run_context, status="completed", completed_at=utc_now()
+    )
     print(
         "\nConfigured open-target-discovery pipeline completed. "
         f"Snapshot: {config.value('snapshots.snapshot_id')}. "
