@@ -35,6 +35,10 @@ own manifest. Unique structures are processed in canonical-SMILES order, and the
 aggregate prewarm status reports cache hits, failures, and coverage without writing
 identifiers or structures.
 
+Independent query and split jobs use the fixed `chem3d.scoring_workers` count.
+Results are collected in input order, so scheduling cannot alter CSV row order,
+rank tie-breaking, seeds, or the evidence calculation for any query.
+
 The legacy snapshot records CARD 4.0.2. Its original ChEMBL release, UniProt
 release/query date, PubChem query date, and RCSB query date were not retained by
 v2; these remain explicit `null` provenance gaps and are never inferred from Git

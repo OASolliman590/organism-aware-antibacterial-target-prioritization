@@ -12,6 +12,7 @@ import json
 import math
 import os
 from pathlib import Path
+import threading
 from typing import Any
 
 import numpy as np
@@ -47,6 +48,15 @@ class ConformerEnsemble:
     @property
     def n_conformers(self) -> int:
         return 0 if self.molecule is None else self.molecule.GetNumConformers()
+
+
+_CONFORMER_LOCKS: dict[str, threading.Lock] = {}
+_CONFORMER_LOCKS_GUARD = threading.Lock()
+
+
+def _conformer_lock(lock_id: str) -> threading.Lock:
+    with _CONFORMER_LOCKS_GUARD:
+        return _CONFORMER_LOCKS.setdefault(lock_id, threading.Lock())
 
 
 def _canonical_smiles(molecule: Chem.Mol) -> str:
@@ -89,7 +99,9 @@ def _cache_root(config: ProjectConfig, cache_dir: str | Path | None) -> Path:
 
 def _atomic_write(path: Path, payload: bytes) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    temporary = path.with_name(f".{path.name}.{os.getpid()}.tmp")
+    temporary = path.with_name(
+        f".{path.name}.{os.getpid()}.{threading.get_ident()}.tmp"
+    )
     temporary.write_bytes(payload)
     temporary.replace(path)
 
@@ -147,6 +159,24 @@ def _filter_by_energy(
 
 
 def generate_conformer_ensemble(
+    molecule: Chem.Mol,
+    config: ProjectConfig,
+    *,
+    cache_dir: str | Path | None = None,
+) -> ConformerEnsemble:
+    """Generate or load one ensemble, serializing duplicate in-process keys."""
+
+    if molecule is None:
+        raise ValueError("molecule must not be None")
+    cache_key = conformer_cache_key(molecule, config)
+    lock_id = str(_cache_root(config, cache_dir) / cache_key)
+    with _conformer_lock(lock_id):
+        return _generate_conformer_ensemble_locked(
+            molecule, config, cache_dir=cache_dir
+        )
+
+
+def _generate_conformer_ensemble_locked(
     molecule: Chem.Mol,
     config: ProjectConfig,
     *,

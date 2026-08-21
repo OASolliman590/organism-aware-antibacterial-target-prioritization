@@ -674,21 +674,22 @@ def score_split_results(
 
     try:
         from pipeline import open_target_discovery_v2 as discovery
+        from pipeline.execution import ordered_thread_map
     except ModuleNotFoundError:  # direct module execution/import compatibility
         import open_target_discovery_v2 as discovery
+        from execution import ordered_thread_map
 
     _, classes_by_alias = ontology_family_maps(ontology)
     query_by_id = {
         str(query.get("query_id") or query.get("drug")): query for query in queries
     }
-    rows = []
-    for split in split_results:
+    def score_one_split(split: SplitResult):
         if split.provenance["status"] != "available" or not split.references:
-            continue
+            return None
         source = query_by_id[split.query_id]
         molecule = _molecule(source)
         if molecule is None:
-            continue
+            return None
         query = {
             **source,
             "query_id": split.query_id,
@@ -707,21 +708,35 @@ def score_split_results(
             exclude_close=False,
             return_reference_evidence=reference_evidence_sink is not None,
         )
+        reference_evidence = None
         if reference_evidence_sink is not None:
             frame, reference_evidence = scored
             reference_evidence = reference_evidence.copy()
             reference_evidence["split_type"] = split.split_type
-            reference_evidence_sink.append(reference_evidence)
         else:
             frame = scored
         if frame.empty:
-            continue
+            return None
         label = str(source.get("target_class") or source.get("query_target_label") or "")
         accepted = set(classes_by_alias.get(label, {label} if label else set()))
         frame["is_active"] = frame["target_class"].isin(accepted).astype(int)
         frame["query_target_label"] = label
         frame["split_type"] = split.split_type
+        return frame, reference_evidence
+
+    scored_splits = ordered_thread_map(
+        score_one_split,
+        split_results,
+        workers=int(config.value("chem3d.scoring_workers")),
+    )
+    rows = []
+    for result in scored_splits:
+        if result is None:
+            continue
+        frame, reference_evidence = result
         rows.append(frame)
+        if reference_evidence_sink is not None and reference_evidence is not None:
+            reference_evidence_sink.append(reference_evidence)
     if not rows:
         return pd.DataFrame(
             columns=[

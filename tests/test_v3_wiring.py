@@ -122,11 +122,14 @@ def test_v3_query_scoring_is_additive_and_deterministic(tmp_path) -> None:
 def test_emit_v3_outputs_writes_suffix_without_touching_v2_files(tmp_path) -> None:
     query, references, quality, empty, ontology = _inputs()
     config = _fast_config(tmp_path)
+    config.data["chem3d"]["scoring_workers"] = 2
     result_dir = tmp_path / "results"
+
+    second_query = {**query, "query_id": "public-query-2", "query_name": "public-query-2"}
 
     written = discovery.emit_v3_outputs(
         [],
-        [query],
+        [query, second_query],
         references,
         quality,
         ontology,
@@ -143,3 +146,27 @@ def test_emit_v3_outputs_writes_suffix_without_touching_v2_files(tmp_path) -> No
     }
     assert all(path.is_file() and path.name.endswith("_v3.csv") for path in written)
     assert not list(result_dir.glob("v2_*.csv"))
+    parallel = pd.read_csv(result_dir / "benchmark_open_target_scores_v3.csv")
+
+    sequential_data = deepcopy(config.data)
+    sequential_data["chem3d"]["scoring_workers"] = 1
+    sequential = ProjectConfig(
+        path=config.path, root=config.root, data=sequential_data
+    )
+    sequential_dir = tmp_path / "sequential-results"
+    discovery.emit_v3_outputs(
+        [],
+        [query, second_query],
+        references,
+        quality,
+        ontology,
+        empty,
+        config=sequential,
+        result_dir=sequential_dir,
+        cache_dir=tmp_path / "conformers",
+    )
+    pd.testing.assert_frame_equal(
+        parallel,
+        pd.read_csv(sequential_dir / "benchmark_open_target_scores_v3.csv"),
+        check_exact=True,
+    )

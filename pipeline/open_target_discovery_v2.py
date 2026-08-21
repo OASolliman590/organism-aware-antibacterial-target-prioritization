@@ -23,6 +23,7 @@ try:
     from pipeline.config import load_config
     from pipeline.disagreement_report import build_disagreement_report
     from pipeline.evidence_fusion import fuse_evidence
+    from pipeline.execution import ordered_thread_map
     from pipeline.snapshots import verify_snapshot
 except ModuleNotFoundError:  # direct ``python pipeline/<script>.py`` execution
     from applicability_domain import (
@@ -36,6 +37,7 @@ except ModuleNotFoundError:  # direct ``python pipeline/<script>.py`` execution
     from config import load_config
     from disagreement_report import build_disagreement_report
     from evidence_fusion import fuse_evidence
+    from execution import ordered_thread_map
     from snapshots import verify_snapshot
 
 
@@ -507,8 +509,10 @@ def emit_v3_outputs(
     disagreement_reports = []
 
     private_scores = []
-    for query in private:
-        score = score_query_v3(
+    scoring_workers = int(config.value("chem3d.scoring_workers"))
+
+    def score_private(query):
+        return score_query_v3(
             query,
             refs,
             quality,
@@ -518,6 +522,11 @@ def emit_v3_outputs(
             exclude_close=False,
             cache_dir=cache_dir,
         )
+
+    scored_private = ordered_thread_map(
+        score_private, private, workers=scoring_workers
+    )
+    for query, score in zip(private, scored_private, strict=True):
         score = add_unscored_classes(score, query, ontology)
         score = _complete_v3_missingness(score, config)
         score = assign_applicability_domain(score, config)
@@ -571,8 +580,8 @@ def emit_v3_outputs(
             written.append(path)
 
     benchmark_scores = []
-    for query in bench:
-        score = score_query_v3(
+    def score_benchmark(query):
+        return score_query_v3(
             query,
             refs,
             quality,
@@ -582,6 +591,11 @@ def emit_v3_outputs(
             exclude_close=True,
             cache_dir=cache_dir,
         )
+
+    scored_benchmark = ordered_thread_map(
+        score_benchmark, bench, workers=scoring_workers
+    )
+    for score in scored_benchmark:
         if not score.empty:
             benchmark_scores.append(score)
     if benchmark_scores:

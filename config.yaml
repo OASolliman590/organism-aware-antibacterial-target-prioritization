@@ -76,6 +76,7 @@ chem2d:
 
 chem3d:
   prewarm_workers: 8
+  scoring_workers: 4
   n_confs: 30
   prune_rms: 0.5
   energy_window_kcal: 10.0
