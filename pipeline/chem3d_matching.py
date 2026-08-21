@@ -17,7 +17,13 @@ from typing import Any
 import numpy as np
 import pandas as pd
 from rdkit import Chem, rdBase
-from rdkit.Chem import AllChem, rdMolDescriptors
+from rdkit.Chem import (
+    AllChem,
+    rdMolAlign,
+    rdMolDescriptors,
+    rdShapeAlign,
+    rdShapeHelpers,
+)
 
 try:
     from pipeline.config import ProjectConfig
@@ -336,6 +342,158 @@ def score_usrcat_by_target(
                 "n_reference_conformer_failures": failures,
                 "query_conformer_status": query_ensemble.status,
                 "query_conformer_count": query_ensemble.n_conformers,
+            }
+        )
+    return pd.DataFrame(rows)
+
+
+def _bounded_similarity(value: float) -> float | None:
+    if not math.isfinite(value) or value < -1e-9 or value > 1.0 + 1e-9:
+        return None
+    return min(1.0, max(0.0, float(value)))
+
+
+def o3a_shape_color_similarity(
+    query: ConformerEnsemble,
+    reference: ConformerEnsemble,
+    config: ProjectConfig,
+) -> tuple[float | None, float | None, int, int]:
+    """O3A-align all conformer pairs and return max shape/color similarities."""
+
+    if query.molecule is None or reference.molecule is None:
+        return None, None, 0, 0
+    typing = str(config.value("chem3d.o3a_atom_typing"))
+    if typing == "mmff94" and (
+        not AllChem.MMFFHasAllMoleculeParams(query.molecule)
+        or not AllChem.MMFFHasAllMoleculeParams(reference.molecule)
+    ):
+        return None, None, 0, 1
+    shape_scores: list[float] = []
+    color_scores: list[float] = []
+    failures = 0
+    attempts = 0
+    shape_options = rdShapeAlign.ShapeInputOptions()
+    shape_options.useColors = True
+    shape_options.normalize = True
+    for query_conformer in query.molecule.GetConformers():
+        for reference_conformer in reference.molecule.GetConformers():
+            attempts += 1
+            probe = Chem.Mol(query.molecule)
+            try:
+                if typing == "mmff94":
+                    overlay = rdMolAlign.GetO3A(
+                        probe,
+                        reference.molecule,
+                        prbCid=query_conformer.GetId(),
+                        refCid=reference_conformer.GetId(),
+                        maxIters=int(config.value("chem3d.o3a_max_iterations")),
+                    )
+                else:
+                    overlay = rdMolAlign.GetCrippenO3A(
+                        probe,
+                        reference.molecule,
+                        prbCid=query_conformer.GetId(),
+                        refCid=reference_conformer.GetId(),
+                        maxIters=int(config.value("chem3d.o3a_max_iterations")),
+                    )
+                overlay.Align()
+                shape = _bounded_similarity(
+                    1.0
+                    - float(
+                        rdShapeHelpers.ShapeTanimotoDist(
+                            reference.molecule,
+                            probe,
+                            confId1=reference_conformer.GetId(),
+                            confId2=query_conformer.GetId(),
+                            ignoreHs=True,
+                        )
+                    )
+                )
+                _, color_raw = rdShapeAlign.ScoreMol(
+                    reference.molecule,
+                    probe,
+                    shape_options,
+                    shape_options,
+                    reference_conformer.GetId(),
+                    query_conformer.GetId(),
+                )
+                color = _bounded_similarity(float(color_raw))
+            except (RuntimeError, ValueError):
+                failures += 1
+                continue
+            if shape is None or color is None:
+                failures += 1
+                continue
+            shape_scores.append(shape)
+            color_scores.append(color)
+    return (
+        max(shape_scores) if shape_scores else None,
+        max(color_scores) if color_scores else None,
+        attempts - failures,
+        failures,
+    )
+
+
+def score_o3a_by_target(
+    query_id: str,
+    query_molecule: Chem.Mol,
+    references: dict[str, list[dict[str, Any]]],
+    config: ProjectConfig,
+    *,
+    cache_dir: str | Path | None = None,
+) -> pd.DataFrame:
+    """USRCAT-shortlist references before alignment-based O3A scoring."""
+
+    query_ensemble = generate_conformer_ensemble(
+        query_molecule, config, cache_dir=cache_dir
+    )
+    shortlist_size = int(config.value("chem3d.o3a_shortlist_top"))
+    rows: list[dict[str, Any]] = []
+    for target_class in sorted(references):
+        candidates: list[tuple[float, ConformerEnsemble]] = []
+        reference_failures = 0
+        for record in references[target_class]:
+            reference_molecule = _record_molecule(record)
+            if reference_molecule is None:
+                reference_failures += 1
+                continue
+            ensemble = generate_conformer_ensemble(
+                reference_molecule, config, cache_dir=cache_dir
+            )
+            usrcat_score = usrcat_similarity(query_ensemble, ensemble)
+            if usrcat_score is None:
+                reference_failures += 1
+            else:
+                candidates.append((usrcat_score, ensemble))
+        candidates.sort(key=lambda item: item[0], reverse=True)
+        shortlisted = candidates[:shortlist_size]
+        shapes: list[float] = []
+        colors: list[float] = []
+        overlay_successes = 0
+        overlay_failures = 0
+        for _, reference_ensemble in shortlisted:
+            shape, color, successes, failures = o3a_shape_color_similarity(
+                query_ensemble, reference_ensemble, config
+            )
+            overlay_successes += successes
+            overlay_failures += failures
+            if shape is not None:
+                shapes.append(shape)
+            if color is not None:
+                colors.append(color)
+        rows.append(
+            {
+                "query_id": query_id,
+                "target_class": target_class,
+                "o3a_shape_tanimoto_max": max(shapes) if shapes else np.nan,
+                "o3a_color_max": max(colors) if colors else np.nan,
+                "n_o3a_references_shortlisted": len(shortlisted),
+                "n_o3a_overlays_scored": overlay_successes,
+                "n_o3a_overlay_failures": overlay_failures,
+                "n_o3a_reference_failures": reference_failures,
+                "o3a_status": (
+                    "ok" if shapes and colors else "unavailable_no_valid_overlay"
+                ),
             }
         )
     return pd.DataFrame(rows)

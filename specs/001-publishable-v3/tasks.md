@@ -20,7 +20,7 @@ phase's tasks pass. Never fabricate data (constitution I). Report negative resul
       disk cache keyed by canonical SMILES+params. **AC:** deterministic conformers; cache hit on rerun.
 - [x] **T1.2** USRCAT descriptor + score per (query, reference); aggregate `usrcat_max`, `usrcat_top5_mean` per
       (query, target_class). **AC:** fields present for all query×class pairs; runtime acceptable via caching.
-- [ ] **T1.3** O3A alignment on USRCAT-shortlisted references → `o3a_shape_tanimoto_max`, `o3a_color_max`. **AC:**
+- [x] **T1.3** O3A alignment on USRCAT-shortlisted references → `o3a_shape_tanimoto_max`, `o3a_color_max`. **AC:**
       shortlist size from config; values in [0,1]; documented.
 - [ ] **T1.4** Pharmacophore similarity (RDKit features + Gobbi_Pharm2D) → `pharmacophore_sim_max`. **AC:** field present.
 - [ ] **T1.5** `pipeline/evidence_fusion.py`: rank/score fusion → `chemical_evidence_score_v3`, retaining all

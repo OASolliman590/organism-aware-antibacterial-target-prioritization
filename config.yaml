@@ -75,6 +75,8 @@ chem3d:
   energy_window_kcal: 10.0
   o3a_shortlist_top: 25
   aggregate_top_k: 5
+  o3a_atom_typing: mmff94
+  o3a_max_iterations: 50
   max_iterations: 500
   num_threads: 1
   cache_dir: .cache/oatp/conformers
