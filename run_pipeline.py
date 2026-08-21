@@ -25,6 +25,7 @@ REFRESH_STEPS = [
 ]
 
 ANALYSIS_STEPS = [
+    'pipeline/prewarm_conformer_cache.py',
     'pipeline/open_target_discovery_v2.py',
     'pipeline/benchmark_v3.py',
     'pipeline/baseline_external.py',

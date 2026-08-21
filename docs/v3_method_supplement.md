@@ -28,6 +28,13 @@ seeds, package versions, and start/completion timestamps. Conformer, bootstrap,
 model, and figure seeds are declared separately in `config.yaml`. Live APIs are
 refresh-only and cannot overwrite the pinned snapshot.
 
+Before scoring, the runner prewarms the conformer cache with the fixed worker count
+in `chem3d.prewarm_workers`. This is scheduling only: every molecule still uses the
+single RDKit thread, seed, ETKDGv3/MMFF94 parameters, and cache key recorded in its
+own manifest. Unique structures are processed in canonical-SMILES order, and the
+aggregate prewarm status reports cache hits, failures, and coverage without writing
+identifiers or structures.
+
 The legacy snapshot records CARD 4.0.2. Its original ChEMBL release, UniProt
 release/query date, PubChem query date, and RCSB query date were not retained by
 v2; these remain explicit `null` provenance gaps and are never inferred from Git

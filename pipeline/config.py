@@ -84,6 +84,7 @@ def _validate(config: ProjectConfig) -> None:
         "chem2d.close_analogue_cutoff",
         "chem2d.top_k",
         "chem3d.n_confs",
+        "chem3d.prewarm_workers",
         "chem3d.prune_rms",
         "chem3d.energy_window_kcal",
         "chem3d.o3a_shortlist_top",
@@ -139,6 +140,7 @@ def _validate(config: ProjectConfig) -> None:
     _require_number(config, "chem2d.close_analogue_cutoff", minimum=0, maximum=1)
     _require_number(config, "chem2d.top_k", minimum=1)
     _require_number(config, "chem3d.n_confs", minimum=1)
+    _require_number(config, "chem3d.prewarm_workers", minimum=1)
     _require_number(config, "chem3d.prune_rms", minimum=0)
     _require_number(config, "chem3d.energy_window_kcal", minimum=0)
     _require_number(config, "chem3d.o3a_shortlist_top", minimum=1)
