@@ -31,7 +31,7 @@ phase's tasks pass. Never fabricate data (constitution I). Report negative resul
       scaffold hop). **AC:** report file lists ≥ the cases found, with per-component scores.
 
 ## Phase 2 — Leakage-controlled benchmark
-- [ ] **T2.1** `pipeline/benchmark_v3.py`: implement target-family, Bemis–Murcko scaffold, and temporal splits;
+- [x] **T2.1** `pipeline/benchmark_v3.py`: implement target-family, Bemis–Murcko scaffold, and temporal splits;
       make scaffold exclusion real and log how many references it removes. **AC:** three splits produced; leakage
       guard asserts query analogues excluded at the configured threshold.
 - [ ] **T2.2** Metrics: AUROC, BEDROC(α=20 & 80.5), EF@1%/5%, MRR, coverage — each with **bootstrap 95% CIs**.

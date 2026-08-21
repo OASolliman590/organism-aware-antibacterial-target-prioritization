@@ -96,6 +96,8 @@ def _validate(config: ProjectConfig) -> None:
         "fusion.disagreement_min_absolute_rank_shift",
         "fusion.components",
         "benchmark.bootstrap_n",
+        "benchmark.splits",
+        "benchmark.analogue_exclusion_threshold",
         "benchmark.time_cutoff",
         "applicability_domain.tanimoto_in",
         "applicability_domain.tanimoto_out",
@@ -141,6 +143,18 @@ def _validate(config: ProjectConfig) -> None:
     ):
         raise ConfigError("fusion.components must be a non-empty unique string list")
     _require_number(config, "benchmark.bootstrap_n", minimum=1)
+    benchmark_splits = config.value("benchmark.splits")
+    if (
+        not isinstance(benchmark_splits, list)
+        or set(benchmark_splits) != {"target_family", "scaffold", "temporal"}
+        or len(benchmark_splits) != 3
+    ):
+        raise ConfigError(
+            "benchmark.splits must contain target_family, scaffold, and temporal exactly once"
+        )
+    _require_number(
+        config, "benchmark.analogue_exclusion_threshold", minimum=0, maximum=1
+    )
     tanimoto_in = _require_number(
         config, "applicability_domain.tanimoto_in", minimum=0, maximum=1
     )
