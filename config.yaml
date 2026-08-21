@@ -38,6 +38,7 @@ paths:
   structure_candidates: data/structures_v2/rcsb_structure_candidates_v2.csv
   benchmark: data/benchmark/eskape_benchmark_drugs.csv
   benchmark_structures: data/benchmark/benchmark_structures.sdf
+  property_matched_decoys: data/benchmark/property_matched_decoys.csv
   snapshot_manifest: data/snapshots/SNAPSHOT_VERSIONS.json
 
 snapshots:
