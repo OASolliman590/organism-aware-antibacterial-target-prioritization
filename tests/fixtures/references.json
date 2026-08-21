@@ -1,0 +1,68 @@
+{
+  "GyrB": [
+    {
+      "molecule_chembl_id": "CHEMBL3314588",
+      "canonical_smiles": "CO[C@H]1CN(c2nc(-c3cncc(NCCN4CCN(C)CC4)n3)c(C(=O)O)s2)CC[C@H]1NC(=O)c1[nH]c(C)c(Cl)c1Cl",
+      "pchembl_value": 8.92,
+      "standard_type": "IC50",
+      "standard_value": "1.2",
+      "target_chembl_id": "CHEMBL1921666",
+      "organism": "S. aureus",
+      "source_path": "data/reference_ligands/ref_ligands_GyrB.json"
+    },
+    {
+      "molecule_chembl_id": "CHEMBL2059380",
+      "canonical_smiles": "CCNC(=O)c1cc2c(-n3ccc(C(F)(F)F)n3)c(-c3cc(-c4n[nH]c(=O)o4)cnc3OC)cnc2[nH]1",
+      "pchembl_value": 8.7,
+      "standard_type": "IC50",
+      "standard_value": "2.0",
+      "target_chembl_id": "CHEMBL1921666",
+      "organism": "S. aureus",
+      "source_path": "data/reference_ligands/ref_ligands_GyrB.json"
+    }
+  ],
+  "DHFR": [
+    {
+      "molecule_chembl_id": "CHEMBL170758",
+      "canonical_smiles": "CCC(CC)n1c(C)cc2c3c(N)nc(N)nc3ccc21",
+      "pchembl_value": 10.52,
+      "standard_type": "Ki",
+      "standard_value": "0.03",
+      "target_chembl_id": "CHEMBL2329",
+      "organism": "C. albicans",
+      "source_path": "data/reference_ligands/ref_ligands_DHFR.json"
+    },
+    {
+      "molecule_chembl_id": "CHEMBL171305",
+      "canonical_smiles": "CC(C)(C)c1cc2c(ccc3nc(N)nc(N)c32)[nH]1",
+      "pchembl_value": 9.92,
+      "standard_type": "Ki",
+      "standard_value": "0.12",
+      "target_chembl_id": "CHEMBL2329",
+      "organism": "C. albicans",
+      "source_path": "data/reference_ligands/ref_ligands_DHFR.json"
+    }
+  ],
+  "FabI": [
+    {
+      "molecule_chembl_id": "CHEMBL3360252",
+      "canonical_smiles": "CCCCCCc1ccc(Oc2ccccc2C#N)c(O)c1",
+      "pchembl_value": 11.0,
+      "standard_type": "Ki",
+      "standard_value": "0.01",
+      "target_chembl_id": "CHEMBL3994",
+      "organism": "S. aureus",
+      "source_path": "data/reference_ligands/ref_ligands_FabI.json"
+    },
+    {
+      "molecule_chembl_id": "CHEMBL488937",
+      "canonical_smiles": "Cc1c(N)cccc1Cn1ccc(OCCc2cccs2)cc1=O",
+      "pchembl_value": 8.33,
+      "standard_type": "Ki",
+      "standard_value": "4.7",
+      "target_chembl_id": "CHEMBL3994",
+      "organism": "S. aureus",
+      "source_path": "data/reference_ligands/ref_ligands_FabI.json"
+    }
+  ]
+}

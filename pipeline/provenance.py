@@ -20,19 +20,6 @@ except ModuleNotFoundError:  # imported by direct ``python pipeline/<script>.py`
     from config import ProjectConfig
 
 
-PACKAGE_DISTRIBUTIONS = (
-    "rdkit",
-    "pandas",
-    "numpy",
-    "matplotlib",
-    "seaborn",
-    "scikit-learn",
-    "umap-learn",
-    "requests",
-    "PyYAML",
-)
-
-
 def utc_now() -> str:
     return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
 
@@ -71,14 +58,15 @@ def git_provenance(root: Path) -> dict[str, Any]:
     }
 
 
-def package_versions() -> dict[str, str | None]:
-    versions: dict[str, str | None] = {}
-    for distribution in PACKAGE_DISTRIBUTIONS:
-        try:
-            versions[distribution] = metadata.version(distribution)
-        except metadata.PackageNotFoundError:
-            versions[distribution] = None
-    return versions
+def package_versions() -> dict[str, str]:
+    """Record the complete installed distribution set, not only direct imports."""
+
+    versions = {
+        str(distribution.metadata["Name"]): distribution.version
+        for distribution in metadata.distributions()
+        if distribution.metadata["Name"]
+    }
+    return dict(sorted(versions.items(), key=lambda item: item[0].casefold()))
 
 
 def snapshot_provenance(config: ProjectConfig) -> dict[str, Any]:

@@ -11,7 +11,7 @@ phase's tasks pass. Never fabricate data (constitution I). Report negative resul
       config hash, seeds, timestamps, package versions). **AC:** manifest written on every run.
 - [x] **T0.3** Create `data/snapshots/SNAPSHOT_VERSIONS.json` and repoint loaders to pinned snapshots; live fetch is
       refresh-only and writes a new dated snapshot, never overwrites. **AC:** a reported run cites a snapshot id.
-- [ ] **T0.4** Add `tests/` with pytest: (a) tiny fixture reference+query set; (b) **golden-file test freezing current
+- [x] **T0.4** Add `tests/` with pytest: (a) tiny fixture reference+query set; (b) **golden-file test freezing current
       v2 outputs** so v3 cannot silently change v2 (FR-10); (c) CI workflow running the fast subset. **AC:** `pytest`
       green; golden test fails if v2 numbers change.
 

@@ -46,7 +46,7 @@ The v2 workflow separates the following evidence layers:
 Copy authorized input structures into the local `inputs/` directory. Do not commit them. Install dependencies and run:
 
 ```bash
-python -m pip install -r requirements.txt
+python -m pip install -r requirements.lock
 python run_pipeline.py --config config.yaml
 ```
 
