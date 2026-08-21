@@ -109,6 +109,13 @@ def _validate(config: ProjectConfig) -> None:
         "external_baseline.model_release",
         "external_baseline.python_executable",
         "external_baseline.applicability_domain_percentile",
+        "model.features",
+        "model.regularization_c",
+        "model.platt_regularization_c",
+        "model.calibration_method",
+        "model.minimum_class_count",
+        "model.max_iterations",
+        "model.reliability_bins",
     ]
     for key in required:
         config.value(key)
@@ -193,6 +200,20 @@ def _validate(config: ProjectConfig) -> None:
         minimum=0,
         maximum=100,
     )
+    model_features = config.value("model.features")
+    if (
+        not isinstance(model_features, list)
+        or not model_features
+        or len(model_features) != len(set(model_features))
+    ):
+        raise ConfigError("model.features must be a non-empty unique list")
+    _require_number(config, "model.regularization_c", minimum=1e-12)
+    _require_number(config, "model.platt_regularization_c", minimum=1e-12)
+    if config.value("model.calibration_method") != "Platt":
+        raise ConfigError("model.calibration_method must be Platt")
+    _require_number(config, "model.minimum_class_count", minimum=2)
+    _require_number(config, "model.max_iterations", minimum=1)
+    _require_number(config, "model.reliability_bins", minimum=2)
 
     weights = config.value("v2_scoring.chemical.weights")
     if not isinstance(weights, dict) or any(float(v) < 0 for v in weights.values()):

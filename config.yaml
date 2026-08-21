@@ -125,6 +125,21 @@ external_baseline:
   python_executable: python2
   applicability_domain_percentile: 90
 
+model:
+  features:
+    - ecfp4_max
+    - maccs_max
+    - usrcat_max
+    - o3a_shape_tanimoto_max
+    - o3a_color_max
+    - pharmacophore_sim_max
+  regularization_c: 1.0
+  platt_regularization_c: 1000000.0
+  calibration_method: Platt
+  minimum_class_count: 2
+  max_iterations: 2000
+  reliability_bins: 5
+
 refresh:
   chembl:
     source_release: unrecorded
