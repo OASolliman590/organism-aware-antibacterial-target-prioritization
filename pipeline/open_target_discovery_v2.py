@@ -23,7 +23,7 @@ try:
     from pipeline.config import load_config
     from pipeline.disagreement_report import build_disagreement_report
     from pipeline.evidence_fusion import fuse_evidence
-    from pipeline.execution import ordered_thread_map
+    from pipeline.execution import ordered_process_map
     from pipeline.snapshots import verify_snapshot
 except ModuleNotFoundError:  # direct ``python pipeline/<script>.py`` execution
     from applicability_domain import (
@@ -37,7 +37,7 @@ except ModuleNotFoundError:  # direct ``python pipeline/<script>.py`` execution
     from config import load_config
     from disagreement_report import build_disagreement_report
     from evidence_fusion import fuse_evidence
-    from execution import ordered_thread_map
+    from execution import ordered_process_map
     from snapshots import verify_snapshot
 
 
@@ -311,6 +311,42 @@ def score_query_v3(
     fused = assign_applicability_domain(fused, config)
     return (fused, reference_evidence) if return_reference_evidence else fused
 
+
+_EMIT_V3_WORKER_CONTEXT = None
+
+
+def _initialize_emit_v3_worker(
+    refs, quality, compat, ontology, config, cache_dir
+):
+    global _EMIT_V3_WORKER_CONTEXT
+    _EMIT_V3_WORKER_CONTEXT = {
+        "refs": refs,
+        "quality": quality,
+        "compat": compat,
+        "ontology": ontology,
+        "config": config,
+        "cache_dir": cache_dir,
+    }
+
+
+def _score_emit_v3_worker(task):
+    """Score one independent query in an initialized spawned process."""
+
+    if _EMIT_V3_WORKER_CONTEXT is None:
+        raise RuntimeError("v3 scoring worker context was not initialized")
+    dataset_scope, query = task
+    context = _EMIT_V3_WORKER_CONTEXT
+    return score_query_v3(
+        query,
+        context["refs"],
+        context["quality"],
+        context["compat"],
+        context["ontology"],
+        config=context["config"],
+        exclude_close=dataset_scope == "benchmark",
+        cache_dir=context["cache_dir"],
+    )
+
 def add_unscored_classes(scored,q,ontology):
     """Keep the broad ontology visible: missing references are explicit, not absent targets."""
     present=set(scored.target_class) if not scored.empty else set()
@@ -511,21 +547,18 @@ def emit_v3_outputs(
     private_scores = []
     scoring_workers = int(config.value("chem3d.scoring_workers"))
 
-    def score_private(query):
-        return score_query_v3(
-            query,
-            refs,
-            quality,
-            compat,
-            ontology,
-            config=config,
-            exclude_close=False,
-            cache_dir=cache_dir,
-        )
-
-    scored_private = ordered_thread_map(
-        score_private, private, workers=scoring_workers
+    scoring_tasks = [
+        *(("private", query) for query in private),
+        *(("benchmark", query) for query in bench),
+    ]
+    scored_queries = ordered_process_map(
+        _score_emit_v3_worker,
+        scoring_tasks,
+        workers=scoring_workers,
+        initializer=_initialize_emit_v3_worker,
+        initargs=(refs, quality, compat, ontology, config, cache_dir),
     )
+    scored_private = scored_queries[: len(private)]
     for query, score in zip(private, scored_private, strict=True):
         score = add_unscored_classes(score, query, ontology)
         score = _complete_v3_missingness(score, config)
@@ -580,21 +613,7 @@ def emit_v3_outputs(
             written.append(path)
 
     benchmark_scores = []
-    def score_benchmark(query):
-        return score_query_v3(
-            query,
-            refs,
-            quality,
-            compat,
-            ontology,
-            config=config,
-            exclude_close=True,
-            cache_dir=cache_dir,
-        )
-
-    scored_benchmark = ordered_thread_map(
-        score_benchmark, bench, workers=scoring_workers
-    )
+    scored_benchmark = scored_queries[len(private) :]
     for score in scored_benchmark:
         if not score.empty:
             benchmark_scores.append(score)

@@ -7,6 +7,7 @@ from rdkit import Chem
 
 from pipeline.config import ProjectConfig
 from pipeline import open_target_discovery_v2 as discovery
+from pipeline.prewarm_conformer_cache import prewarm_molecules
 
 
 def _fast_config(tmp_path) -> ProjectConfig:
@@ -126,6 +127,16 @@ def test_emit_v3_outputs_writes_suffix_without_touching_v2_files(tmp_path) -> No
     result_dir = tmp_path / "results"
 
     second_query = {**query, "query_id": "public-query-2", "query_name": "public-query-2"}
+    prewarm_molecules(
+        [
+            query["mol"],
+            second_query["mol"],
+            *(record["_mol"] for records in references.values() for record in records),
+        ],
+        config,
+        cache_dir=tmp_path / "conformers",
+        workers=2,
+    )
 
     written = discovery.emit_v3_outputs(
         [],

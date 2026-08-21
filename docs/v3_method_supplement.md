@@ -33,9 +33,12 @@ in `chem3d.prewarm_workers`. This is scheduling only: every molecule still uses 
 single RDKit thread, seed, ETKDGv3/MMFF94 parameters, and cache key recorded in its
 own manifest. Unique structures are processed in canonical-SMILES order, and the
 aggregate prewarm status reports cache hits, failures, and coverage without writing
-identifiers or structures.
+identifiers or structures. Deterministic embedding or MMFF-energy failures are
+cached as manifest-only records with zero conformers; they remain missing evidence
+and are never represented by a binary molecule or synthetic score.
 
-Independent query and split jobs use the fixed `chem3d.scoring_workers` count.
+Independent query and split jobs use spawned processes with the fixed
+`chem3d.scoring_workers` count.
 Results are collected in input order, so scheduling cannot alter CSV row order,
 rank tie-breaking, seeds, or the evidence calculation for any query.
 

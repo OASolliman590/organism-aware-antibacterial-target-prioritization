@@ -1,6 +1,10 @@
 import pytest
 
-from pipeline.execution import ordered_thread_map
+from pipeline.execution import ordered_process_map, ordered_thread_map
+
+
+def square(value):
+    return value * value
 
 
 def test_ordered_thread_map_preserves_order_and_propagates_errors():
@@ -13,3 +17,7 @@ def test_ordered_thread_map_preserves_order_and_propagates_errors():
 
     with pytest.raises(RuntimeError, match="declared worker failure"):
         ordered_thread_map(fail_on_two, [1, 2, 3], workers=2)
+
+
+def test_ordered_process_map_preserves_order():
+    assert ordered_process_map(square, [3, 1, 2], workers=2) == [9, 1, 4]

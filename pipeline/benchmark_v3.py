@@ -661,6 +661,90 @@ def compare_score_modes(
     return query_metrics, comparison
 
 
+_SPLIT_WORKER_CONTEXT = None
+
+
+def _initialize_split_worker(
+    split_results,
+    queries,
+    ontology,
+    quality,
+    config,
+    reference_evidence_enabled,
+):
+    global _SPLIT_WORKER_CONTEXT
+    _, classes_by_alias = ontology_family_maps(ontology)
+    _SPLIT_WORKER_CONTEXT = {
+        "split_results": split_results,
+        "query_by_id": {
+            str(query.get("query_id") or query.get("drug")): query
+            for query in queries
+        },
+        "ontology": ontology,
+        "quality": quality,
+        "config": config,
+        "classes_by_alias": classes_by_alias,
+        "reference_evidence_enabled": reference_evidence_enabled,
+    }
+
+
+def _score_split_worker(index):
+    """Score one split row in an initialized spawned process."""
+
+    if _SPLIT_WORKER_CONTEXT is None:
+        raise RuntimeError("benchmark split worker context was not initialized")
+    try:
+        from pipeline import open_target_discovery_v2 as discovery
+    except ModuleNotFoundError:  # direct module execution/import compatibility
+        import open_target_discovery_v2 as discovery
+
+    context = _SPLIT_WORKER_CONTEXT
+    split = context["split_results"][index]
+    if split.provenance["status"] != "available" or not split.references:
+        return None
+    source = context["query_by_id"][split.query_id]
+    molecule = _molecule(source)
+    if molecule is None:
+        return None
+    query = {
+        **source,
+        "query_id": split.query_id,
+        "mol": molecule,
+        "fp": discovery.fp(molecule),
+        "maccs": discovery.maccs(molecule),
+        "source": "public_benchmark_v3",
+    }
+    scored = discovery.score_query_v3(
+        query,
+        split.references,
+        context["quality"],
+        pd.DataFrame(),
+        context["ontology"],
+        config=context["config"],
+        exclude_close=False,
+        return_reference_evidence=context["reference_evidence_enabled"],
+    )
+    reference_evidence = None
+    if context["reference_evidence_enabled"]:
+        frame, reference_evidence = scored
+        reference_evidence = reference_evidence.copy()
+        reference_evidence["split_type"] = split.split_type
+    else:
+        frame = scored
+    if frame.empty:
+        return None
+    label = str(
+        source.get("target_class") or source.get("query_target_label") or ""
+    )
+    accepted = set(
+        context["classes_by_alias"].get(label, {label} if label else set())
+    )
+    frame["is_active"] = frame["target_class"].isin(accepted).astype(int)
+    frame["query_target_label"] = label
+    frame["split_type"] = split.split_type
+    return frame, reference_evidence
+
+
 def score_split_results(
     split_results: list[SplitResult],
     queries: list[dict[str, Any]],
@@ -673,61 +757,23 @@ def score_split_results(
     """Compute additive 2D/3D/fusion target scores for available split rows."""
 
     try:
-        from pipeline import open_target_discovery_v2 as discovery
-        from pipeline.execution import ordered_thread_map
+        from pipeline.execution import ordered_process_map
     except ModuleNotFoundError:  # direct module execution/import compatibility
-        import open_target_discovery_v2 as discovery
-        from execution import ordered_thread_map
+        from execution import ordered_process_map
 
-    _, classes_by_alias = ontology_family_maps(ontology)
-    query_by_id = {
-        str(query.get("query_id") or query.get("drug")): query for query in queries
-    }
-    def score_one_split(split: SplitResult):
-        if split.provenance["status"] != "available" or not split.references:
-            return None
-        source = query_by_id[split.query_id]
-        molecule = _molecule(source)
-        if molecule is None:
-            return None
-        query = {
-            **source,
-            "query_id": split.query_id,
-            "mol": molecule,
-            "fp": discovery.fp(molecule),
-            "maccs": discovery.maccs(molecule),
-            "source": "public_benchmark_v3",
-        }
-        scored = discovery.score_query_v3(
-            query,
-            split.references,
-            quality,
-            pd.DataFrame(),
-            ontology,
-            config=config,
-            exclude_close=False,
-            return_reference_evidence=reference_evidence_sink is not None,
-        )
-        reference_evidence = None
-        if reference_evidence_sink is not None:
-            frame, reference_evidence = scored
-            reference_evidence = reference_evidence.copy()
-            reference_evidence["split_type"] = split.split_type
-        else:
-            frame = scored
-        if frame.empty:
-            return None
-        label = str(source.get("target_class") or source.get("query_target_label") or "")
-        accepted = set(classes_by_alias.get(label, {label} if label else set()))
-        frame["is_active"] = frame["target_class"].isin(accepted).astype(int)
-        frame["query_target_label"] = label
-        frame["split_type"] = split.split_type
-        return frame, reference_evidence
-
-    scored_splits = ordered_thread_map(
-        score_one_split,
-        split_results,
+    scored_splits = ordered_process_map(
+        _score_split_worker,
+        range(len(split_results)),
         workers=int(config.value("chem3d.scoring_workers")),
+        initializer=_initialize_split_worker,
+        initargs=(
+            split_results,
+            queries,
+            ontology,
+            quality,
+            config,
+            reference_evidence_sink is not None,
+        ),
     )
     rows = []
     for result in scored_splits:

@@ -109,11 +109,25 @@ def _atomic_write(path: Path, payload: bytes) -> None:
 def _load_cached(
     binary_path: Path, manifest_path: Path, cache_key: str
 ) -> ConformerEnsemble | None:
-    if not binary_path.is_file() or not manifest_path.is_file():
+    if not manifest_path.is_file():
         return None
     try:
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
         if manifest.get("cache_key") != cache_key:
+            return None
+        status = str(manifest["status"])
+        if status in {"embedding_failed", "mmff94_energy_failed"}:
+            return ConformerEnsemble(
+                molecule=None,
+                relative_energies_kcal=(),
+                optimization_statuses=(),
+                cache_key=cache_key,
+                cache_path=None,
+                cache_hit=True,
+                status=status,
+                n_embedded=int(manifest["n_embedded"]),
+            )
+        if not binary_path.is_file():
             return None
         molecule = Chem.Mol(binary_path.read_bytes())
         energies = tuple(manifest["relative_energies_kcal"])
@@ -131,6 +145,32 @@ def _load_cached(
         cache_hit=True,
         status=str(manifest["status"]),
         n_embedded=int(manifest["n_embedded"]),
+    )
+
+
+def _write_failure_manifest(
+    manifest_path: Path,
+    molecule: Chem.Mol,
+    cache_key: str,
+    parameters: dict[str, Any],
+    *,
+    status: str,
+    n_embedded: int,
+) -> None:
+    manifest = {
+        "schema_version": 1,
+        "cache_key": cache_key,
+        "canonical_smiles": _canonical_smiles(molecule),
+        "parameters": parameters,
+        "status": status,
+        "n_embedded": n_embedded,
+        "n_kept": 0,
+        "relative_energies_kcal": [],
+        "optimization_statuses": [],
+    }
+    _atomic_write(
+        manifest_path,
+        (json.dumps(manifest, indent=2, sort_keys=True) + "\n").encode("utf-8"),
     )
 
 
@@ -209,6 +249,14 @@ def _generate_conformer_ensemble_locked(
     )
     n_embedded = len(conformer_ids)
     if not conformer_ids:
+        _write_failure_manifest(
+            manifest_path,
+            molecule,
+            cache_key,
+            parameters,
+            status="embedding_failed",
+            n_embedded=0,
+        )
         return ConformerEnsemble(
             molecule=None,
             relative_energies_kcal=(),
@@ -239,6 +287,14 @@ def _generate_conformer_ensemble_locked(
             )
         )
         if not optimization or not any(math.isfinite(x[1]) for x in optimization):
+            _write_failure_manifest(
+                manifest_path,
+                molecule,
+                cache_key,
+                parameters,
+                status="mmff94_energy_failed",
+                n_embedded=n_embedded,
+            )
             return ConformerEnsemble(
                 molecule=None,
                 relative_energies_kcal=(),
