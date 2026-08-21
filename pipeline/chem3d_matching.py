@@ -16,7 +16,7 @@ from typing import Any
 
 import numpy as np
 import pandas as pd
-from rdkit import Chem, rdBase
+from rdkit import Chem, DataStructs, rdBase
 from rdkit.Chem import (
     AllChem,
     rdMolAlign,
@@ -24,6 +24,7 @@ from rdkit.Chem import (
     rdShapeAlign,
     rdShapeHelpers,
 )
+from rdkit.Chem.Pharm2D import Generate, Gobbi_Pharm2D
 
 try:
     from pipeline.config import ProjectConfig
@@ -493,6 +494,71 @@ def score_o3a_by_target(
                 "n_o3a_reference_failures": reference_failures,
                 "o3a_status": (
                     "ok" if shapes and colors else "unavailable_no_valid_overlay"
+                ),
+            }
+        )
+    return pd.DataFrame(rows)
+
+
+def gobbi_pharmacophore_fingerprint(molecule: Chem.Mol):
+    """Generate the Gobbi/Poppe feature-pair pharmacophore fingerprint."""
+
+    return Generate.Gen2DFingerprint(
+        Chem.RemoveHs(Chem.Mol(molecule)), Gobbi_Pharm2D.factory
+    )
+
+
+def score_pharmacophore_by_target(
+    query_id: str,
+    query_molecule: Chem.Mol,
+    references: dict[str, list[dict[str, Any]]],
+) -> pd.DataFrame:
+    """Aggregate alignment-free Gobbi pharmacophore similarity per target class."""
+
+    try:
+        query_fingerprint = gobbi_pharmacophore_fingerprint(query_molecule)
+        if query_fingerprint.GetNumOnBits() == 0:
+            query_fingerprint = None
+    except (RuntimeError, ValueError):
+        query_fingerprint = None
+    fingerprint_cache: dict[str, Any] = {}
+    rows: list[dict[str, Any]] = []
+    for target_class in sorted(references):
+        scores: list[float] = []
+        failures = 0
+        for record in references[target_class]:
+            molecule = _record_molecule(record)
+            if molecule is None or query_fingerprint is None:
+                failures += 1
+                continue
+            smiles = _canonical_smiles(molecule)
+            try:
+                if smiles not in fingerprint_cache:
+                    fingerprint_cache[smiles] = gobbi_pharmacophore_fingerprint(
+                        molecule
+                    )
+                fingerprint = fingerprint_cache[smiles]
+                if fingerprint.GetNumOnBits() == 0:
+                    raise ValueError("empty Gobbi pharmacophore fingerprint")
+                similarity = _bounded_similarity(
+                    float(DataStructs.TanimotoSimilarity(query_fingerprint, fingerprint))
+                )
+            except (RuntimeError, ValueError):
+                similarity = None
+            if similarity is None:
+                failures += 1
+            else:
+                scores.append(similarity)
+        rows.append(
+            {
+                "query_id": query_id,
+                "target_class": target_class,
+                "pharmacophore_sim_max": max(scores) if scores else np.nan,
+                "n_pharmacophore_references_scored": len(scores),
+                "n_pharmacophore_failures": failures,
+                "pharmacophore_method": "Gobbi_Pharm2D",
+                "pharmacophore_status": (
+                    "ok" if scores else "unavailable_no_valid_fingerprint"
                 ),
             }
         )
