@@ -38,7 +38,7 @@ cached as manifest-only records with zero conformers; they remain missing eviden
 and are never represented by a binary molecule or synthetic score.
 
 Independent query and split jobs use spawned processes with the fixed
-`chem3d.scoring_workers` count.
+`chem3d.scoring_workers` count (eight in the published configuration).
 Results are collected in input order, so scheduling cannot alter CSV row order,
 rank tie-breaking, seeds, or the evidence calculation for any query.
 
