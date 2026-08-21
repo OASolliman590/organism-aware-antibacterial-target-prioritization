@@ -12,6 +12,10 @@ from rdkit import Chem, DataStructs
 from rdkit.Chem import AllChem, MACCSkeys
 
 try:
+    from pipeline.applicability_domain import (
+        assign_applicability_domain,
+        shortlist_with_applicability_domain,
+    )
     from pipeline.chem3d_matching import (
         aggregate_reference_evidence,
         score_reference_evidence_by_target,
@@ -21,6 +25,10 @@ try:
     from pipeline.evidence_fusion import fuse_evidence
     from pipeline.snapshots import verify_snapshot
 except ModuleNotFoundError:  # direct ``python pipeline/<script>.py`` execution
+    from applicability_domain import (
+        assign_applicability_domain,
+        shortlist_with_applicability_domain,
+    )
     from chem3d_matching import (
         aggregate_reference_evidence,
         score_reference_evidence_by_target,
@@ -298,6 +306,7 @@ def score_query_v3(
         * fused["target_specificity_score"]
     )
     fused["chemical_quality_adjusted_score_v3_is_probability"] = False
+    fused = assign_applicability_domain(fused, config)
     return (fused, reference_evidence) if return_reference_evidence else fused
 
 def add_unscored_classes(scored,q,ontology):
@@ -511,6 +520,7 @@ def emit_v3_outputs(
         )
         score = add_unscored_classes(score, query, ontology)
         score = _complete_v3_missingness(score, config)
+        score = assign_applicability_domain(score, config)
         if not score.empty:
             private_scores.append(score)
     if private_scores:
@@ -545,15 +555,12 @@ def emit_v3_outputs(
             ranked.to_csv(path, index=False)
             written.append(path)
             path = result_dir / "open_target_shortlist_by_organism_v3.csv"
-            (
-                ranked.sort_values(
-                    ["organism", "query_id", "overall_priority_score"],
-                    ascending=[True, True, False],
-                )
-                .groupby(["organism", "query_id"])
-                .head(10)
-                .to_csv(path, index=False)
-            )
+            shortlist_with_applicability_domain(
+                ranked,
+                group_columns=["organism", "query_id"],
+                score_column="overall_priority_score",
+                top_n=10,
+            ).to_csv(path, index=False)
             written.append(path)
             path = result_dir / "validation_priority_candidates_v3.csv"
             (
@@ -580,6 +587,7 @@ def emit_v3_outputs(
     if benchmark_scores:
         benchmark = pd.concat(benchmark_scores, ignore_index=True)
         benchmark = _complete_v3_missingness(benchmark, config)
+        benchmark = assign_applicability_domain(benchmark, config)
         path = result_dir / "benchmark_open_target_scores_v3.csv"
         benchmark.to_csv(path, index=False)
         written.append(path)

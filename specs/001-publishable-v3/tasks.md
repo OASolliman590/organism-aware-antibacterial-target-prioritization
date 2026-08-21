@@ -65,7 +65,7 @@ phase's tasks pass. Never fabricate data (constitution I). Report negative resul
       stability of top hypotheses quantified and plotted.
 
 ## Phase 5 — Applicability domain + reporting
-- [ ] **T5.1** `pipeline/applicability_domain.py`: NN-distance AD flags (Tanimoto + USRCAT) per prediction; threshold
+- [x] **T5.1** `pipeline/applicability_domain.py`: NN-distance AD flags (Tanimoto + USRCAT) per prediction; threshold
       from config. **AC:** every prediction row carries an AD flag; out-of-domain discounted in shortlist logic.
 - [ ] **T5.2** Update `docs/` methods supplement: 3D method, benchmark protocol, calibration, AD, limitations, and
       the honest negative results. Regenerate figures. **AC:** supplement reproducible from a pinned run.
