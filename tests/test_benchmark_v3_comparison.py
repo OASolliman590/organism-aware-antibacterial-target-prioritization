@@ -33,7 +33,8 @@ def _scores() -> pd.DataFrame:
                     "usrcat_max": 0.1,
                     "o3a_shape_tanimoto_max": 0.1,
                     "o3a_color_max": 0.1,
-                    "pharmacophore_sim_max": 0.1,
+                    "pharmacophore_2d_gobbi_sim_max": 0.9,
+                    "pharmacophore_3d_sim_max": 0.1,
                 },
                 {
                     "split_type": split,
@@ -47,7 +48,8 @@ def _scores() -> pd.DataFrame:
                     "usrcat_max": 0.9,
                     "o3a_shape_tanimoto_max": 0.9,
                     "o3a_color_max": 0.9,
-                    "pharmacophore_sim_max": 0.9,
+                    "pharmacophore_2d_gobbi_sim_max": 0.1,
+                    "pharmacophore_3d_sim_max": 0.9,
                 },
             ]
         )
@@ -93,3 +95,58 @@ def test_single_table_compares_all_modes_and_reports_worse_3d_honestly() -> None
     assert temporal.estimate.isna().all()
     assert (temporal.performance_vs_2d == "unavailable").all()
     assert set(query_metrics.score_mode) == {"2d_only", "3d_only", "fusion"}
+
+
+def test_3d_only_score_excludes_alignment_free_2d_gobbi_component() -> None:
+    config = _config()
+    original = _scores()
+    reversed_gobbi = original.copy()
+    reversed_gobbi["pharmacophore_2d_gobbi_sim_max"] = 1.0 - reversed_gobbi[
+        "pharmacophore_2d_gobbi_sim_max"
+    ]
+
+    original_score = add_3d_only_score(original, config)[
+        "chemical_evidence_score_3d_only"
+    ]
+    reversed_score = add_3d_only_score(reversed_gobbi, config)[
+        "chemical_evidence_score_3d_only"
+    ]
+
+    pd.testing.assert_series_equal(original_score, reversed_score)
+
+
+def test_3d_only_score_uses_aligned_3d_pharmacophore_component() -> None:
+    config = _config()
+    forward = _scores()
+    for component in config.value("benchmark.three_dimensional_components"):
+        forward[component] = 0.5
+    forward.loc[forward.target_class == "active", "pharmacophore_3d_sim_max"] = 0.9
+    forward.loc[forward.target_class == "decoy", "pharmacophore_3d_sim_max"] = 0.1
+    reversed_3d = forward.copy()
+    reversed_3d["pharmacophore_3d_sim_max"] = 1.0 - reversed_3d[
+        "pharmacophore_3d_sim_max"
+    ]
+
+    forward_scored = add_3d_only_score(forward, config)
+    reversed_scored = add_3d_only_score(reversed_3d, config)
+
+    assert (
+        forward_scored.loc[
+            forward_scored.target_class == "active",
+            "chemical_evidence_score_3d_only",
+        ].iloc[0]
+        > forward_scored.loc[
+            forward_scored.target_class == "decoy",
+            "chemical_evidence_score_3d_only",
+        ].iloc[0]
+    )
+    assert (
+        reversed_scored.loc[
+            reversed_scored.target_class == "active",
+            "chemical_evidence_score_3d_only",
+        ].iloc[0]
+        < reversed_scored.loc[
+            reversed_scored.target_class == "decoy",
+            "chemical_evidence_score_3d_only",
+        ].iloc[0]
+    )

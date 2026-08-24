@@ -14,10 +14,19 @@ from typing import Any
 
 import numpy as np
 import pandas as pd
-from rdkit import Chem, DataStructs
-from rdkit.Chem import AllChem
-from rdkit.Chem.Scaffolds.MurckoScaffold import MurckoScaffoldSmiles
 from sklearn.metrics import roc_auc_score
+
+_RDKIT_IMPORT_ERROR: ImportError | None = None
+try:
+    from rdkit import Chem, DataStructs
+    from rdkit.Chem import AllChem
+    from rdkit.Chem.Scaffolds.MurckoScaffold import MurckoScaffoldSmiles
+except ImportError as error:  # pure metric/fusion helpers remain testable
+    Chem = None
+    DataStructs = None
+    AllChem = None
+    MurckoScaffoldSmiles = None
+    _RDKIT_IMPORT_ERROR = error
 
 try:
     from pipeline.config import ProjectConfig
@@ -46,7 +55,15 @@ class SplitResult:
     provenance: dict[str, Any]
 
 
+def _require_rdkit() -> None:
+    if _RDKIT_IMPORT_ERROR is not None:
+        raise RuntimeError(
+            "RDKit is required for benchmark structure and split operations"
+        ) from _RDKIT_IMPORT_ERROR
+
+
 def _molecule(record: dict[str, Any]) -> Chem.Mol | None:
+    _require_rdkit()
     existing = record.get("_mol") or record.get("mol")
     if existing is not None:
         return Chem.RemoveHs(Chem.Mol(existing))
@@ -549,11 +566,9 @@ def add_3d_only_score(scores: pd.DataFrame, config: ProjectConfig) -> pd.DataFra
     except ModuleNotFoundError:  # direct module execution/import compatibility
         from evidence_fusion import reciprocal_rank_fusion
 
-    three_dimensional = [
-        component
-        for component in config.value("fusion.components")
-        if component not in {"ecfp4_max", "maccs_max"}
-    ]
+    three_dimensional = list(
+        config.value("benchmark.three_dimensional_components")
+    )
     if not three_dimensional:
         raise ValueError("No 3D/pharmacophore fusion components are configured")
     required = {"split_type", "query_id", "target_class", *three_dimensional}
