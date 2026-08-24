@@ -92,6 +92,13 @@ def _validate(config: ProjectConfig) -> None:
         "chem3d.aggregate_top_k",
         "chem3d.o3a_atom_typing",
         "chem3d.o3a_max_iterations",
+        "chem3d.pharmacophore_3d_feature_definition",
+        "chem3d.pharmacophore_3d_score_mode",
+        "chem3d.pharmacophore_3d_profile",
+        "chem3d.pharmacophore_3d_radius",
+        "chem3d.pharmacophore_3d_width",
+        "chem3d.pharmacophore_3d_direction_mode",
+        "chem3d.pharmacophore_3d_normalization",
         "chem3d.max_iterations",
         "chem3d.num_threads",
         "fusion.reciprocal_rank_constant",
@@ -101,6 +108,7 @@ def _validate(config: ProjectConfig) -> None:
         "benchmark.bedroc_alphas",
         "benchmark.enrichment_fractions",
         "benchmark.splits",
+        "benchmark.three_dimensional_components",
         "benchmark.analogue_exclusion_threshold",
         "benchmark.time_cutoff",
         "applicability_domain.tanimoto_in",
@@ -150,6 +158,26 @@ def _validate(config: ProjectConfig) -> None:
     if config.value("chem3d.o3a_atom_typing") not in {"mmff94", "crippen"}:
         raise ConfigError("chem3d.o3a_atom_typing must be mmff94 or crippen")
     _require_number(config, "chem3d.o3a_max_iterations", minimum=1)
+    if config.value("chem3d.pharmacophore_3d_feature_definition") != "BaseFeatures.fdef":
+        raise ConfigError(
+            "chem3d.pharmacophore_3d_feature_definition must be BaseFeatures.fdef"
+        )
+    if config.value("chem3d.pharmacophore_3d_score_mode") != "best":
+        raise ConfigError("chem3d.pharmacophore_3d_score_mode must be best")
+    if config.value("chem3d.pharmacophore_3d_profile") != "gaussian":
+        raise ConfigError("chem3d.pharmacophore_3d_profile must be gaussian")
+    _require_number(config, "chem3d.pharmacophore_3d_radius", minimum=1e-12)
+    _require_number(config, "chem3d.pharmacophore_3d_width", minimum=1e-12)
+    if config.value("chem3d.pharmacophore_3d_direction_mode") != "ignore":
+        raise ConfigError("chem3d.pharmacophore_3d_direction_mode must be ignore")
+    if (
+        config.value("chem3d.pharmacophore_3d_normalization")
+        != "symmetric_directed_feature_coverage"
+    ):
+        raise ConfigError(
+            "chem3d.pharmacophore_3d_normalization must be "
+            "symmetric_directed_feature_coverage"
+        )
     _require_number(config, "chem3d.max_iterations", minimum=1)
     if int(_require_number(config, "chem3d.num_threads", minimum=1)) != 1:
         raise ConfigError("chem3d.num_threads must be 1 for deterministic runs")
@@ -165,6 +193,31 @@ def _validate(config: ProjectConfig) -> None:
         or len(fusion_components) != len(set(fusion_components))
     ):
         raise ConfigError("fusion.components must be a non-empty unique string list")
+    three_dimensional_components = config.value(
+        "benchmark.three_dimensional_components"
+    )
+    if (
+        not isinstance(three_dimensional_components, list)
+        or not three_dimensional_components
+        or not all(
+            isinstance(component, str) and component
+            for component in three_dimensional_components
+        )
+        or len(three_dimensional_components)
+        != len(set(three_dimensional_components))
+    ):
+        raise ConfigError(
+            "benchmark.three_dimensional_components must be a non-empty "
+            "unique string list"
+        )
+    unconfigured_3d = sorted(
+        set(three_dimensional_components) - set(fusion_components)
+    )
+    if unconfigured_3d:
+        raise ConfigError(
+            "benchmark.three_dimensional_components must be fusion components: "
+            f"{unconfigured_3d}"
+        )
     _require_number(config, "benchmark.bootstrap_n", minimum=1)
     bedroc_alphas = config.value("benchmark.bedroc_alphas")
     if not isinstance(bedroc_alphas, list) or {

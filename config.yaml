@@ -84,6 +84,13 @@ chem3d:
   aggregate_top_k: 5
   o3a_atom_typing: mmff94
   o3a_max_iterations: 50
+  pharmacophore_3d_feature_definition: BaseFeatures.fdef
+  pharmacophore_3d_score_mode: best
+  pharmacophore_3d_profile: gaussian
+  pharmacophore_3d_radius: 2.5
+  pharmacophore_3d_width: 1.0
+  pharmacophore_3d_direction_mode: ignore
+  pharmacophore_3d_normalization: symmetric_directed_feature_coverage
   max_iterations: 500
   num_threads: 1
   cache_dir: .cache/oatp/conformers
@@ -97,13 +104,19 @@ fusion:
     - usrcat_max
     - o3a_shape_tanimoto_max
     - o3a_color_max
-    - pharmacophore_sim_max
+    - pharmacophore_2d_gobbi_sim_max
+    - pharmacophore_3d_sim_max
 
 benchmark:
   splits:
     - target_family
     - scaffold
     - temporal
+  three_dimensional_components:
+    - usrcat_max
+    - o3a_shape_tanimoto_max
+    - o3a_color_max
+    - pharmacophore_3d_sim_max
   time_cutoff: "2018-01-01"
   bootstrap_n: 1000
   decoys: property_matched
@@ -134,7 +147,8 @@ model:
     - usrcat_max
     - o3a_shape_tanimoto_max
     - o3a_color_max
-    - pharmacophore_sim_max
+    - pharmacophore_2d_gobbi_sim_max
+    - pharmacophore_3d_sim_max
   regularization_c: 1.0
   platt_regularization_c: 1000000.0
   calibration_method: Platt

@@ -22,7 +22,8 @@ REFERENCE_COMPONENT_COLUMNS = {
     "usrcat_max": "usrcat_similarity",
     "o3a_shape_tanimoto_max": "o3a_shape_tanimoto",
     "o3a_color_max": "o3a_color",
-    "pharmacophore_sim_max": "pharmacophore_similarity",
+    "pharmacophore_2d_gobbi_sim_max": "pharmacophore_2d_gobbi_similarity",
+    "pharmacophore_3d_sim_max": "pharmacophore_3d_similarity",
 }
 
 BIOLOGY_COMPONENT_COLUMNS = {
@@ -63,7 +64,10 @@ def perturbation_scenarios(components: list[str], factors: list[float]):
     layer_groups = {
         "2d": ["ecfp4_max", "maccs_max"],
         "shape": ["usrcat_max", "o3a_shape_tanimoto_max", "o3a_color_max"],
-        "pharmacophore": ["pharmacophore_sim_max"],
+        "pharmacophore": [
+            "pharmacophore_2d_gobbi_sim_max",
+            "pharmacophore_3d_sim_max",
+        ],
     }
     for layer, members in layer_groups.items():
         present = [component for component in members if component in baseline]

@@ -50,8 +50,10 @@ Preserves the existing v2 engine; v3 is additive.
 
 ## 3. Data-flow contracts (see contracts/)
 - `chem3d_matching` input: list of RDKit mols (queries) + reference dict {class: [mols]}; output: DataFrame with
-  `usrcat_max, usrcat_top5_mean, o3a_shape_tanimoto_max, o3a_color_max, pharmacophore_sim_max` per (query, class),
-  plus a conformer-cache manifest.
+  `usrcat_max, usrcat_top5_mean, o3a_shape_tanimoto_max, o3a_color_max,
+  pharmacophore_2d_gobbi_sim_max, pharmacophore_3d_sim_max` per (query, class),
+  plus a conformer-cache manifest. The legacy `pharmacophore_sim_max` alias
+  remains the 2D Gobbi value for v2-compatible consumers.
 - `evidence_fusion` input: 2D score frame + 3D frame; output: adds `chemical_evidence_score_v3` and keeps all
   component columns; deterministic given config.
 - `benchmark_v3` output: one row per (split_type, metric) with point estimate + CI bounds + n + split provenance.

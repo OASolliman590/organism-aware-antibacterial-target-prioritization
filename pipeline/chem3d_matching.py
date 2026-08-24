@@ -7,6 +7,7 @@ force-field parameters. Such cases carry an explicit status and remain missing.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from functools import lru_cache
 import hashlib
 import json
 import math
@@ -17,9 +18,10 @@ from typing import Any
 
 import numpy as np
 import pandas as pd
-from rdkit import Chem, DataStructs, rdBase
+from rdkit import Chem, DataStructs, RDConfig, rdBase
 from rdkit.Chem import (
     AllChem,
+    ChemicalFeatures,
     MACCSkeys,
     rdMolAlign,
     rdMolDescriptors,
@@ -27,6 +29,7 @@ from rdkit.Chem import (
     rdShapeHelpers,
 )
 from rdkit.Chem.Pharm2D import Generate, Gobbi_Pharm2D
+from rdkit.Chem.FeatMaps import FeatMaps
 
 try:
     from pipeline.config import ProjectConfig
@@ -48,6 +51,29 @@ class ConformerEnsemble:
     @property
     def n_conformers(self) -> int:
         return 0 if self.molecule is None else self.molecule.GetNumConformers()
+
+
+@dataclass(frozen=True)
+class Pharmacophore3DScore:
+    similarity: float | None
+    status: str
+    query_feature_count: int
+    reference_feature_count: int
+
+
+@dataclass(frozen=True)
+class O3AOverlayEvidence:
+    shape_similarity: float | None
+    color_similarity: float | None
+    pharmacophore_3d_similarity: float | None
+    overlay_successes: int
+    overlay_failures: int
+    pharmacophore_3d_successes: int
+    pharmacophore_3d_failures: int
+    pharmacophore_3d_status: str
+    pharmacophore_3d_query_feature_count_max: int
+    pharmacophore_3d_reference_feature_count_max: int
+    feature_definition_sha256: str
 
 
 _CONFORMER_LOCKS: dict[str, threading.Lock] = {}
@@ -441,23 +467,188 @@ def _bounded_similarity(value: float) -> float | None:
     return min(1.0, max(0.0, float(value)))
 
 
-def o3a_shape_color_similarity(
+@lru_cache(maxsize=4)
+def _resolved_pharmacophore_3d_feature_definition(
+    rdkit_data_dir: str, filename: str
+) -> tuple[Path, str]:
+    if filename != "BaseFeatures.fdef":
+        raise ValueError("Only RDKit BaseFeatures.fdef is permitted in analysis runs")
+    path = (Path(rdkit_data_dir) / filename).resolve()
+    if not path.is_file():
+        raise FileNotFoundError(f"RDKit pharmacophore feature definition missing: {path}")
+    return path, hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def pharmacophore_3d_feature_definition(config: ProjectConfig) -> tuple[Path, str]:
+    """Resolve and hash the pinned feature definition once per process."""
+
+    filename = str(config.value("chem3d.pharmacophore_3d_feature_definition"))
+    return _resolved_pharmacophore_3d_feature_definition(
+        str(Path(RDConfig.RDDataDir).resolve()), filename
+    )
+
+
+@lru_cache(maxsize=4)
+def _pharmacophore_3d_factory(path: str, sha256: str):
+    """Build a cached factory whose content hash is part of the cache identity."""
+
+    feature_path = Path(path)
+    if hashlib.sha256(feature_path.read_bytes()).hexdigest() != sha256:
+        raise ValueError("Pharmacophore feature-definition hash changed during run")
+    return ChemicalFeatures.BuildFeatureFactory(str(feature_path))
+
+
+def _pharmacophore_3d_features(
+    molecule: Chem.Mol,
+    conformer_id: int,
+    feature_factory,
+):
+    return tuple(
+        feature_factory.GetFeaturesForMol(molecule, confId=int(conformer_id))
+    )
+
+
+def _directed_feature_coverage(
+    map_features,
+    probe_features,
+    config: ProjectConfig,
+) -> float:
+    families = sorted(
+        {feature.GetFamily() for feature in (*map_features, *probe_features)}
+    )
+    parameters = {}
+    for family in families:
+        parameter = FeatMaps.FeatMapParams()
+        parameter.radius = float(config.value("chem3d.pharmacophore_3d_radius"))
+        parameter.width = float(config.value("chem3d.pharmacophore_3d_width"))
+        parameter.featProfile = FeatMaps.FeatMapParams.FeatProfile.Gaussian
+        parameters[family] = parameter
+    feature_map = FeatMaps.FeatMap(
+        params=parameters,
+        feats=list(map_features),
+        weights=[1.0] * len(map_features),
+    )
+    feature_map.scoreMode = FeatMaps.FeatMapScoreMode.Best
+    feature_map.dirScoreMode = FeatMaps.FeatDirScoreMode.Ignore
+    return float(feature_map.ScoreFeats(list(probe_features))) / len(probe_features)
+
+
+def pharmacophore_3d_similarity(
+    aligned_query: Chem.Mol,
+    query_conformer_id: int,
+    reference: Chem.Mol,
+    reference_conformer_id: int,
+    config: ProjectConfig,
+    *,
+    _feature_factory=None,
+) -> Pharmacophore3DScore:
+    """Symmetric BaseFeatures overlap on one already aligned conformer pair."""
+
+    if _feature_factory is None:
+        path, sha256 = pharmacophore_3d_feature_definition(config)
+        _feature_factory = _pharmacophore_3d_factory(str(path), sha256)
+    try:
+        query_features = _pharmacophore_3d_features(
+            aligned_query, query_conformer_id, _feature_factory
+        )
+        reference_features = _pharmacophore_3d_features(
+            reference, reference_conformer_id, _feature_factory
+        )
+    except (OSError, RuntimeError, ValueError, KeyError):
+        return Pharmacophore3DScore(None, "feature_extraction_failed", 0, 0)
+    if not query_features or not reference_features:
+        return Pharmacophore3DScore(
+            None,
+            "unavailable_no_features",
+            len(query_features),
+            len(reference_features),
+        )
+    try:
+        query_to_reference = _directed_feature_coverage(
+            reference_features, query_features, config
+        )
+        reference_to_query = _directed_feature_coverage(
+            query_features, reference_features, config
+        )
+        similarity = _bounded_similarity(
+            0.5 * (query_to_reference + reference_to_query)
+        )
+    except (RuntimeError, ValueError, KeyError, ZeroDivisionError):
+        similarity = None
+    return Pharmacophore3DScore(
+        similarity,
+        "ok" if similarity is not None else "feature_scoring_failed",
+        len(query_features),
+        len(reference_features),
+    )
+
+
+def _o3a_overlay_evidence(
     query: ConformerEnsemble,
     reference: ConformerEnsemble,
     config: ProjectConfig,
-) -> tuple[float | None, float | None, int, int]:
-    """O3A-align all conformer pairs and return max shape/color similarities."""
+    *,
+    include_pharmacophore_3d: bool,
+) -> O3AOverlayEvidence:
+    """O3A-align conformer pairs and score independent overlay evidence."""
 
+    feature_factory = None
+    feature_definition_sha256 = ""
+    if include_pharmacophore_3d:
+        feature_path, feature_definition_sha256 = (
+            pharmacophore_3d_feature_definition(config)
+        )
+        feature_factory = _pharmacophore_3d_factory(
+            str(feature_path), feature_definition_sha256
+        )
     if query.molecule is None or reference.molecule is None:
-        return None, None, 0, 0
+        return O3AOverlayEvidence(
+            None,
+            None,
+            None,
+            0,
+            0,
+            0,
+            0,
+            (
+                "unavailable_missing_conformer_ensemble"
+                if include_pharmacophore_3d
+                else "not_requested"
+            ),
+            0,
+            0,
+            feature_definition_sha256,
+        )
     typing = str(config.value("chem3d.o3a_atom_typing"))
     if typing == "mmff94" and (
         not AllChem.MMFFHasAllMoleculeParams(query.molecule)
         or not AllChem.MMFFHasAllMoleculeParams(reference.molecule)
     ):
-        return None, None, 0, 1
+        return O3AOverlayEvidence(
+            None,
+            None,
+            None,
+            0,
+            1,
+            0,
+            1 if include_pharmacophore_3d else 0,
+            (
+                "unavailable_mmff94_parameters"
+                if include_pharmacophore_3d
+                else "not_requested"
+            ),
+            0,
+            0,
+            feature_definition_sha256,
+        )
     shape_scores: list[float] = []
     color_scores: list[float] = []
+    pharmacophore_scores: list[float] = []
+    pharmacophore_statuses: set[str] = set()
+    pharmacophore_successes = 0
+    pharmacophore_failures = 0
+    query_feature_count_max = 0
+    reference_feature_count_max = 0
     failures = 0
     attempts = 0
     shape_options = rdShapeAlign.ShapeInputOptions()
@@ -485,6 +676,16 @@ def o3a_shape_color_similarity(
                         maxIters=int(config.value("chem3d.o3a_max_iterations")),
                     )
                 overlay.Align()
+            except (RuntimeError, ValueError):
+                failures += 1
+                if include_pharmacophore_3d:
+                    pharmacophore_failures += 1
+                    pharmacophore_statuses.add("unavailable_alignment_failed")
+                continue
+
+            shape = None
+            color = None
+            try:
                 shape = _bounded_similarity(
                     1.0
                     - float(
@@ -497,6 +698,9 @@ def o3a_shape_color_similarity(
                         )
                     )
                 )
+            except (RuntimeError, ValueError):
+                shape = None
+            try:
                 _, color_raw = rdShapeAlign.ScoreMol(
                     reference.molecule,
                     probe,
@@ -507,18 +711,85 @@ def o3a_shape_color_similarity(
                 )
                 color = _bounded_similarity(float(color_raw))
             except (RuntimeError, ValueError):
-                failures += 1
-                continue
+                color = None
             if shape is None or color is None:
                 failures += 1
-                continue
-            shape_scores.append(shape)
-            color_scores.append(color)
-    return (
+            if shape is not None:
+                shape_scores.append(shape)
+            if color is not None:
+                color_scores.append(color)
+            if include_pharmacophore_3d:
+                pharmacophore = pharmacophore_3d_similarity(
+                    probe,
+                    query_conformer.GetId(),
+                    reference.molecule,
+                    reference_conformer.GetId(),
+                    config,
+                    _feature_factory=feature_factory,
+                )
+                pharmacophore_statuses.add(pharmacophore.status)
+                query_feature_count_max = max(
+                    query_feature_count_max, pharmacophore.query_feature_count
+                )
+                reference_feature_count_max = max(
+                    reference_feature_count_max,
+                    pharmacophore.reference_feature_count,
+                )
+                if pharmacophore.similarity is None:
+                    pharmacophore_failures += 1
+                else:
+                    pharmacophore_scores.append(pharmacophore.similarity)
+                    pharmacophore_successes += 1
+    if not include_pharmacophore_3d:
+        pharmacophore_status = "not_requested"
+    elif pharmacophore_scores:
+        pharmacophore_status = "ok"
+    elif pharmacophore_statuses:
+        pharmacophore_status = ";".join(sorted(pharmacophore_statuses))
+    else:
+        pharmacophore_status = "unavailable_no_valid_overlay"
+    return O3AOverlayEvidence(
         max(shape_scores) if shape_scores else None,
         max(color_scores) if color_scores else None,
+        max(pharmacophore_scores) if pharmacophore_scores else None,
         attempts - failures,
         failures,
+        pharmacophore_successes,
+        pharmacophore_failures,
+        pharmacophore_status,
+        query_feature_count_max,
+        reference_feature_count_max,
+        feature_definition_sha256,
+    )
+
+
+def o3a_shape_color_pharmacophore_similarity(
+    query: ConformerEnsemble,
+    reference: ConformerEnsemble,
+    config: ProjectConfig,
+) -> O3AOverlayEvidence:
+    """O3A-align conformer pairs and score shape, color, and 3D features."""
+
+    return _o3a_overlay_evidence(
+        query, reference, config, include_pharmacophore_3d=True
+    )
+
+
+def o3a_shape_color_similarity(
+    query: ConformerEnsemble,
+    reference: ConformerEnsemble,
+    config: ProjectConfig,
+) -> tuple[float | None, float | None, int, int]:
+    """Compatibility wrapper returning the original O3A shape/color contract."""
+
+    evidence = _o3a_overlay_evidence(
+        query, reference, config, include_pharmacophore_3d=False
+    )
+    return (
+        evidence.shape_similarity,
+        evidence.color_similarity,
+        evidence.overlay_successes,
+        evidence.overlay_failures,
     )
 
 
@@ -557,28 +828,74 @@ def score_o3a_by_target(
         shortlisted = candidates[:shortlist_size]
         shapes: list[float] = []
         colors: list[float] = []
+        pharmacophores_3d: list[float] = []
+        pharmacophore_3d_statuses: set[str] = set()
         overlay_successes = 0
         overlay_failures = 0
+        pharmacophore_3d_successes = 0
+        pharmacophore_3d_failures = 0
+        pharmacophore_3d_query_feature_count_max = 0
+        pharmacophore_3d_reference_feature_count_max = 0
+        feature_definition_sha256 = ""
         for _, reference_ensemble in shortlisted:
-            shape, color, successes, failures = o3a_shape_color_similarity(
+            overlay = o3a_shape_color_pharmacophore_similarity(
                 query_ensemble, reference_ensemble, config
             )
-            overlay_successes += successes
-            overlay_failures += failures
-            if shape is not None:
-                shapes.append(shape)
-            if color is not None:
-                colors.append(color)
+            overlay_successes += overlay.overlay_successes
+            overlay_failures += overlay.overlay_failures
+            pharmacophore_3d_successes += overlay.pharmacophore_3d_successes
+            pharmacophore_3d_failures += overlay.pharmacophore_3d_failures
+            pharmacophore_3d_query_feature_count_max = max(
+                pharmacophore_3d_query_feature_count_max,
+                overlay.pharmacophore_3d_query_feature_count_max,
+            )
+            pharmacophore_3d_reference_feature_count_max = max(
+                pharmacophore_3d_reference_feature_count_max,
+                overlay.pharmacophore_3d_reference_feature_count_max,
+            )
+            pharmacophore_3d_statuses.add(overlay.pharmacophore_3d_status)
+            feature_definition_sha256 = overlay.feature_definition_sha256
+            if overlay.shape_similarity is not None:
+                shapes.append(overlay.shape_similarity)
+            if overlay.color_similarity is not None:
+                colors.append(overlay.color_similarity)
+            if overlay.pharmacophore_3d_similarity is not None:
+                pharmacophores_3d.append(overlay.pharmacophore_3d_similarity)
         rows.append(
             {
                 "query_id": query_id,
                 "target_class": target_class,
                 "o3a_shape_tanimoto_max": max(shapes) if shapes else np.nan,
                 "o3a_color_max": max(colors) if colors else np.nan,
+                "pharmacophore_3d_sim_max": (
+                    max(pharmacophores_3d) if pharmacophores_3d else np.nan
+                ),
                 "n_o3a_references_shortlisted": len(shortlisted),
                 "n_o3a_overlays_scored": overlay_successes,
                 "n_o3a_overlay_failures": overlay_failures,
                 "n_o3a_reference_failures": reference_failures,
+                "n_pharmacophore_3d_overlays_scored": pharmacophore_3d_successes,
+                "n_pharmacophore_3d_overlay_failures": pharmacophore_3d_failures,
+                "pharmacophore_3d_query_feature_count_max": (
+                    pharmacophore_3d_query_feature_count_max
+                ),
+                "pharmacophore_3d_reference_feature_count_max": (
+                    pharmacophore_3d_reference_feature_count_max
+                ),
+                "pharmacophore_3d_feature_definition_sha256": (
+                    feature_definition_sha256
+                    or pharmacophore_3d_feature_definition(config)[1]
+                ),
+                "pharmacophore_3d_method": (
+                    "RDKit_BaseFeatures_FeatMaps_on_O3A_aligned_conformers"
+                ),
+                "pharmacophore_3d_status": (
+                    "ok"
+                    if pharmacophores_3d
+                    else ";".join(sorted(pharmacophore_3d_statuses))
+                    if pharmacophore_3d_statuses
+                    else "unavailable_no_shortlisted_overlay"
+                ),
                 "o3a_status": (
                     "ok" if shapes and colors else "unavailable_no_valid_overlay"
                 ),
@@ -600,7 +917,7 @@ def score_pharmacophore_by_target(
     query_molecule: Chem.Mol,
     references: dict[str, list[dict[str, Any]]],
 ) -> pd.DataFrame:
-    """Aggregate alignment-free Gobbi pharmacophore similarity per target class."""
+    """Aggregate complementary 2D Gobbi pharmacophore similarity per target."""
 
     try:
         query_fingerprint = gobbi_pharmacophore_fingerprint(query_molecule)
@@ -640,9 +957,18 @@ def score_pharmacophore_by_target(
             {
                 "query_id": query_id,
                 "target_class": target_class,
+                "pharmacophore_2d_gobbi_sim_max": (
+                    max(scores) if scores else np.nan
+                ),
                 "pharmacophore_sim_max": max(scores) if scores else np.nan,
+                "n_pharmacophore_2d_gobbi_references_scored": len(scores),
+                "n_pharmacophore_2d_gobbi_failures": failures,
                 "n_pharmacophore_references_scored": len(scores),
                 "n_pharmacophore_failures": failures,
+                "pharmacophore_2d_gobbi_method": "Gobbi_Pharm2D",
+                "pharmacophore_2d_gobbi_status": (
+                    "ok" if scores else "unavailable_no_valid_fingerprint"
+                ),
                 "pharmacophore_method": "Gobbi_Pharm2D",
                 "pharmacophore_status": (
                     "ok" if scores else "unavailable_no_valid_fingerprint"
@@ -688,6 +1014,7 @@ def score_reference_evidence_by_target(
             query_pharmacophore = None
     except (RuntimeError, ValueError):
         query_pharmacophore = None
+    _, pharmacophore_3d_fdef_sha256 = pharmacophore_3d_feature_definition(config)
 
     rows: list[dict[str, Any]] = []
     ensembles: dict[int, ConformerEnsemble] = {}
@@ -708,14 +1035,28 @@ def score_reference_evidence_by_target(
                 "o3a_color": np.nan,
                 "n_o3a_overlays_scored": 0,
                 "n_o3a_overlay_failures": 0,
+                "pharmacophore_3d_similarity": np.nan,
+                "n_pharmacophore_3d_overlays_scored": 0,
+                "n_pharmacophore_3d_overlay_failures": 0,
+                "pharmacophore_3d_query_feature_count_max": 0,
+                "pharmacophore_3d_reference_feature_count_max": 0,
+                "pharmacophore_3d_status": "not_shortlisted",
+                "pharmacophore_3d_method": (
+                    "RDKit_BaseFeatures_FeatMaps_on_O3A_aligned_conformers"
+                ),
+                "pharmacophore_3d_feature_definition_sha256": (
+                    pharmacophore_3d_fdef_sha256
+                ),
             }
             if molecule is None:
                 rows.append(
                     {
                         **base,
+                        "pharmacophore_3d_status": "invalid_structure",
                         "ecfp4_similarity": np.nan,
                         "maccs_similarity": np.nan,
                         "usrcat_similarity": np.nan,
+                        "pharmacophore_2d_gobbi_similarity": np.nan,
                         "pharmacophore_similarity": np.nan,
                         "reference_conformer_status": "invalid_structure",
                         "reference_evidence_status": "invalid_structure",
@@ -762,6 +1103,11 @@ def score_reference_evidence_by_target(
                     "usrcat_similarity": (
                         usr_similarity if usr_similarity is not None else np.nan
                     ),
+                    "pharmacophore_2d_gobbi_similarity": (
+                        pharmacophore_similarity
+                        if pharmacophore_similarity is not None
+                        else np.nan
+                    ),
                     "pharmacophore_similarity": (
                         pharmacophore_similarity
                         if pharmacophore_similarity is not None
@@ -785,17 +1131,45 @@ def score_reference_evidence_by_target(
         )
         for row_index in candidates.head(shortlist_size).index:
             evidence.loc[row_index, "o3a_was_shortlisted"] = True
-            shape, color, successes, failures = o3a_shape_color_similarity(
+            overlay = o3a_shape_color_pharmacophore_similarity(
                 query_ensemble, ensembles[int(row_index)], config
             )
             evidence.loc[row_index, "o3a_shape_tanimoto"] = (
-                shape if shape is not None else np.nan
+                overlay.shape_similarity
+                if overlay.shape_similarity is not None
+                else np.nan
             )
             evidence.loc[row_index, "o3a_color"] = (
-                color if color is not None else np.nan
+                overlay.color_similarity
+                if overlay.color_similarity is not None
+                else np.nan
             )
-            evidence.loc[row_index, "n_o3a_overlays_scored"] = successes
-            evidence.loc[row_index, "n_o3a_overlay_failures"] = failures
+            evidence.loc[row_index, "n_o3a_overlays_scored"] = (
+                overlay.overlay_successes
+            )
+            evidence.loc[row_index, "n_o3a_overlay_failures"] = (
+                overlay.overlay_failures
+            )
+            evidence.loc[row_index, "pharmacophore_3d_similarity"] = (
+                overlay.pharmacophore_3d_similarity
+                if overlay.pharmacophore_3d_similarity is not None
+                else np.nan
+            )
+            evidence.loc[row_index, "n_pharmacophore_3d_overlays_scored"] = (
+                overlay.pharmacophore_3d_successes
+            )
+            evidence.loc[row_index, "n_pharmacophore_3d_overlay_failures"] = (
+                overlay.pharmacophore_3d_failures
+            )
+            evidence.loc[row_index, "pharmacophore_3d_query_feature_count_max"] = (
+                overlay.pharmacophore_3d_query_feature_count_max
+            )
+            evidence.loc[
+                row_index, "pharmacophore_3d_reference_feature_count_max"
+            ] = overlay.pharmacophore_3d_reference_feature_count_max
+            evidence.loc[row_index, "pharmacophore_3d_status"] = (
+                overlay.pharmacophore_3d_status
+            )
     return evidence
 
 
@@ -812,6 +1186,8 @@ def aggregate_reference_evidence(
         "usrcat_similarity",
         "o3a_shape_tanimoto",
         "o3a_color",
+        "pharmacophore_2d_gobbi_similarity",
+        "pharmacophore_3d_similarity",
         "pharmacophore_similarity",
     }
     missing = sorted(required - set(reference_evidence.columns))
@@ -826,9 +1202,27 @@ def aggregate_reference_evidence(
         ordered_usrcat = usrcat.sort_values(ascending=False)
         shapes = pd.to_numeric(group["o3a_shape_tanimoto"], errors="coerce").dropna()
         colors = pd.to_numeric(group["o3a_color"], errors="coerce").dropna()
-        pharmacophores = pd.to_numeric(
-            group["pharmacophore_similarity"], errors="coerce"
+        pharmacophores_2d = pd.to_numeric(
+            group["pharmacophore_2d_gobbi_similarity"], errors="coerce"
         ).dropna()
+        pharmacophores_3d = pd.to_numeric(
+            group["pharmacophore_3d_similarity"], errors="coerce"
+        ).dropna()
+        shortlisted = group["o3a_was_shortlisted"].astype(bool)
+        pharmacophore_3d_statuses = sorted(
+            set(group.loc[shortlisted, "pharmacophore_3d_status"].astype(str))
+        )
+        fdef_hashes = sorted(
+            set(
+                group["pharmacophore_3d_feature_definition_sha256"]
+                .dropna()
+                .astype(str)
+            )
+        )
+        if len(fdef_hashes) != 1:
+            raise ValueError(
+                "Expected one pharmacophore feature-definition hash per target group"
+            )
         valid_structures = group["reference_conformer_status"] != "invalid_structure"
         reference_3d_failures = valid_structures & group["usrcat_similarity"].isna()
         rows.append(
@@ -854,13 +1248,70 @@ def aggregate_reference_evidence(
                 "n_o3a_overlay_failures": int(group["n_o3a_overlay_failures"].sum()),
                 "n_o3a_reference_failures": int((~valid_structures | group["usrcat_similarity"].isna()).sum()),
                 "o3a_status": "ok" if len(shapes) and len(colors) else "unavailable_no_valid_overlay",
-                "pharmacophore_sim_max": (
-                    float(pharmacophores.max()) if len(pharmacophores) else np.nan
+                "pharmacophore_2d_gobbi_sim_max": (
+                    float(pharmacophores_2d.max())
+                    if len(pharmacophores_2d)
+                    else np.nan
                 ),
-                "n_pharmacophore_references_scored": len(pharmacophores),
-                "n_pharmacophore_failures": int(len(group) - len(pharmacophores)),
+                "pharmacophore_3d_sim_max": (
+                    float(pharmacophores_3d.max())
+                    if len(pharmacophores_3d)
+                    else np.nan
+                ),
+                "pharmacophore_sim_max": (
+                    float(pharmacophores_2d.max())
+                    if len(pharmacophores_2d)
+                    else np.nan
+                ),
+                "n_pharmacophore_2d_gobbi_references_scored": len(
+                    pharmacophores_2d
+                ),
+                "n_pharmacophore_2d_gobbi_failures": int(
+                    len(group) - len(pharmacophores_2d)
+                ),
+                "n_pharmacophore_3d_references_scored": len(pharmacophores_3d),
+                "n_pharmacophore_3d_reference_failures": int(
+                    shortlisted.sum() - len(pharmacophores_3d)
+                ),
+                "n_pharmacophore_3d_overlays_scored": int(
+                    group["n_pharmacophore_3d_overlays_scored"].sum()
+                ),
+                "n_pharmacophore_3d_overlay_failures": int(
+                    group["n_pharmacophore_3d_overlay_failures"].sum()
+                ),
+                "pharmacophore_3d_query_feature_count_max": int(
+                    group["pharmacophore_3d_query_feature_count_max"].max()
+                ),
+                "pharmacophore_3d_reference_feature_count_max": int(
+                    group["pharmacophore_3d_reference_feature_count_max"].max()
+                ),
+                "pharmacophore_3d_feature_definition_sha256": fdef_hashes[0],
+                "pharmacophore_3d_method": (
+                    "RDKit_BaseFeatures_FeatMaps_on_O3A_aligned_conformers"
+                ),
+                "pharmacophore_3d_status": (
+                    "ok"
+                    if len(pharmacophores_3d)
+                    else ";".join(pharmacophore_3d_statuses)
+                    if pharmacophore_3d_statuses
+                    else "unavailable_no_shortlisted_overlay"
+                ),
+                "n_pharmacophore_references_scored": len(pharmacophores_2d),
+                "n_pharmacophore_failures": int(
+                    len(group) - len(pharmacophores_2d)
+                ),
+                "pharmacophore_2d_gobbi_method": "Gobbi_Pharm2D",
+                "pharmacophore_2d_gobbi_status": (
+                    "ok"
+                    if len(pharmacophores_2d)
+                    else "unavailable_no_valid_fingerprint"
+                ),
                 "pharmacophore_method": "Gobbi_Pharm2D",
-                "pharmacophore_status": "ok" if len(pharmacophores) else "unavailable_no_valid_fingerprint",
+                "pharmacophore_status": (
+                    "ok"
+                    if len(pharmacophores_2d)
+                    else "unavailable_no_valid_fingerprint"
+                ),
             }
         )
     return pd.DataFrame(rows)

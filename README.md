@@ -14,7 +14,7 @@ The workflow separates the following evidence layers:
 |---|---|---|
 | Chemical | ECFP4/Morgan, MACCS, nearest-neighbour consistency | Ligand-space support |
 | 3D shape | ETKDGv3, USRCAT, O3A shape/color | Conformer-dependent shape/feature support |
-| Pharmacophore | Gobbi/Poppe feature-pair similarity | Scaffold-independent feature support |
+| Pharmacophore | O3A-aligned BaseFeatures 3D overlap; Gobbi/Poppe 2D feature-pair similarity | Separate spatial and alignment-free scaffold-independent feature support |
 | Specificity | Cross-target decoys, target-specificity margin | Whether the signal is target-specific |
 | Reference quality | Reference count, scaffold diversity, evidence grade | Stability of public support |
 | Species transfer | UniProt accession, mapping status, sequence similarity/coverage | Transferability to the organism protein |

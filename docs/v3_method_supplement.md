@@ -73,15 +73,41 @@ default. After alignment, shape similarity is `1 - ShapeTanimotoDist`; the color
 field is RDKit's normalized shape-feature color score. Both remain bounded in
 `[0,1]`, with overlay attempts and failures reported separately.
 
-The complementary pharmacophore field uses the RDKit Gobbi/Poppe feature-pair
-fingerprint and Tanimoto similarity. This signal is alignment-free; it is kept
-separate from O3A color rather than presented as the same measurement.
+V3 retains two complementary pharmacophore measurements. The alignment-free
+2D field, `pharmacophore_2d_gobbi_sim_max`, uses the RDKit Gobbi/Poppe
+feature-pair fingerprint and Tanimoto similarity. For the true 3D field,
+`pharmacophore_3d_sim_max`, RDKit `ChemicalFeatures` extracts features from the
+pinned `BaseFeatures.fdef` definition on each successfully O3A-aligned conformer
+pair. The feature-definition SHA-256 is emitted with the evidence.
+
+The 3D overlap uses RDKit `FeatMaps` with the best same-family match selected
+independently for each probe feature (map-feature reuse is allowed), a Gaussian
+profile, 2.5 Å cutoff radius, width 1.0, unit feature weights, and ignored
+feature directions. Each direction is normalized by its probe feature count;
+the reported pair score is the mean of query-to-reference and
+reference-to-query directed coverage. This symmetric normalization is an
+explicit implementation choice because the research plan specifies
+`ChemicalFeatures`/`BaseFeatures` but not a normalization rule. It prevents the
+larger feature set from being the only denominator. A molecule with no detected
+features, a feature-extraction failure, or no valid O3A overlay remains missing;
+a numeric zero is reserved for two valid feature sets with no spatial overlap.
+The maximum valid pair score is retained per query/reference and then per
+query/target class. The legacy `pharmacophore_sim_max` alias remains equal to
+the 2D Gobbi value for compatibility and is not an additional fusion input.
+The feature-definition path, content hash, and factory are resolved once per
+worker process rather than re-read for every conformer pair. After O3A succeeds,
+shape, color, and 3D pharmacophore scores are attempted independently: failure
+of one component does not erase another. The pharmacophore overlay-failure count
+includes conformer pairs that could not be aligned as well as aligned pairs with
+missing or failed feature scores; per-reference missingness and status remain
+separate fields.
 
 ## Evidence fusion
 
 The default chemical v3 score is normalized Reciprocal Rank Fusion (RRF), applied
-within each query over target classes. The configured components are ECFP4,
-MACCS, USRCAT, O3A shape, O3A color, and Gobbi pharmacophore similarity. If
+within each query over target classes. The seven configured components are
+ECFP4, MACCS, USRCAT, O3A shape, O3A color, 2D Gobbi pharmacophore similarity,
+and O3A-aligned 3D pharmacophore similarity. If
 `r_i(q,t)` is the rank for component `i`, `k=60`, and `I_i` indicates that the
 component exists, then:
 
@@ -125,8 +151,12 @@ inside each query. Every aggregate carries its 95% interval, total/evaluable
 query counts, seed, snapshot, and split-removal provenance. Undefined metrics
 carry `NaN` bounds and an unavailable status.
 
-The single mode-comparison table contains 2D-only, 3D-plus-pharmacophore-only,
-and fused retrieval for all three splits. `performance_vs_2d` is assigned
+The single mode-comparison table contains legacy 2D-only, true 3D-only (USRCAT,
+O3A shape/color, and aligned 3D pharmacophore), and seven-component fused
+retrieval for all three splits. The 2D Gobbi field is excluded from the 3D-only
+mode. The exact 3D-only component list is declared independently in
+`benchmark.three_dimensional_components`, preventing later 2D additions to the
+fusion list from silently contaminating this comparison. `performance_vs_2d` is assigned
 mechanically as improved, equal, worse, or unavailable. A worse 3D or fused
 result is reported unchanged.
 

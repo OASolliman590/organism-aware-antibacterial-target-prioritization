@@ -58,7 +58,8 @@ def _references(config: ProjectConfig) -> pd.DataFrame:
                             "usrcat_similarity": base - 0.02,
                             "o3a_shape_tanimoto": base - 0.03,
                             "o3a_color": base - 0.04,
-                            "pharmacophore_similarity": base - 0.05,
+                            "pharmacophore_2d_gobbi_similarity": base - 0.05,
+                            "pharmacophore_3d_similarity": base - 0.06,
                         }
                     )
     return pd.DataFrame(rows)

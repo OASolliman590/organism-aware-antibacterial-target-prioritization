@@ -103,6 +103,8 @@ def test_v3_query_scoring_is_additive_and_deterministic(tmp_path) -> None:
         "usrcat_top5_mean",
         "o3a_shape_tanimoto_max",
         "o3a_color_max",
+        "pharmacophore_2d_gobbi_sim_max",
+        "pharmacophore_3d_sim_max",
         "pharmacophore_sim_max",
         "chemical_evidence_score_v3",
         "chemical_quality_adjusted_score_v3",
@@ -116,6 +118,8 @@ def test_v3_query_scoring_is_additive_and_deterministic(tmp_path) -> None:
         "ecfp4_similarity",
         "usrcat_similarity",
         "o3a_was_shortlisted",
+        "pharmacophore_2d_gobbi_similarity",
+        "pharmacophore_3d_similarity",
         "pharmacophore_similarity",
     }.issubset(reference_evidence.columns)
 

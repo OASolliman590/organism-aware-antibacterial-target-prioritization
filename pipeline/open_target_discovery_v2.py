@@ -664,7 +664,9 @@ def emit_v3_outputs(
         {
             "target_class": sorted(refs),
             "n_reference_ligands": [len(refs[key]) for key in sorted(refs)],
-            "chem3d_method": "ETKDGv3_USRCAT_O3A_Gobbi_Pharm2D",
+            "chem3d_method": (
+                "ETKDGv3_USRCAT_O3A_BaseFeatures3D_Gobbi_Pharm2D"
+            ),
         }
     )
     path = result_dir / "open_target_reference_coverage_v3.csv"

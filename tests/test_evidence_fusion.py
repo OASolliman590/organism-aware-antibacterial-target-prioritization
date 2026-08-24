@@ -24,7 +24,8 @@ def test_rank_fusion_retains_components_and_exposes_contributions() -> None:
                 "usrcat_max": 0.5,
                 "o3a_shape_tanimoto_max": 0.6,
                 "o3a_color_max": 0.3,
-                "pharmacophore_sim_max": 0.2,
+                "pharmacophore_2d_gobbi_sim_max": 0.2,
+                "pharmacophore_3d_sim_max": 0.4,
             },
             {
                 "query_id": "q1",
@@ -32,7 +33,8 @@ def test_rank_fusion_retains_components_and_exposes_contributions() -> None:
                 "usrcat_max": 0.8,
                 "o3a_shape_tanimoto_max": 0.7,
                 "o3a_color_max": 0.9,
-                "pharmacophore_sim_max": 0.6,
+                "pharmacophore_2d_gobbi_sim_max": 0.6,
+                "pharmacophore_3d_sim_max": 0.8,
             },
         ]
     )
@@ -43,7 +45,7 @@ def test_rank_fusion_retains_components_and_exposes_contributions() -> None:
     assert set(chem3d.columns).issubset(fused.columns)
     assert fused["chemical_evidence_score_v3"].between(0, 1).all()
     assert not fused["chemical_evidence_score_v3_is_probability"].any()
-    assert (fused["fusion_component_count"] == 6).all()
+    assert (fused["fusion_component_count"] == 7).all()
     assert (fused["fusion_missing_components"] == "").all()
     assert fused.loc[fused.target_class == "B", "chemical_evidence_score_v3"].iloc[0] > fused.loc[
         fused.target_class == "A", "chemical_evidence_score_v3"

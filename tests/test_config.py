@@ -36,3 +36,39 @@ def test_config_rejects_overlapping_applicability_domain_thresholds(
 
     with pytest.raises(ConfigError, match="tanimoto_out"):
         load_config(invalid, project_root=ROOT)
+
+
+@pytest.mark.parametrize(
+    ("key", "value", "message"),
+    [
+        ("pharmacophore_3d_feature_definition", "custom.fdef", "BaseFeatures"),
+        ("pharmacophore_3d_score_mode", "all", "score_mode"),
+        ("pharmacophore_3d_profile", "triangle", "profile"),
+        ("pharmacophore_3d_radius", 0, "radius"),
+        ("pharmacophore_3d_width", 0, "width"),
+        ("pharmacophore_3d_direction_mode", "dot", "direction_mode"),
+        ("pharmacophore_3d_normalization", "asymmetric", "normalization"),
+    ],
+)
+def test_config_rejects_unpinned_3d_pharmacophore_options(
+    tmp_path: Path, key: str, value, message: str
+) -> None:
+    raw = yaml.safe_load((ROOT / "config.yaml").read_text(encoding="utf-8"))
+    raw["chem3d"][key] = value
+    invalid = tmp_path / f"invalid-{key}.yaml"
+    invalid.write_text(yaml.safe_dump(raw), encoding="utf-8")
+
+    with pytest.raises(ConfigError, match=message):
+        load_config(invalid, project_root=ROOT)
+
+
+def test_config_rejects_3d_benchmark_components_outside_fusion(
+    tmp_path: Path,
+) -> None:
+    raw = yaml.safe_load((ROOT / "config.yaml").read_text(encoding="utf-8"))
+    raw["benchmark"]["three_dimensional_components"].append("unknown_3d_score")
+    invalid = tmp_path / "invalid-3d-components.yaml"
+    invalid.write_text(yaml.safe_dump(raw), encoding="utf-8")
+
+    with pytest.raises(ConfigError, match="must be fusion components"):
+        load_config(invalid, project_root=ROOT)
