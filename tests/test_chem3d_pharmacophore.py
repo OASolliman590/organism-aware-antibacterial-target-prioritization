@@ -198,7 +198,11 @@ def test_reference_evidence_keeps_2d_and_o3a_aligned_3d_pharmacophores(
     tmp_path,
 ) -> None:
     config = _config()
-    query = Chem.MolFromSmiles("CCO")
+    # Ethanol has no populated Gobbi/Poppe 2D feature-pair fingerprint under
+    # the pinned RDKit release. This test asserts populated 2D and aligned 3D
+    # evidence, so use the same fingerprint-bearing reference pair as the
+    # dedicated 2D pharmacophore test above.
+    query = Chem.MolFromSmiles("COC1=CC(=CC(=C1OC)OC)CC2=CN=C(N=C2N)N")
     other = Chem.MolFromSmiles("CC(=O)N")
     assert query is not None and other is not None
     evidence = score_reference_evidence_by_target(
