@@ -22,13 +22,14 @@ phase's tasks pass. Never fabricate data (constitution I). Report negative resul
       (query, target_class). **AC:** fields present for all query×class pairs; runtime acceptable via caching.
 - [x] **T1.3** O3A alignment on USRCAT-shortlisted references → `o3a_shape_tanimoto_max`, `o3a_color_max`. **AC:**
       shortlist size from config; values in [0,1]; documented.
-- [ ] **T1.4** Pharmacophore similarity (RDKit `ChemicalFeatures`/`BaseFeatures.fdef` on O3A-aligned conformers,
+- [x] **T1.4** Pharmacophore similarity (RDKit `ChemicalFeatures`/`BaseFeatures.fdef` on O3A-aligned conformers,
       plus complementary `Gobbi_Pharm2D`) → separate `pharmacophore_3d_sim_max` and
       `pharmacophore_2d_gobbi_sim_max` fields; retain `pharmacophore_sim_max` as a 2D compatibility alias only.
       **AC:** both canonical fields are present and independently auditable.
-      **STATUS: PENDING HOST VERIFICATION —** implementation, tests, static compilation, and non-RDKit integration
-      checks are present, but the pinned RDKit 2026.3.5 Windows extension modules are unsigned and blocked by the
-      host Application Control policy before pytest collection. No score or passing test was simulated.
+      **STATUS: VERIFIED —** committed snapshot `5dc43ce` passed the full suite on NMRbox HTCondor cluster `2006524`
+      (`75 passed in 37.15s`) with Python 3.12.3 and pinned RDKit 2026.03.5. The uploaded archive SHA-256 was
+      `e85165c0de046931172ff105580d8720bf7732fc3143af965501452588e8cd81`. Local Windows RDKit remains blocked by
+      Application Control; no score or passing result was simulated locally.
 - [x] **T1.5** `pipeline/evidence_fusion.py`: rank/score fusion → `chemical_evidence_score_v3`, retaining all
       component columns (constitution VI). **AC:** components auditable; fusion deterministic.
 - [x] **T1.6** Wire v3 chemical evidence into `open_target_discovery_v2.py` behind `combiner`/`fusion_mode` config,
