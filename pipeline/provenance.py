@@ -46,15 +46,33 @@ def _git_output(root: Path, *args: str) -> str | None:
     return result.stdout.strip()
 
 
+def _provided_source_commit() -> str | None:
+    """Return an explicitly supplied archive commit only when it is a Git hash."""
+
+    value = os.environ.get("OAATP_SOURCE_COMMIT", "").strip()
+    if not value:
+        return None
+    if len(value) < 7 or len(value) > 64:
+        return None
+    if any(character not in "0123456789abcdefABCDEF" for character in value):
+        return None
+    return value.lower()
+
+
 def git_provenance(root: Path) -> dict[str, Any]:
     commit = _git_output(root, "rev-parse", "HEAD")
     branch = _git_output(root, "branch", "--show-current")
     status = _git_output(root, "status", "--porcelain", "--untracked-files=no")
+    source = "git"
+    if commit is None:
+        commit = _provided_source_commit()
+        source = "environment" if commit else None
     return {
         "commit": commit,
         "branch": branch,
         "dirty_tracked_files": None if status is None else bool(status),
         "status": "available" if commit else "unavailable",
+        "source": source,
     }
 
 

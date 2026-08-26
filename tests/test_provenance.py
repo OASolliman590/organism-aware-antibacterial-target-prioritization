@@ -7,7 +7,12 @@ import yaml
 
 import run_pipeline
 from pipeline.config import load_config
-from pipeline.provenance import start_run, utc_now, write_run_manifest
+from pipeline.provenance import (
+    git_provenance,
+    start_run,
+    utc_now,
+    write_run_manifest,
+)
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -23,8 +28,9 @@ def _temporary_config(tmp_path: Path):
 
 
 def test_manifest_is_written_and_finalized_without_inventing_missing_versions(
-    tmp_path: Path,
+    tmp_path: Path, monkeypatch
 ) -> None:
+    monkeypatch.setenv("OAATP_SOURCE_COMMIT", "a23394a")
     config = _temporary_config(tmp_path)
     context = start_run(config)
 
@@ -69,3 +75,18 @@ def test_configured_runner_emits_a_completed_manifest(
     )
     assert manifest["status"] == "completed"
     assert manifest["timestamps"]["completed_at_utc"] is not None
+
+
+def test_archive_run_accepts_only_an_explicit_valid_source_commit(
+    tmp_path: Path, monkeypatch
+) -> None:
+    monkeypatch.setenv("OAATP_SOURCE_COMMIT", "A23394A")
+    provenance = git_provenance(tmp_path)
+    assert provenance["commit"] == "a23394a"
+    assert provenance["source"] == "environment"
+    assert provenance["dirty_tracked_files"] is None
+
+    monkeypatch.setenv("OAATP_SOURCE_COMMIT", "not-a-commit")
+    unavailable = git_provenance(tmp_path)
+    assert unavailable["commit"] is None
+    assert unavailable["status"] == "unavailable"
