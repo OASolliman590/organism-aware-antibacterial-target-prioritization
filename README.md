@@ -1,5 +1,9 @@
 # Organism-Aware Antibacterial Open Target Discovery (v3)
 
+[![CI](https://github.com/OASolliman590/organism-aware-antibacterial-target-prioritization/actions/workflows/ci.yml/badge.svg)](https://github.com/OASolliman590/organism-aware-antibacterial-target-prioritization/actions/workflows/ci.yml)
+[![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/release/python-3120/)
+[![RDKit](https://img.shields.io/badge/cheminformatics-RDKit-3838ff.svg)](https://www.rdkit.org/)
+
 This repository contains a reproducible cheminformatics framework for **open target discovery** from small molecules, followed by organism-specific biological and clinical annotation. It is designed for antibacterial research involving the ESKAPE pathogens and related organisms.
 
 > **Data-protection policy:** unpublished compound structures, compound names, docking/MD outputs, and compound-specific predictions are intentionally excluded from this GitHub repository. Authorized local inputs belong in `inputs/`, which is ignored by Git. The public repository contains code, public benchmark data, public reference data, and documentation only.
