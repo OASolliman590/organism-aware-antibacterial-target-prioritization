@@ -100,8 +100,10 @@ def load_run_molecules(config: ProjectConfig) -> list[Chem.Mol]:
 
     try:
         from pipeline import open_target_discovery_v2 as discovery
+        from pipeline.benchmark_decoys import load_property_matched_decoys
     except ModuleNotFoundError:
         import open_target_discovery_v2 as discovery
+        from benchmark_decoys import load_property_matched_decoys
 
     molecules = [
         record["_mol"]
@@ -119,6 +121,14 @@ def load_run_molecules(config: ProjectConfig) -> list[Chem.Mol]:
     elif config.path_for("benchmark").is_file():
         benchmark = pd.read_csv(config.path_for("benchmark"))
         for smiles in benchmark.get("canonical_smiles", pd.Series(dtype=str)):
+            molecule = discovery.mol(smiles)
+            if molecule is not None:
+                molecules.append(molecule)
+    decoy_result = load_property_matched_decoys(
+        config.path_for("property_matched_decoys")
+    )
+    if decoy_result.status["status"] == "available":
+        for smiles in decoy_result.decoys["canonical_smiles_rdkit"]:
             molecule = discovery.mol(smiles)
             if molecule is not None:
                 molecules.append(molecule)

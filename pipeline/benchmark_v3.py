@@ -46,6 +46,20 @@ DATE_FIELDS = (
     "year",
 )
 
+APPLICABILITY_DOMAIN_COLUMNS = (
+    "ad_nearest_reference_tanimoto",
+    "ad_nearest_reference_usrcat_similarity",
+    "ad_nearest_reference_usrcat_distance",
+    "ad_tanimoto_flag",
+    "ad_usrcat_status",
+    "applicability_domain_flag",
+    "applicability_domain_flag_basis",
+    "ad_tanimoto_in_threshold",
+    "ad_tanimoto_out_threshold",
+    "ad_shortlist_eligible",
+    "ad_shortlist_discount_policy",
+)
+
 
 @dataclass(frozen=True)
 class SplitResult:
@@ -479,6 +493,8 @@ def aggregate_metrics_with_bootstrap(
     score_mode: str,
     split_provenance: pd.DataFrame,
     config: ProjectConfig,
+    bootstrap_unit: str = "query_id",
+    benchmark_task: str = "target_identification",
 ) -> pd.DataFrame:
     """Aggregate query metrics with deterministic query-level bootstrap CIs."""
 
@@ -528,6 +544,7 @@ def aggregate_metrics_with_bootstrap(
         status = "available" if finite.any() else "unavailable_no_evaluable_queries"
         rows.append(
             {
+                "benchmark_task": benchmark_task,
                 "split_type": split_type,
                 "score_mode": score_mode,
                 "metric": metric,
@@ -536,7 +553,7 @@ def aggregate_metrics_with_bootstrap(
                 "ci_upper_95": ci_upper,
                 "n_queries": n_queries,
                 "n_evaluable_queries": int(finite.sum()),
-                "bootstrap_unit": "query_id",
+                "bootstrap_unit": bootstrap_unit,
                 "bootstrap_n": bootstrap_n,
                 "bootstrap_seed": bootstrap_seed,
                 "status": status,
@@ -646,6 +663,478 @@ def compare_score_modes(
                     config=config,
                 )
             )
+    query_metrics = pd.concat(query_tables, ignore_index=True)
+    comparison = pd.concat(aggregate_tables, ignore_index=True)
+    reference = comparison[comparison.score_mode == "2d_only"][
+        ["split_type", "metric", "estimate"]
+    ].rename(columns={"estimate": "estimate_2d_reference"})
+    comparison = comparison.merge(
+        reference,
+        on=["split_type", "metric"],
+        how="left",
+        validate="many_to_one",
+    )
+    comparison["delta_vs_2d"] = (
+        comparison["estimate"] - comparison["estimate_2d_reference"]
+    )
+    available = comparison["estimate"].notna() & comparison[
+        "estimate_2d_reference"
+    ].notna()
+    comparison["performance_vs_2d"] = np.select(
+        [
+            ~available,
+            comparison["score_mode"] == "2d_only",
+            comparison["delta_vs_2d"] > 0,
+            comparison["delta_vs_2d"] < 0,
+        ],
+        ["unavailable", "reference", "improved", "worse"],
+        default="equal",
+    )
+    return query_metrics, comparison
+
+
+def build_property_decoy_target_score_table(
+    scores: pd.DataFrame,
+    candidates: pd.DataFrame,
+    split_provenance: pd.DataFrame,
+    config: ProjectConfig,
+) -> pd.DataFrame:
+    """Extract each molecule's score for its explicitly matched target class."""
+
+    candidate_columns = {
+        "candidate_id",
+        "retrieval_task_id",
+        "matched_active_query_id",
+        "matched_target_class",
+        "is_active",
+        "candidate_type",
+        "label_semantics",
+    }
+    missing_candidates = sorted(candidate_columns - set(candidates.columns))
+    if missing_candidates:
+        raise ValueError(
+            f"Property-decoy candidates are missing fields: {missing_candidates}"
+        )
+    for column in [
+        "candidate_id",
+        "retrieval_task_id",
+        "matched_active_query_id",
+        "matched_target_class",
+    ]:
+        if (
+            candidates[column].isna().any()
+            or candidates[column].astype(str).str.strip().eq("").any()
+        ):
+            raise ValueError(f"Property-decoy candidate provenance is blank: {column}")
+    canonical_task_ids = (
+        candidates["matched_active_query_id"].astype(str)
+        + "::"
+        + candidates["matched_target_class"].astype(str)
+    )
+    mismatched_task_ids = candidates["retrieval_task_id"].astype(str).ne(
+        canonical_task_ids
+    )
+    if mismatched_task_ids.any():
+        raise ValueError(
+            "Property-decoy retrieval_task_id must equal "
+            "matched_active_query_id::matched_target_class"
+        )
+    if candidates["candidate_id"].duplicated().any():
+        raise ValueError("Property-decoy candidate_id values must be unique")
+    if not candidates.empty:
+        labels = pd.to_numeric(candidates["is_active"], errors="coerce")
+        if not labels.isin([0, 1]).all():
+            raise ValueError("Property-decoy is_active labels must be exactly 0 or 1")
+        task_contract = (
+            candidates.assign(_numeric_is_active=labels)
+            .groupby("retrieval_task_id", sort=True)
+            .agg(
+                n_active=("_numeric_is_active", "sum"),
+                n_candidates=("candidate_id", "size"),
+                n_matched_actives=("matched_active_query_id", "nunique"),
+                n_matched_targets=("matched_target_class", "nunique"),
+            )
+        )
+        invalid_tasks = task_contract[
+            task_contract["n_active"].ne(1)
+            | task_contract["n_candidates"].le(1)
+            | task_contract["n_matched_actives"].ne(1)
+            | task_contract["n_matched_targets"].ne(1)
+        ]
+        if not invalid_tasks.empty:
+            raise ValueError(
+                "Each property-decoy retrieval task requires exactly one matched "
+                "active, at least one linked decoy, and one target class: "
+                f"{invalid_tasks.head(5).to_dict('index')}"
+            )
+
+    metadata_columns = [
+        column
+        for column in candidates.columns
+        if column not in {"query_id", "target_class"}
+    ]
+    grid = candidates[metadata_columns].merge(
+        pd.DataFrame({"split_type": list(config.value("benchmark.splits"))}),
+        how="cross",
+    )
+    evidence_columns = [
+        *list(config.value("fusion.components")),
+        *list(SCORE_MODES.values()),
+        *APPLICABILITY_DOMAIN_COLUMNS,
+    ]
+    required_score_columns = {
+        "query_id",
+        "target_class",
+        "split_type",
+        *evidence_columns,
+    }
+    missing_score_columns = sorted(required_score_columns - set(scores.columns))
+    if not scores.empty and missing_score_columns:
+        raise ValueError(
+            "Property-decoy scores are missing evidence or applicability-domain "
+            f"fields: {missing_score_columns}"
+        )
+    score_source = scores.copy()
+    for column in ["query_id", "target_class", "split_type", *evidence_columns]:
+        if column not in score_source:
+            numeric_evidence = {
+                *config.value("fusion.components"),
+                *SCORE_MODES.values(),
+                "ad_nearest_reference_tanimoto",
+                "ad_nearest_reference_usrcat_similarity",
+                "ad_nearest_reference_usrcat_distance",
+                "ad_tanimoto_in_threshold",
+                "ad_tanimoto_out_threshold",
+            }
+            score_source[column] = pd.Series(
+                dtype=float if column in numeric_evidence else object
+            )
+    selected = score_source.merge(
+        candidates[["candidate_id", "matched_target_class"]],
+        left_on="query_id",
+        right_on="candidate_id",
+        how="inner",
+        validate="many_to_one",
+    )
+    selected = selected[
+        selected["target_class"].astype(str)
+        == selected["matched_target_class"].astype(str)
+    ].copy()
+    if selected.duplicated(["candidate_id", "split_type"]).any():
+        raise ValueError("Matched-target scoring produced duplicate candidate/split rows")
+    selected = selected[["candidate_id", "split_type", *evidence_columns]]
+    result = grid.merge(
+        selected,
+        on=["candidate_id", "split_type"],
+        how="left",
+        validate="one_to_one",
+    )
+
+    provenance = split_provenance.copy()
+    if provenance.empty:
+        provenance = pd.DataFrame(columns=["query_id", "split_type", "status"])
+    provenance = provenance.rename(
+        columns={
+            "query_id": "candidate_id",
+            "status": "split_status",
+            "status_reason": "split_status_reason",
+        }
+    )
+    provenance_columns = [
+        "candidate_id",
+        "split_type",
+        "split_status",
+        "split_status_reason",
+        "analogue_exclusion_threshold",
+        "query_murcko_scaffold",
+        "n_references_input",
+        "n_references_after_split",
+        "n_removed_close_analogue",
+        "n_removed_same_scaffold",
+        "n_removed_target_family",
+        "n_removed_post_cutoff",
+        "n_removed_missing_date",
+        "max_remaining_query_reference_tanimoto",
+        "analogue_leakage_guard_passed",
+    ]
+    for column in provenance_columns:
+        if column not in provenance:
+            provenance[column] = pd.NA
+    result = result.merge(
+        provenance[provenance_columns],
+        on=["candidate_id", "split_type"],
+        how="left",
+        validate="one_to_one",
+    )
+    mode_status_columns = []
+    for score_mode, score_column in SCORE_MODES.items():
+        status_column = f"{score_mode}_status"
+        mode_status_columns.append(status_column)
+        finite = np.isfinite(pd.to_numeric(result[score_column], errors="coerce"))
+        result[status_column] = np.select(
+            [
+                result["split_status"].fillna("missing") != "available",
+                ~finite,
+            ],
+            [
+                "unavailable_split_"
+                + result["split_status"].fillna("missing").astype(str),
+                "unavailable_no_matched_target_score",
+            ],
+            default="available",
+        )
+    n_available_modes = result[mode_status_columns].eq("available").sum(axis=1)
+    result["candidate_score_status"] = np.select(
+        [
+            result["split_status"].fillna("missing") != "available",
+            n_available_modes == 0,
+            n_available_modes < len(SCORE_MODES),
+        ],
+        [
+            "unavailable_split_" + result["split_status"].fillna("missing").astype(str),
+            "unavailable_no_matched_target_score",
+            "partial_mode_coverage",
+        ],
+        default="available_all_modes",
+    )
+    result["benchmark_task"] = "property_matched_active_decoy_retrieval"
+    result["scores_are_probabilities"] = False
+    result["snapshot_id"] = str(config.value("snapshots.snapshot_id"))
+    return result.sort_values(
+        ["split_type", "matched_target_class", "candidate_id"],
+        kind="mergesort",
+    ).reset_index(drop=True)
+
+
+def compare_property_decoy_score_modes(
+    candidate_scores: pd.DataFrame,
+    split_provenance: pd.DataFrame,
+    config: ProjectConfig,
+) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Evaluate matched-target scores over active/property-decoy molecules."""
+
+    discrimination_metric_columns = [
+        "auroc",
+        *[
+            f"bedroc_alpha_{str(float(alpha)).replace('.', '_')}"
+            for alpha in config.value("benchmark.bedroc_alphas")
+        ],
+        *[
+            f"ef_{int(round(float(fraction) * 100))}pct"
+            for fraction in config.value("benchmark.enrichment_fractions")
+        ],
+        "mrr",
+    ]
+    query_tables: list[pd.DataFrame] = []
+    aggregate_tables: list[pd.DataFrame] = []
+    for split_type in config.value("benchmark.splits"):
+        split_scores = candidate_scores[
+            candidate_scores.get("split_type", pd.Series(dtype=str)) == split_type
+        ]
+        split_provenance_rows = split_provenance[
+            split_provenance.get("split_type", pd.Series(dtype=str)) == split_type
+        ]
+        for score_mode, score_column in SCORE_MODES.items():
+            source = pd.DataFrame(
+                {
+                    "query_id": split_scores.get(
+                        "retrieval_task_id", pd.Series(dtype=str)
+                    ),
+                    "target_class": split_scores.get(
+                        "candidate_id", pd.Series(dtype=str)
+                    ),
+                    "is_active": split_scores.get(
+                        "is_active", pd.Series(dtype=int)
+                    ),
+                    score_column: split_scores.get(
+                        score_column, pd.Series(dtype=float)
+                    ),
+                }
+            )
+            query_table = query_level_metrics(
+                source,
+                score_column=score_column,
+                bedroc_alphas=tuple(
+                    float(value) for value in config.value("benchmark.bedroc_alphas")
+                ),
+                enrichment_fractions=tuple(
+                    float(value)
+                    for value in config.value("benchmark.enrichment_fractions")
+                ),
+            )
+            totals = (
+                split_scores.groupby(
+                    [
+                        "retrieval_task_id",
+                        "matched_active_query_id",
+                        "matched_target_class",
+                    ],
+                    sort=True,
+                )
+                .agg(
+                    n_active_total=(
+                        "is_active", lambda values: int((values == 1).sum())
+                    ),
+                    n_decoy_total=(
+                        "is_active", lambda values: int((values == 0).sum())
+                    ),
+                    n_candidates_total=("is_active", "size"),
+                    n_split_available=(
+                        "split_status",
+                        lambda values: int(
+                            values.fillna("missing").eq("available").sum()
+                        ),
+                    ),
+                    split_statuses=(
+                        "split_status",
+                        lambda values: ";".join(
+                            sorted(set(values.fillna("missing").astype(str)))
+                        ),
+                    ),
+                )
+                .reset_index()
+                .rename(columns={"retrieval_task_id": "query_id"})
+                if not split_scores.empty
+                else pd.DataFrame(
+                    columns=[
+                        "query_id",
+                        "matched_active_query_id",
+                        "matched_target_class",
+                        "n_active_total",
+                        "n_decoy_total",
+                        "n_candidates_total",
+                        "n_split_available",
+                        "split_statuses",
+                    ]
+                )
+            )
+            query_table = query_table.merge(
+                totals, on="query_id", how="left", validate="one_to_one"
+            )
+            query_table["coverage"] = (
+                query_table["n_candidates"]
+                / pd.to_numeric(
+                    query_table["n_candidates_total"], errors="coerce"
+                )
+            )
+            split_task_available = query_table["n_split_available"].eq(
+                query_table["n_candidates_total"]
+            )
+            query_table.loc[~split_task_available, "coverage"] = np.nan
+            has_both_scored = (
+                split_task_available
+                & query_table["n_positive"].gt(0)
+                & query_table["n_negative"].gt(0)
+            )
+            query_table.loc[
+                ~has_both_scored, discrimination_metric_columns
+            ] = np.nan
+            unavailable_split_status = (
+                "unavailable_candidate_split_status_"
+                + query_table["split_statuses"].fillna("missing").astype(str)
+            )
+            query_table["coverage_status"] = np.where(
+                split_task_available,
+                "available",
+                unavailable_split_status,
+            )
+            query_table["discrimination_status"] = np.select(
+                [~split_task_available, has_both_scored],
+                [unavailable_split_status, "available"],
+                default="unavailable_requires_scored_active_and_property_decoy",
+            )
+            query_table = query_table.rename(
+                columns={"query_id": "retrieval_task_id"}
+            )
+            query_table["status"] = np.select(
+                [~split_task_available, has_both_scored],
+                ["unavailable_split_task", "available_all_metrics"],
+                default="available_coverage_only",
+            )
+            query_table["split_type"] = split_type
+            query_table["score_mode"] = score_mode
+            query_table["benchmark_task"] = (
+                "property_matched_active_decoy_retrieval"
+            )
+            query_tables.append(query_table)
+
+            bootstrap_input = (
+                query_table.groupby("matched_target_class", sort=True)[
+                    [*discrimination_metric_columns, "coverage"]
+                ]
+                .mean()
+                .reset_index()
+                .rename(columns={"matched_target_class": "query_id"})
+            )
+            aggregate = aggregate_metrics_with_bootstrap(
+                bootstrap_input,
+                split_type=split_type,
+                score_mode=score_mode,
+                split_provenance=split_provenance_rows,
+                config=config,
+                bootstrap_unit="matched_target_class_cluster",
+                benchmark_task="property_matched_active_decoy_retrieval",
+            ).rename(
+                columns={
+                    "n_queries": "n_matched_target_classes",
+                    "n_evaluable_queries": "n_evaluable_matched_target_classes",
+                }
+            )
+            aggregate["negative_label_semantics"] = (
+                "presumed_inactive_property_matched_decoy_not_confirmed_inactive"
+            )
+            aggregate["cross_target_decoy_policy"] = (
+                "specificity_margin_only_not_inactive"
+            )
+            aggregate["n_active_candidate_target_pairs"] = int(
+                (split_scores.get("is_active", pd.Series(dtype=int)) == 1).sum()
+            )
+            aggregate["n_decoy_candidate_target_pairs"] = int(
+                (split_scores.get("is_active", pd.Series(dtype=int)) == 0).sum()
+            )
+            aggregate["n_candidate_target_pairs"] = len(split_scores)
+            aggregate["n_retrieval_tasks"] = len(query_table)
+            aggregate["n_retrieval_tasks_split_available"] = int(
+                split_task_available.sum()
+            )
+            aggregate[
+                "n_retrieval_tasks_with_scored_active_and_decoy"
+            ] = int(has_both_scored.sum())
+            numeric_mode_scores = pd.to_numeric(
+                split_scores.get(score_column, pd.Series(dtype=float)),
+                errors="coerce",
+            )
+            mode_scored = np.isfinite(numeric_mode_scores)
+            labels = pd.to_numeric(
+                split_scores.get("is_active", pd.Series(dtype=float)),
+                errors="coerce",
+            )
+            aggregate["n_active_candidate_target_pairs_scored"] = int(
+                (mode_scored & labels.eq(1)).sum()
+            )
+            aggregate["n_decoy_candidate_target_pairs_scored"] = int(
+                (mode_scored & labels.eq(0)).sum()
+            )
+            aggregate["n_candidate_target_pairs_scored"] = int(mode_scored.sum())
+            for source_column, output_column in [
+                ("decoy_source_dataset", "decoy_source_datasets"),
+                ("decoy_source_version", "decoy_source_versions"),
+                ("decoy_artifact_sha256", "decoy_artifact_sha256"),
+            ]:
+                values = (
+                    sorted(
+                        set(
+                            split_scores.get(source_column, pd.Series(dtype=str))
+                            .dropna()
+                            .astype(str)
+                        )
+                    )
+                    if not split_scores.empty
+                    else []
+                )
+                aggregate[output_column] = ";".join(values)
+            aggregate_tables.append(aggregate)
+
     query_metrics = pd.concat(query_tables, ignore_index=True)
     comparison = pd.concat(aggregate_tables, ignore_index=True)
     reference = comparison[comparison.score_mode == "2d_only"][
@@ -818,12 +1307,20 @@ def main() -> None:
 
     try:
         from pipeline import benchmark_v2
-        from pipeline.benchmark_decoys import load_property_matched_decoys
+        from pipeline.benchmark_decoys import (
+            CANDIDATE_COLUMNS,
+            build_active_decoy_candidates,
+            load_property_matched_decoys,
+        )
         from pipeline.config import load_config, set_global_seed
         from pipeline.snapshots import verify_snapshot
     except ModuleNotFoundError:  # direct module execution/import compatibility
         import benchmark_v2
-        from benchmark_decoys import load_property_matched_decoys
+        from benchmark_decoys import (
+            CANDIDATE_COLUMNS,
+            build_active_decoy_candidates,
+            load_property_matched_decoys,
+        )
         from config import load_config, set_global_seed
         from snapshots import verify_snapshot
 
@@ -847,9 +1344,6 @@ def main() -> None:
     provenance.to_csv(results_dir / "benchmark_split_provenance_v3.csv", index=False)
     decoy_result = load_property_matched_decoys(
         config.path_for("property_matched_decoys")
-    )
-    pd.DataFrame([decoy_result.status]).to_csv(
-        results_dir / "benchmark_decoy_status_v3.csv", index=False
     )
     quality_path = config.path_for("reference_quality")
     quality = (
@@ -878,6 +1372,163 @@ def main() -> None:
     query_metrics, comparison = compare_score_modes(scores, provenance, config)
     query_metrics.to_csv(results_dir / "benchmark_query_metrics_v3.csv", index=False)
     comparison.to_csv(results_dir / "benchmark_mode_comparison_v3.csv", index=False)
+
+    decoy_status = dict(decoy_result.status)
+    if decoy_result.status["status"] == "available":
+        active_queries = pd.DataFrame(
+            [
+                {
+                    **query,
+                    "query_id": str(query.get("query_id") or query.get("drug")),
+                }
+                for query in queries
+            ]
+        )
+        _, classes_by_alias = ontology_family_maps(ontology)
+        valid_target_classes = set(ontology["target_class"].astype(str))
+        decoy_mapping_gaps: list[dict[str, object]] = []
+        decoy_candidates = build_active_decoy_candidates(
+            active_queries,
+            decoy_result,
+            classes_by_alias=classes_by_alias,
+            valid_target_classes=valid_target_classes,
+            unmapped_active_sink=decoy_mapping_gaps,
+        )
+        decoy_mapping_gaps_frame = pd.DataFrame(
+            decoy_mapping_gaps,
+            columns=[
+                "source_candidate_id",
+                "source_target_label",
+                "mapping_status",
+                "status_reason",
+                "n_linked_decoys_excluded",
+                "linked_decoy_ids_sha256",
+            ],
+        )
+        decoy_candidates["decoy_artifact_sha256"] = str(
+            decoy_result.status["artifact_sha256"]
+        )
+        decoy_split_results, decoy_split_provenance = generate_splits(
+            decoy_candidates.to_dict("records"), references, ontology, config
+        )
+        decoy_all_target_scores = score_split_results(
+            decoy_split_results,
+            decoy_candidates.to_dict("records"),
+            ontology,
+            quality,
+            config,
+        )
+        decoy_target_scores = build_property_decoy_target_score_table(
+            decoy_all_target_scores,
+            decoy_candidates,
+            decoy_split_provenance,
+            config,
+        )
+        decoy_query_metrics, decoy_metrics = compare_property_decoy_score_modes(
+            decoy_target_scores, decoy_split_provenance, config
+        )
+        n_evaluable_metric_rows = int(
+            np.isfinite(
+                pd.to_numeric(decoy_metrics["estimate"], errors="coerce")
+            ).sum()
+        )
+        n_evaluable_discrimination_metric_rows = int(
+            (
+                decoy_metrics["metric"].ne("coverage")
+                & np.isfinite(
+                    pd.to_numeric(decoy_metrics["estimate"], errors="coerce")
+                )
+            ).sum()
+        )
+        decoy_status.update(
+            {
+                "integration_status": (
+                    "available_scored"
+                    if n_evaluable_discrimination_metric_rows
+                    else "available_but_no_evaluable_split_target_tasks"
+                ),
+                "n_evaluable_metric_rows": n_evaluable_metric_rows,
+                "n_evaluable_discrimination_metric_rows": (
+                    n_evaluable_discrimination_metric_rows
+                ),
+                "n_active_candidate_target_pairs": int(
+                    (decoy_candidates["is_active"] == 1).sum()
+                ),
+                "n_decoy_candidate_target_pairs": int(
+                    (decoy_candidates["is_active"] == 0).sum()
+                ),
+                "n_candidate_target_pairs": len(decoy_candidates),
+                "n_unmapped_active_queries": len(decoy_mapping_gaps_frame),
+                "n_linked_decoys_excluded": int(
+                    pd.to_numeric(
+                        decoy_mapping_gaps_frame["n_linked_decoys_excluded"],
+                        errors="coerce",
+                    )
+                    .fillna(0)
+                    .sum()
+                ),
+            }
+        )
+    else:
+        decoy_candidates = pd.DataFrame(columns=list(CANDIDATE_COLUMNS))
+        decoy_candidates["decoy_artifact_sha256"] = pd.Series(dtype=str)
+        decoy_mapping_gaps_frame = pd.DataFrame(
+            columns=[
+                "source_candidate_id",
+                "source_target_label",
+                "mapping_status",
+                "status_reason",
+                "n_linked_decoys_excluded",
+                "linked_decoy_ids_sha256",
+            ]
+        )
+        decoy_split_provenance = pd.DataFrame(
+            columns=["query_id", "split_type", "status", "status_reason"]
+        )
+        decoy_target_scores = build_property_decoy_target_score_table(
+            pd.DataFrame(),
+            decoy_candidates,
+            decoy_split_provenance,
+            config,
+        )
+        decoy_query_metrics, decoy_metrics = compare_property_decoy_score_modes(
+            decoy_target_scores, decoy_split_provenance, config
+        )
+        decoy_status.update(
+            {
+                "integration_status": "pending_no_official_decoy_artifact",
+                "n_evaluable_metric_rows": 0,
+                "n_evaluable_discrimination_metric_rows": 0,
+                "n_active_candidate_target_pairs": 0,
+                "n_decoy_candidate_target_pairs": 0,
+                "n_candidate_target_pairs": 0,
+                "n_unmapped_active_queries": 0,
+                "n_linked_decoys_excluded": 0,
+            }
+        )
+    decoy_status["snapshot_id"] = str(config.value("snapshots.snapshot_id"))
+    decoy_candidates.to_csv(
+        results_dir / "benchmark_property_decoy_candidates_v3.csv", index=False
+    )
+    decoy_mapping_gaps_frame.to_csv(
+        results_dir / "benchmark_property_decoy_mapping_gaps_v3.csv", index=False
+    )
+    decoy_split_provenance.to_csv(
+        results_dir / "benchmark_property_decoy_split_provenance_v3.csv",
+        index=False,
+    )
+    decoy_target_scores.to_csv(
+        results_dir / "benchmark_property_decoy_target_scores_v3.csv", index=False
+    )
+    decoy_query_metrics.to_csv(
+        results_dir / "benchmark_property_decoy_query_metrics_v3.csv", index=False
+    )
+    decoy_metrics.to_csv(
+        results_dir / "benchmark_property_decoy_metrics_v3.csv", index=False
+    )
+    pd.DataFrame([decoy_status]).to_csv(
+        results_dir / "benchmark_decoy_status_v3.csv", index=False
+    )
     print(comparison.to_string(index=False))
 
 

@@ -46,7 +46,9 @@ phase's tasks pass. Never fabricate data (constitution I). Report negative resul
       the specificity margin. **AC:** decoy provenance recorded; enrichment computed against them.
       **STATUS: PENDING —** the pinned snapshot has no property-matched decoy artifact. Cross-target ligands remain
       specificity-only and are not relabelled inactive. The official DUD-E arbitrary-ligand generator requires an
-      interactive CAPTCHA/email workflow, so no decoys were simulated or silently substituted.
+      interactive CAPTCHA/email workflow, so no decoys were simulated or silently substituted. A separate
+      candidate-specific split/scoring/metric path is implemented and emits schema-valid pending tables; T2.3
+      remains unchecked until an official versioned artifact is pinned and the resulting enrichment is executed.
 - [x] **T2.4** Compare 2D-only vs 3D-only vs fusion under each split. **AC:** a single table; honest reporting even
       if 3D does not help (constitution III).
 

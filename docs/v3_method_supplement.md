@@ -164,10 +164,42 @@ result is reported unchanged.
 
 Cross-target reference ligands remain specificity controls only. They are not
 called experimentally inactive. The property-matched decoy loader requires a
-versioned record identifier, source dataset/release, matching method, target
-class, and valid SMILES. The pinned snapshot has no such artifact. The official
-DUD-E arbitrary-ligand workflow requires interactive submission, so T2.3 remains
-pending and enrichment is not claimed against substituted negatives.
+versioned record identifier, source dataset/release, matching method, matched
+curated-active query identifier, target class, and valid SMILES. It rejects
+blank/unversioned provenance, invalid or duplicate records, targets absent from
+the pinned ontology, and exact structural overlap with a curated active.
+
+Property-matched decoys form a separate molecular-retrieval benchmark; they are
+never appended as target-class negatives. Each curated active is expanded only
+through exact or declared pinned-ontology aliases, while each decoy retains its
+explicit matched active and target. Candidate-specific analogue and scaffold
+guards are applied before the normal 2D/3D/fusion target-scoring path. The
+candidate's score for its matched target is then extracted, and active molecules and their
+property-matched presumed-inactive decoys are ranked within an active-target
+retrieval task; decoys from another active are never pooled into that task.
+AUROC, BEDROC, EF, MRR, and coverage use the same configured definitions;
+decoy-task coverage is the fraction of target-specific candidate molecules with
+a finite score and remains reported even when a class lacks enough scored labels
+for discrimination metrics. Availability and scored active/decoy counts are
+reported separately for 2D-only, 3D-only, and fusion. Applicability-domain fields
+are retained on every matched-target score row. Point estimates first average
+active-target task metrics within target class, and bootstrap uncertainty
+resamples target-class clusters so multiple actives for one target are not
+treated as independent. Explicit active dates are preserved; decoy dates are
+left missing, never inferred. Target-family removal or missing temporal metadata
+may make a task unavailable and is reported without filling scores or dates.
+Curated actives without an exact or declared ontology mapping are recorded as
+mapping gaps rather than
+silently assigned or allowed to abort supported tasks; any linked decoys excluded
+with such a task are counted and their identifiers are hashed in the gap table.
+
+Every run writes the decoy artifact status plus schema-valid candidate,
+candidate-split provenance, matched-target score, active-target-task metric, and
+aggregate metric tables. When a validated artifact is available its structures
+also enter deterministic conformer-cache prewarming. The pinned snapshot has no
+such artifact. The official DUD-E arbitrary-ligand workflow requires interactive
+submission, so T2.3 remains pending and the emitted tables contain no fabricated
+negative measurements or enrichment claims.
 
 PIDGINv4 is the selected external-baseline adapter. Code is pinned to commit
 `df0f6068a8aa16e2278e3779a1ad5e6d552731dc` and models to DOI
