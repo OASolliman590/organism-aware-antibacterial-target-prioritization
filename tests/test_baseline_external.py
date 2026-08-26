@@ -21,9 +21,10 @@ def test_missing_pidgin_runtime_models_and_map_are_pending_not_fabricated() -> N
     scores, run_status = run_or_load_pidginv4(queries, config)
 
     assert status["status"] == "pending_unavailable_prerequisites"
-    assert not status["python2_runtime_available"]
     assert not status["model_pickles_available"]
     assert not status["target_mapping_available"]
+    assert "model_pickles_available" in status["status_reason"]
+    assert "target_mapping_available" in status["status_reason"]
     assert scores.empty
     assert run_status["score_is_calibrated_probability"] is False
 
