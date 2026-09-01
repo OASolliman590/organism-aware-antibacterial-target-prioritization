@@ -1,14 +1,16 @@
 {
   "captured_at_commit": "2ed4684",
-  "description": "Golden fingerprints of public-only v2 outputs captured before v3 implementation. Private query outputs are intentionally excluded.",
+  "description": "Golden fingerprints of public-only v2 outputs, frozen so that additive v3 work cannot silently change the v2 scoring path. Scores are rounded to GOLDEN_DECIMALS places before fingerprinting; see tests/test_v2_golden.py. Private query outputs are intentionally excluded.",
   "outputs": {
     "v2_benchmark_open_target_scores.csv": {
       "rows": 272,
-      "sha256_lf": "81c4acf3f0f43507f43e95e9d00f6c39831b01cc563823733a94ce9fe82de312"
+      "sha256_lf": "df534d2ec6bbab362151653b7b40ead8c0b8c52b99b54362bde009728a1e3efe"
     },
     "v2_open_target_reference_coverage.csv": {
       "rows": 17,
       "sha256_lf": "fa592349e5c75173b7642c7b771eef635cf2ecf0a1746d41fd7126b91d9b1b57"
     }
-  }
+  },
+  "reanchored_at_commit": "feat/visualization-suite",
+  "reanchor_note": "Re-recorded after two reproducibility defects were fixed. (1) The fingerprint hashed full-precision floats, so it reproduced only on the machine that captured it; scores are now rounded to GOLDEN_DECIMALS places first. (2) best_reference_molecule was selected with an unstable argsort, so reference ligands tied at the maximum similarity were ordered by whichever SIMD path NumPy chose for the host CPU; 3 of 272 rows named a different, exactly-tied reference on different machines. The sort is now stable and no score changed. Before re-recording, the v2 outputs were recomputed under requirements.lock at 1f6173c, the commit that froze this golden, and at 61fc130, and were byte-identical, so v3 work has not changed the v2 scoring path. The reference-coverage digest is unchanged from its original capture at 2ed4684."
 }

@@ -212,7 +212,13 @@ def score_query(q,refs,quality,compat,ontology,exclude_close=False,cutoff=None):
             else: kept.append(r)
         if not kept: continue
         e=np.array([sim(q['fp'],r['_fp']) for r in kept]); k=np.array([sim(q['maccs'],r['_maccs']) for r in kept])
-        order=np.argsort(-e); topn=min(int(CHEM2D["top_k"]),len(e)); best=kept[int(order[0])]
+        # Stable sort: reference ligands tie at the maximum similarity often
+        # enough to matter, and an unstable sort breaks those ties by whichever
+        # SIMD path NumPy selects for the host CPU. That made
+        # best_reference_molecule differ between machines for identical input.
+        # Stability resolves ties by reference order, which load_refs fixes.
+        # Scores are untouched; only which of the tied references is named.
+        order=np.argsort(-e,kind="stable"); topn=min(int(CHEM2D["top_k"]),len(e)); best=kept[int(order[0])]
         # Cross-target molecules are decoys for specificity only.
         other=[]
         for other_cls,other_rs in refs.items():
