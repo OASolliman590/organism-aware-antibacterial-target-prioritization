@@ -148,6 +148,30 @@ path in the `OATP_CONFIG` environment variable when one is set.
 | `uncertainty_landscape` | Which hypotheses are both stable and decoy-separated? | `v2_uncertainty_private.csv` |
 | `benchmark_enrichment` | How much better than random is retrieval? | `benchmark_v2_summary.csv` |
 | `chemical_space` | Do the private compounds sit near known benchmark drugs? | private SDF plus `data/benchmark/eskape_benchmark_drugs.csv` |
+| `assignment_concordance` | Does each compound score best against the organism it was made for? | manifest plus `v2_open_target_predictions_by_organism.csv` |
+
+### Per-organism suites
+
+When a private compound manifest is present at `paths.compound_manifest` (default
+`inputs/compound_manifest.csv`, gitignored), the suite additionally renders one focused set
+per configured organism under `results/figures_suite/by_organism/<organism>/`.
+
+The manifest needs a `compound_code` and a `microbe_group` column. Its microbe labels are
+mapped onto `organisms.names` through the explicit `organisms.manifest_aliases` table in
+`config.yaml` — never by fuzzy matching, because the manifest uses abbreviations and at
+least one misspelled genus, and a silently wrong resolution would mislabel every
+per-organism figure. A group with no alias entry is left unassigned and reported.
+
+Each per-organism suite covers **every** compound scored against that organism, with the
+compounds the manifest assigned to it marked `*` in the axis labels and named in a footnote.
+The organism-specific view therefore never hides the cross-series comparison. Panels that
+exist to compare organisms against each other (`organism_target_atlas`,
+`assignment_concordance`) are skipped there and recorded as
+`not_applicable_for_single_organism`, since filtering to one organism would leave them
+drawing a misleading figure from the surviving rows.
+
+The manifest records design intent, not evidence: it is used to focus and annotate figures,
+and never to weight a score.
 
 Every panel is drawn only from a completed run table. A panel with no source file, no
 evaluable rows, or an unavailable optional dependency writes no image and instead records

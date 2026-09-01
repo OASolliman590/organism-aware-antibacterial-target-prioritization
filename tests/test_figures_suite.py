@@ -5,14 +5,22 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
+from pipeline.compound_manifest import CompoundManifest
 from pipeline.figures_suite import (
     STATUS_CREATED,
     STATUS_DEPENDENCY,
     STATUS_NO_ROWS,
+    STATUS_NOT_APPLICABLE,
     STATUS_SOURCE_MISSING,
     PANELS,
     SuiteContext,
     generate_figure_suite,
+    generate_per_organism_suites,
+    organism_slug,
+)
+
+MANIFEST = CompoundManifest(
+    assignments={"A-1": "Escherichia coli", "A-2": "Staphylococcus aureus"}
 )
 
 
@@ -121,12 +129,24 @@ def _write_full_run(directory: Path) -> None:
 def test_every_panel_renders_from_a_complete_run(tmp_path: Path) -> None:
     _write_full_run(tmp_path)
 
-    status = generate_figure_suite(tmp_path).set_index("figure")
+    status = generate_figure_suite(
+        tmp_path, context=SuiteContext(manifest=MANIFEST)
+    ).set_index("figure")
 
     table_backed = [panel.name for panel in PANELS if panel.sources]
     for name in table_backed:
         assert status.loc[name, "status"] == STATUS_CREATED, name
         assert Path(str(status.loc[name, "output"])).is_file()
+
+
+def test_concordance_needs_a_manifest_and_says_so_without_one(tmp_path: Path) -> None:
+    _write_full_run(tmp_path)
+
+    status = generate_figure_suite(tmp_path).set_index("figure")
+
+    # Design intent comes only from the manifest; with none supplied the panel
+    # must report that rather than inferring an assignment from the scores.
+    assert status.loc["assignment_concordance", "status"] == STATUS_SOURCE_MISSING
 
 
 def test_missing_tables_are_reported_not_invented(tmp_path: Path) -> None:
@@ -166,6 +186,82 @@ def test_chemical_space_reports_missing_input_without_raising(tmp_path: Path) ->
         STATUS_SOURCE_MISSING,
         STATUS_DEPENDENCY,
     }
+
+
+def test_per_organism_suites_land_in_their_own_directories(tmp_path: Path) -> None:
+    _write_full_run(tmp_path)
+    organisms = ["Escherichia coli", "Staphylococcus aureus"]
+
+    status = generate_per_organism_suites(
+        tmp_path,
+        context=SuiteContext(manifest=MANIFEST),
+        organisms=organisms,
+    )
+
+    assert set(status["organism"]) == set(organisms)
+    for organism in organisms:
+        directory = tmp_path / "figures_suite" / "by_organism" / organism_slug(organism)
+        assert directory.is_dir()
+        assert list(directory.glob("*.png"))
+
+
+def test_cross_organism_panels_are_skipped_per_organism(tmp_path: Path) -> None:
+    _write_full_run(tmp_path)
+    cross_only = {panel.name for panel in PANELS if panel.cross_organism_only}
+    assert cross_only, "expected at least one cross-organism panel"
+
+    status = generate_per_organism_suites(
+        tmp_path,
+        context=SuiteContext(manifest=MANIFEST),
+        organisms=["Escherichia coli"],
+    ).set_index("figure")
+
+    for name in cross_only:
+        # Filtered to one organism these panels have nothing to compare against,
+        # so they must be recorded as skipped rather than drawn from the
+        # surviving rows.
+        assert status.loc[name, "status"] == STATUS_NOT_APPLICABLE
+        assert pd.isna(status.loc[name, "output"])
+        assert not (
+            tmp_path
+            / "figures_suite"
+            / "by_organism"
+            / organism_slug("Escherichia coli")
+            / f"{name}.png"
+        ).exists()
+
+
+def test_per_organism_suite_only_uses_that_organisms_rows(tmp_path: Path) -> None:
+    _write_full_run(tmp_path)
+
+    status = generate_per_organism_suites(
+        tmp_path,
+        context=SuiteContext(manifest=MANIFEST),
+        organisms=["Klebsiella pneumoniae"],
+    ).set_index("figure")
+
+    # No row in the fixture carries this organism, so organism-aware panels have
+    # nothing to draw and must say so.
+    assert status.loc["compound_target_priority", "status"] == STATUS_NO_ROWS
+
+
+def test_assigned_compounds_are_marked_in_labels() -> None:
+    context = SuiteContext(manifest=MANIFEST, organism="Escherichia coli")
+
+    assert context.label("A-1") == "A-1*"
+    assert context.label("A-2") == "A-2"
+    assert context.labels(["A-1", "A-2"]) == ["A-1*", "A-2"]
+    assert "A-1" in context.assignment_note()
+
+
+def test_labels_are_unmarked_without_a_manifest_or_organism() -> None:
+    assert SuiteContext().label("A-1") == "A-1"
+    assert SuiteContext(manifest=MANIFEST).label("A-1") == "A-1"
+    assert SuiteContext(manifest=MANIFEST).assignment_note() == ""
+
+
+def test_organism_slug_is_filesystem_safe() -> None:
+    assert organism_slug("Klebsiella pneumoniae") == "klebsiella_pneumoniae"
 
 
 def test_panel_names_and_outputs_are_unique() -> None:

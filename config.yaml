@@ -17,6 +17,7 @@ seeds:
 paths:
   inputs: inputs
   private_compounds: data/compounds/compounds_normalized.sdf
+  compound_manifest: inputs/compound_manifest.csv
   results: results
   cache: .cache/oatp
   reference_ligands: data/reference_ligands
@@ -59,6 +60,17 @@ organisms:
     - Staphylococcus aureus
   aliases:
     MRSA / Staphylococcus aureus: Staphylococcus aureus
+  # Microbe-group labels as they appear in the private compound manifest,
+  # mapped onto organisms.names. Explicit rather than fuzzy-matched: the
+  # manifest uses abbreviations and at least one misspelling, and a silently
+  # wrong genus resolution would mislabel every per-organism figure.
+  manifest_aliases:
+    Acinitobacter: Acinetobacter baumannii
+    Bacillus_cereus: Bacillus cereus
+    E_Coli: Escherichia coli
+    K_Pneumonia: Klebsiella pneumoniae
+    MRSA: Staphylococcus aureus
+    P_mirabilis: Proteus mirabilis
   gram_negative:
     - Klebsiella pneumoniae
     - Escherichia coli

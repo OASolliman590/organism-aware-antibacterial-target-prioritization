@@ -24,15 +24,18 @@ import pandas as pd
 try:  # pragma: no cover - import shim for direct module execution
     from pipeline.config import load_config
     from pipeline import figure_style as style
+    from pipeline.compound_manifest import CompoundManifest, load_from_config
 except ModuleNotFoundError:  # pragma: no cover
     from config import load_config
     import figure_style as style
+    from compound_manifest import CompoundManifest, load_from_config
 
 
 STATUS_CREATED = "created"
 STATUS_SOURCE_MISSING = "unavailable_source_missing"
 STATUS_NO_ROWS = "unavailable_no_evaluable_rows"
 STATUS_DEPENDENCY = "unavailable_dependency_unavailable"
+STATUS_NOT_APPLICABLE = "not_applicable_for_single_organism"
 
 PREDICTIONS_BY_ORGANISM = "v2_open_target_predictions_by_organism.csv"
 PREDICTIONS_V3 = "open_target_predictions_by_organism_v3.csv"
@@ -52,6 +55,33 @@ class SuiteContext:
     figure_sample_seed: int = 7
     top_target_classes: int = 18
     max_disagreements_per_compound: int = 6
+    # Design intent from the private manifest: which organism each compound was
+    # prepared against. Used to annotate and focus figures, never to score.
+    manifest: CompoundManifest | None = None
+    # Set when this suite is rendered for a single organism.
+    organism: str | None = None
+
+    def label(self, compound: str) -> str:
+        """Compound label, marked when it was prepared against this organism."""
+
+        if self.manifest is not None and self.manifest.is_assigned(
+            compound, self.organism
+        ):
+            return f"{compound}*"
+        return compound
+
+    def labels(self, compounds) -> list[str]:
+        return [self.label(str(compound)) for compound in compounds]
+
+    def assignment_note(self) -> str:
+        """Footnote naming the compounds prepared against this organism."""
+
+        if self.manifest is None or self.organism is None:
+            return ""
+        assigned = self.manifest.compounds_for(self.organism)
+        if not assigned:
+            return "* no compound in this series was prepared against this organism"
+        return "* prepared against this organism: " + ", ".join(assigned)
 
 
 @dataclass(frozen=True)
@@ -64,6 +94,11 @@ class PanelSpec:
     renderer: Callable[[dict[str, pd.DataFrame], Path, SuiteContext], str]
     description: str = ""
     optional_sources: dict[str, str] = field(default_factory=dict)
+    # Panels that compare organisms against each other carry no meaning once the
+    # run is filtered to one organism, and would render a misleading figure from
+    # the surviving rows. They are skipped, and recorded as skipped, in the
+    # per-organism suites.
+    cross_organism_only: bool = False
 
 
 def _numeric(frame: pd.DataFrame, column: str) -> pd.Series:
@@ -123,6 +158,51 @@ def _compound_target_priority(
     if not compounds or not targets or not organisms:
         return STATUS_NO_ROWS
 
+    if context.organism is not None:
+        # Filtered to one organism, the per-compound grids collapse to single
+        # rows. A compound x target heatmap carries the same numbers legibly.
+        matrix = (
+            frame.pivot_table(
+                index="query_id",
+                columns="target_class",
+                values="overall_priority_score",
+                aggfunc="max",
+            )
+            .reindex(index=compounds, columns=targets)
+        )
+        figure, axis = plt.subplots(
+            figsize=(
+                max(9.0, 0.52 * len(targets)),
+                max(4.0, 0.42 * len(compounds)) + 2.4,
+            )
+        )
+        sns.heatmap(
+            matrix,
+            cmap=style.SEQUENTIAL_CMAP,
+            vmin=0.0,
+            linewidths=0.3,
+            linecolor="white",
+            cbar_kws={"label": "Overall priority score"},
+            ax=axis,
+        )
+        axis.set_yticks(
+            axis.get_yticks(), context.labels(matrix.index), rotation=0, fontsize=8
+        )
+        axis.set_xticks(
+            axis.get_xticks(),
+            style.wrap_labels(targets, width=18),
+            rotation=90,
+            fontsize=7,
+        )
+        axis.set_xlabel("Open target class")
+        axis.set_ylabel("Private compound")
+        axis.set_title(f"Target priority in {context.organism}")
+        note = context.assignment_note()
+        if note:
+            figure.text(0.01, 0.005, note, fontsize=7.5, color="#4a5058")
+        style.save_figure(figure, path)
+        return STATUS_CREATED
+
     columns = min(3, len(compounds))
     rows = int(np.ceil(len(compounds) / columns))
     vmax = float(frame["overall_priority_score"].max()) or 1.0
@@ -158,7 +238,7 @@ def _compound_target_priority(
             vmin=0.0,
             vmax=vmax,
         )
-        axis.set_title(compound)
+        axis.set_title(context.label(compound))
         # Tick labels only on the outer edges: repeating six organism names and
         # eighteen target names in every cell of the grid would overrun the
         # neighbouring panels.
@@ -284,7 +364,8 @@ def _evidence_decomposition(
             color=color,
         )
     annotations = [
-        f"{compound}\n{str(row.get('target_class', ''))} | {str(row.get('organism', ''))}"
+        f"{context.label(compound)}\n"
+        f"{str(row.get('target_class', ''))} | {str(row.get('organism', ''))}"
         for compound, row in best.iterrows()
     ]
     axis.set_xticks(positions, annotations, rotation=40, ha="right", fontsize=7)
@@ -314,7 +395,8 @@ def _confidence_profile(
         return STATUS_NO_ROWS
 
     facets: list[tuple[str, str]] = [("query_id", "Private compound")]
-    if "organism" in frame:
+    # An organism facet is a single bar once the run is filtered to one organism.
+    if "organism" in frame and context.organism is None:
         facets.append(("organism", "Organism"))
 
     figure, axes = plt.subplots(
@@ -339,8 +421,13 @@ def _confidence_profile(
                 color=style.CONFIDENCE_COLORS.get(name, "#9aa2ab"),
             )
             bottom += values[:, index]
+        tick_labels = (
+            context.labels(counts.index)
+            if column == "query_id"
+            else list(counts.index)
+        )
         axis.set_xticks(
-            np.arange(len(counts)), list(counts.index), rotation=40, ha="right", fontsize=8
+            np.arange(len(counts)), tick_labels, rotation=40, ha="right", fontsize=8
         )
         axis.set_xlabel(label)
         axis.set_ylabel("Compound-target hypotheses")
@@ -392,7 +479,9 @@ def _fusion_contribution(
             color=style.COMPOUND_COLORS[index % len(style.COMPOUND_COLORS)],
         )
         bottom += column_values
-    axis.set_xticks(np.arange(len(means)), list(means.index), rotation=40, ha="right")
+    axis.set_xticks(
+        np.arange(len(means)), context.labels(means.index), rotation=40, ha="right"
+    )
     axis.set_ylabel("Mean reciprocal-rank contribution")
     axis.set_xlabel("Private compound")
     axis.set_title("Fusion component contributions to the v3 chemical evidence score")
@@ -554,7 +643,7 @@ def _uncertainty_landscape(
             alpha=0.75,
             edgecolor="white",
             linewidth=0.5,
-            label=compound,
+            label=context.label(compound),
         )
     axis.axhline(0.05, color="#22262b", linestyle="--", linewidth=0.9)
     axis.text(
@@ -621,6 +710,89 @@ def _benchmark_enrichment(
         axis.grid(axis="x", visible=False)
     axes[0][0].legend(title="Scoring mode")
     figure.suptitle("Benchmark retrieval enrichment against a random ranking")
+    style.save_figure(figure, path)
+    return STATUS_CREATED
+
+
+def _assignment_concordance(
+    frames: dict[str, pd.DataFrame], path: Path, context: SuiteContext
+) -> str:
+    """Does each compound score best against the organism it was made for?
+
+    The manifest records design intent. This panel puts that intent next to the
+    evidence: the compound's priority in its assigned organism against its best
+    score in any other organism. It reports concordance, it does not enforce it.
+    """
+
+    import matplotlib.pyplot as plt
+
+    if context.manifest is None or not context.manifest:
+        return STATUS_SOURCE_MISSING
+    frame = frames["predictions"].copy()
+    if not {"query_id", "organism", "overall_priority_score"}.issubset(frame.columns):
+        return STATUS_NO_ROWS
+    frame["overall_priority_score"] = _numeric(frame, "overall_priority_score")
+    frame = frame.dropna(subset=["overall_priority_score"])
+    if frame.empty:
+        return STATUS_NO_ROWS
+
+    assignments = context.manifest.assignments
+    rows = []
+    for compound, assigned in sorted(assignments.items()):
+        subset = frame[frame["query_id"].astype(str) == compound]
+        if subset.empty:
+            continue
+        own = subset[subset["organism"].astype(str) == assigned]
+        others = subset[subset["organism"].astype(str) != assigned]
+        if own.empty:
+            continue
+        best_other = others.loc[others["overall_priority_score"].idxmax()] if not others.empty else None
+        rows.append(
+            {
+                "compound": compound,
+                "assigned": assigned,
+                "assigned_score": float(own["overall_priority_score"].max()),
+                "best_other_score": (
+                    float(best_other["overall_priority_score"]) if best_other is not None else np.nan
+                ),
+                "best_other_organism": (
+                    str(best_other["organism"]) if best_other is not None else ""
+                ),
+            }
+        )
+    if not rows:
+        return STATUS_NO_ROWS
+    table = pd.DataFrame(rows).sort_values("assigned_score", ascending=False)
+
+    positions = np.arange(len(table))
+    width = 0.38
+    figure, axis = plt.subplots(figsize=(max(9.0, 1.05 * len(table)), 6.2))
+    axis.bar(
+        positions - width / 2,
+        table["assigned_score"],
+        width,
+        label="Assigned organism",
+        color=style.EVIDENCE_COLORS[1],
+    )
+    axis.bar(
+        positions + width / 2,
+        table["best_other_score"],
+        width,
+        label="Best other organism",
+        color=style.EVIDENCE_COLORS[4],
+    )
+    labels = [
+        f"{row.compound}\n{row.assigned}" for row in table.itertuples()
+    ]
+    axis.set_xticks(positions, labels, rotation=40, ha="right", fontsize=7.5)
+    axis.set_ylabel("Overall priority score")
+    axis.grid(axis="x", visible=False)
+    axis.legend(loc="upper right")
+    concordant = int((table["assigned_score"] >= table["best_other_score"].fillna(-1)).sum())
+    figure.suptitle(
+        "Design intent versus evidence: assigned organism against best alternative "
+        f"({concordant} of {len(table)} compounds score highest in their assigned organism)"
+    )
     style.save_figure(figure, path)
     return STATUS_CREATED
 
@@ -724,6 +896,7 @@ PANELS: tuple[PanelSpec, ...] = (
         output="organism_target_atlas.png",
         renderer=_organism_target_atlas,
         description="Mean priority per organism and target class across all compounds.",
+        cross_organism_only=True,
     ),
     PanelSpec(
         name="evidence_decomposition",
@@ -775,6 +948,14 @@ PANELS: tuple[PanelSpec, ...] = (
         description="Retrieval enrichment over random, by split and scoring mode.",
     ),
     PanelSpec(
+        name="assignment_concordance",
+        sources={"predictions": PREDICTIONS_BY_ORGANISM},
+        output="assignment_concordance.png",
+        renderer=_assignment_concordance,
+        description="Manifest-assigned organism against the best alternative organism.",
+        cross_organism_only=True,
+    ),
+    PanelSpec(
         name="chemical_space",
         sources={},
         output="chemical_space.png",
@@ -782,6 +963,27 @@ PANELS: tuple[PanelSpec, ...] = (
         description="ECFP4 UMAP of private compounds against benchmark drugs.",
     ),
 )
+
+
+def organism_slug(organism: str) -> str:
+    """Filesystem-safe directory name for one organism."""
+
+    return "_".join(str(organism).split()).lower()
+
+
+def _restrict_to_organism(frame: pd.DataFrame, organism: str) -> pd.DataFrame:
+    """Keep only rows belonging to ``organism``.
+
+    Tables carrying no organism column are compound-level and organism-agnostic
+    (fusion contributions, rank disagreements, bootstrap uncertainty, benchmark
+    summaries). They are passed through unchanged rather than silently emptied:
+    filtering them by organism would be inventing a distinction the pipeline did
+    not compute.
+    """
+
+    if "organism" not in frame.columns:
+        return frame
+    return frame[frame["organism"].astype(str) == organism]
 
 
 def generate_figure_suite(
@@ -800,18 +1002,36 @@ def generate_figure_suite(
     rows: list[dict[str, object]] = []
     for panel in PANELS:
         output = figure_dir / panel.output
+        if panel.cross_organism_only and context.organism is not None:
+            rows.append(
+                {
+                    "organism": context.organism,
+                    "figure": panel.name,
+                    "status": STATUS_NOT_APPLICABLE,
+                    "source": "",
+                    "output": None,
+                    "description": panel.description,
+                }
+            )
+            continue
         source_paths = {alias: results_dir / name for alias, name in panel.sources.items()}
         missing = [str(path) for path in source_paths.values() if not path.is_file()]
         if missing:
             status = STATUS_SOURCE_MISSING
         else:
             frames = {alias: pd.read_csv(path) for alias, path in source_paths.items()}
+            if context.organism is not None:
+                frames = {
+                    alias: _restrict_to_organism(frame, context.organism)
+                    for alias, frame in frames.items()
+                }
             if any(frame.empty for frame in frames.values()):
                 status = STATUS_NO_ROWS
             else:
                 status = panel.renderer(frames, output, context)
         rows.append(
             {
+                "organism": context.organism or "",
                 "figure": panel.name,
                 "status": status,
                 "source": ";".join(str(path) for path in source_paths.values()),
@@ -822,18 +1042,75 @@ def generate_figure_suite(
     return pd.DataFrame(rows)
 
 
+def generate_per_organism_suites(
+    results_dir: Path,
+    *,
+    context: SuiteContext,
+    organisms: list[str],
+    figure_dirname: str = "figures_suite",
+) -> pd.DataFrame:
+    """Render one focused suite per organism under ``figures_suite/by_organism``.
+
+    Each suite covers every compound scored against that organism, with the
+    compounds the manifest assigned to it marked in the axis labels, so the
+    organism-specific view never hides the cross-series comparison.
+    """
+
+    from dataclasses import replace
+
+    statuses = []
+    for organism in organisms:
+        organism_context = replace(context, organism=organism)
+        statuses.append(
+            generate_figure_suite(
+                results_dir,
+                context=organism_context,
+                figure_dirname=f"{figure_dirname}/by_organism/{organism_slug(organism)}",
+            )
+        )
+    if not statuses:
+        return pd.DataFrame(
+            columns=["organism", "figure", "status", "source", "output", "description"]
+        )
+    return pd.concat(statuses, ignore_index=True)
+
+
 def main() -> None:
     config = load_config()
     results_dir = config.path_for("results")
+    manifest = load_from_config(config)
     context = SuiteContext(
         private_compounds=config.path_for("private_compounds"),
         benchmark_compounds=config.path_for("benchmark"),
         umap_seed=int(config.value("seeds.umap")),
         figure_sample_seed=int(config.value("seeds.figure_sampling")),
+        manifest=manifest,
     )
+    if manifest.unresolved_groups:
+        print(
+            "WARNING: manifest microbe groups with no organisms.manifest_aliases "
+            f"entry, left unassigned: {', '.join(manifest.unresolved_groups)}"
+        )
+
     status = generate_figure_suite(results_dir, context=context)
+    organisms = list(config.value("organisms.names"))
+    status = pd.concat(
+        [
+            status,
+            generate_per_organism_suites(
+                results_dir, context=context, organisms=organisms
+            ),
+        ],
+        ignore_index=True,
+    )
     status.to_csv(results_dir / "figure_suite_status.csv", index=False)
-    print(status.drop(columns=["description"]).to_string(index=False))
+
+    summary = status.drop(columns=["description", "source"])
+    print(summary.to_string(index=False))
+    print(
+        f"\ncreated {(status.status == STATUS_CREATED).sum()} of {len(status)} panels "
+        f"across 1 overall suite and {len(organisms)} per-organism suites"
+    )
 
 
 if __name__ == "__main__":
