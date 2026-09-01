@@ -20,8 +20,24 @@ ROOT = Path(__file__).resolve().parents[1]
 GOLDEN = ROOT / "tests" / "golden" / "v2_public_outputs.json"
 
 
+#: Decimal places scores are rounded to before fingerprinting.
+#
+# Hashing full-precision floats made this golden host-dependent: the same
+# commit, the same data bytes and the same pinned dependency set produce
+# different digests on different CPUs, because vectorized floating-point
+# operations differ in their final bits. A fingerprint that changes with the
+# machine cannot detect what this test exists to detect. Rounding well above
+# that noise floor, and far below any change in scoring that would matter,
+# keeps the freeze both meaningful and portable.
+GOLDEN_DECIMALS = 9
+
+
 def _sha256_csv(frame: pd.DataFrame) -> str:
-    payload = frame.to_csv(index=False, lineterminator="\n").encode("utf-8")
+    payload = (
+        frame.round(GOLDEN_DECIMALS)
+        .to_csv(index=False, lineterminator="\n")
+        .encode("utf-8")
+    )
     return hashlib.sha256(payload).hexdigest()
 
 

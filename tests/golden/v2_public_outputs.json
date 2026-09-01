@@ -1,16 +1,16 @@
 {
   "captured_at_commit": "2ed4684",
-  "description": "Golden fingerprints of public-only v2 outputs, frozen so that additive v3 work cannot silently change the v2 scoring path. Private query outputs are intentionally excluded.",
+  "description": "Golden fingerprints of public-only v2 outputs, frozen so that additive v3 work cannot silently change the v2 scoring path. Scores are rounded to GOLDEN_DECIMALS places before fingerprinting; see tests/test_v2_golden.py. Private query outputs are intentionally excluded.",
   "outputs": {
     "v2_benchmark_open_target_scores.csv": {
       "rows": 272,
-      "sha256_lf": "a4639b4c8828386b9020faa6038c99d275c95c4f184076623fbf9dc38f5641b7"
+      "sha256_lf": "5d4342ee6513b13ffd6458e43ac0f4e76b5295cdd939337e0ef202e745a261ae"
     },
     "v2_open_target_reference_coverage.csv": {
       "rows": 17,
       "sha256_lf": "fa592349e5c75173b7642c7b771eef635cf2ecf0a1746d41fd7126b91d9b1b57"
     }
   },
-  "reanchored_at_commit": "61fc130",
-  "reanchor_note": "The v2_benchmark_open_target_scores.csv digest was re-recorded because the original value, captured at 2ed4684 before the dependency set was pinned, was not reproducible from the tracked inputs under requirements.lock. Recomputing at the freezing commit 1f6173c and at 61fc130 yields the same digest, so the v2 scoring path did not change between them: the freeze is intact and is now anchored to a value the pinned environment reproduces. The v2_open_target_reference_coverage.csv digest was already reproducible and is unchanged."
+  "reanchored_at_commit": "9383ab9",
+  "reanchor_note": "Re-recorded after the fingerprint was made host-independent. The original digest hashed full-precision floats, so it reproduced only on the machine that captured it: with identical data bytes and identical pinned dependencies, two Linux hosts produced different digests because vectorized floating-point operations differ in their final bits. Before re-recording, the v2 outputs were recomputed at 1f6173c, the commit that froze this golden, and at 61fc130; both produced byte-identical results, so the v2 scoring path did not change between them and the freeze is intact. The reference-coverage digest is unaffected by rounding and is unchanged from the original capture at 2ed4684."
 }
