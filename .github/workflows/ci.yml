@@ -16,9 +16,5 @@ jobs:
           cache: pip
       - name: Install pinned dependencies
         run: python -m pip install -r requirements.lock
-      # TEMPORARY: locating a v2 golden difference between hosts. Remove along
-      # with scripts_diag_golden.py once the golden reproduces across machines.
-      - name: Diagnose v2 golden
-        run: python scripts_diag_golden.py
       - name: Run fast deterministic tests
         run: python -m pytest -q --basetemp=.pytest_tmp
