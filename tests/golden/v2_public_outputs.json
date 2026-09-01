@@ -1,14 +1,16 @@
 {
   "captured_at_commit": "2ed4684",
-  "description": "Golden fingerprints of public-only v2 outputs captured before v3 implementation. Private query outputs are intentionally excluded.",
+  "description": "Golden fingerprints of public-only v2 outputs, frozen so that additive v3 work cannot silently change the v2 scoring path. Private query outputs are intentionally excluded.",
   "outputs": {
     "v2_benchmark_open_target_scores.csv": {
       "rows": 272,
-      "sha256_lf": "81c4acf3f0f43507f43e95e9d00f6c39831b01cc563823733a94ce9fe82de312"
+      "sha256_lf": "a4639b4c8828386b9020faa6038c99d275c95c4f184076623fbf9dc38f5641b7"
     },
     "v2_open_target_reference_coverage.csv": {
       "rows": 17,
       "sha256_lf": "fa592349e5c75173b7642c7b771eef635cf2ecf0a1746d41fd7126b91d9b1b57"
     }
-  }
+  },
+  "reanchored_at_commit": "61fc130",
+  "reanchor_note": "The v2_benchmark_open_target_scores.csv digest was re-recorded because the original value, captured at 2ed4684 before the dependency set was pinned, was not reproducible from the tracked inputs under requirements.lock. Recomputing at the freezing commit 1f6173c and at 61fc130 yields the same digest, so the v2 scoring path did not change between them: the freeze is intact and is now anchored to a value the pinned environment reproduces. The v2_open_target_reference_coverage.csv digest was already reproducible and is unchanged."
 }

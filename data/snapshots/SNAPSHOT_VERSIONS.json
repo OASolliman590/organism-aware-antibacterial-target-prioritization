@@ -5,7 +5,7 @@
   "snapshot_recorded_at": "2026-08-21",
   "pinned_at_git_commit": "2ed4684",
   "hash_algorithm": "sha256-tree-v1",
-  "hash_definition": "SHA-256 over sorted project-relative UTF-8 paths, NUL, each file's SHA-256 digest, and LF",
+  "hash_definition": "SHA-256 over sorted project-relative UTF-8 paths, NUL, each file's SHA-256 digest, and LF. Hashed bytes are the LF-normalized working tree pinned by .gitattributes, so the digest is identical on every platform.",
   "provenance_warning": "This manifest freezes the legacy public files exactly. Source release or acquisition metadata absent from those files remains null and is not inferred from commit dates.",
   "datasets": {
     "chembl_reference_ligands": {
@@ -16,9 +16,9 @@
       "paths": [
         "data/reference_ligands"
       ],
-      "sha256": "60d92404d69888bf285386fcebf7006806c1ed9c6252687fe02cc194d177a418",
+      "sha256": "4f50c7ca713038a2f8809316d3839092757a2e0d749682ad739f32365e8be603",
       "file_count": 21,
-      "total_bytes": 841275
+      "total_bytes": 838437
     },
     "reference_quality": {
       "source": "Derived from the pinned ChEMBL reference-ligand files",
@@ -30,9 +30,9 @@
         "data/reference_quality/reference_ligands_v2.csv",
         "data/reference_quality/cross_target_decoys_v2.csv"
       ],
-      "sha256": "fef6450e710278a199eecbc399234a932f6b63b62af1d69658d50a541591ef4c",
+      "sha256": "9cdcc7eb769b2e2788c5c3d7de6234234ccffc5bf3da4bd92fcc18feee5779c2",
       "file_count": 3,
-      "total_bytes": 1077025
+      "total_bytes": 1072723
     },
     "pubchem_benchmark": {
       "source": "PubChem PUG REST plus curated mechanism labels",
@@ -42,9 +42,9 @@
       "paths": [
         "data/benchmark"
       ],
-      "sha256": "16cff6c3150a28b9dcf1f8d4c551b27c0f4569de46bbfcad5c675a5bcb8a9b7d",
+      "sha256": "15eb7c5afe414740fb32a224dd61fe2849604017a33bbf2f19ce600df7fa998c",
       "file_count": 3,
-      "total_bytes": 23716
+      "total_bytes": 23498
     },
     "uniprot_species_targets": {
       "source": "UniProt REST API",
@@ -54,9 +54,9 @@
       "paths": [
         "data/species_targets"
       ],
-      "sha256": "c0b73cf99c95a16bd919fbf3f681847f2389c3537e85886fc11744e7d7b7ded2",
+      "sha256": "391bd9c8f322f4c9439a19bf79dcdcf32fef79bf06e77b3cab604ea64e96fe48",
       "file_count": 4,
-      "total_bytes": 248794
+      "total_bytes": 248448
     },
     "card_derived_annotations": {
       "source": "CARD data archive",
@@ -66,9 +66,9 @@
       "paths": [
         "data/resistance_v2"
       ],
-      "sha256": "e4dad57fcea0ecbefe26c827245852b47e0d4976a7f6bb82a42364446af29399",
+      "sha256": "2f6597ca100a2cfd9ffbce8a44e0882f02f8344478157aca449ad818536d10bd",
       "file_count": 5,
-      "total_bytes": 2546175
+      "total_bytes": 2535937
     },
     "rcsb_structure_catalog": {
       "source": "RCSB PDB search and data APIs",
@@ -78,9 +78,9 @@
       "paths": [
         "data/structures_v2"
       ],
-      "sha256": "b39172ad774543a3673fc63ed20aec041bd3b0cd9071a40e7ed9153574d27373",
+      "sha256": "5cf8b5fa30e8a42e35d31b6e240931f3bebc25d41d9305b727e84e71a43b235c",
       "file_count": 2,
-      "total_bytes": 8699
+      "total_bytes": 8635
     },
     "curated_ontologies": {
       "source": "Repository-curated target ontologies and aliases",
@@ -93,9 +93,9 @@
         "data/chembl_target_aliases_v21.json",
         "data/target_annotations.csv"
       ],
-      "sha256": "4c9654ee031b7ca23710ce5504c6fff1be2c8852abf26938c126509ab41bf8b2",
+      "sha256": "f802da126f16176575dd06f17eda9a84c0b0e04c873bc9905849cf8778903e45",
       "file_count": 4,
-      "total_bytes": 23110
+      "total_bytes": 23023
     }
   }
 }

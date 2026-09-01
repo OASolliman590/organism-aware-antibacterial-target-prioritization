@@ -59,10 +59,34 @@ def _provided_source_commit() -> str | None:
     return value.lower()
 
 
+def _is_own_working_tree(root: Path) -> bool:
+    """Whether ``root`` is itself the top level of a Git working tree.
+
+    Git discovery walks upwards, so running it inside an extracted archive that
+    happens to sit within another checkout answers for the *enclosing*
+    repository. Reporting that commit as the archive's provenance would be
+    silently wrong, so anything below the top level is treated as having no Git
+    metadata of its own.
+    """
+
+    toplevel = _git_output(root, "rev-parse", "--show-toplevel")
+    if not toplevel:
+        return False
+    try:
+        return Path(toplevel).resolve() == root.resolve()
+    except OSError:
+        return False
+
+
 def git_provenance(root: Path) -> dict[str, Any]:
-    commit = _git_output(root, "rev-parse", "HEAD")
-    branch = _git_output(root, "branch", "--show-current")
-    status = _git_output(root, "status", "--porcelain", "--untracked-files=no")
+    own_working_tree = _is_own_working_tree(root)
+    commit = _git_output(root, "rev-parse", "HEAD") if own_working_tree else None
+    branch = _git_output(root, "branch", "--show-current") if own_working_tree else None
+    status = (
+        _git_output(root, "status", "--porcelain", "--untracked-files=no")
+        if own_working_tree
+        else None
+    )
     source = "git"
     if commit is None:
         commit = _provided_source_commit()

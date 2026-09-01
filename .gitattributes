@@ -1,0 +1,17 @@
+# Tracked data files must check out byte-identically on every platform.
+#
+# The SHA-256 digest of each declared data tree is recorded as run provenance in
+# data/snapshots/SNAPSHOT_VERSIONS.json and re-verified on every load. Git's
+# autocrlf translation would otherwise hand a Windows checkout CRLF bytes and a
+# Linux checkout LF bytes for byte-for-byte identical content, so snapshot
+# verification would fail on whichever platform did not record the digest.
+#
+# Scoped to data/ deliberately: these are the trees whose bytes are hashed.
+# Source and documentation line endings are left to each contributor's setup.
+data/** text eol=lf
+
+# Binary payloads under data/: never translate.
+data/**/*.png binary
+data/**/*.gz binary
+data/**/*.bz2 binary
+data/**/*.zip binary
