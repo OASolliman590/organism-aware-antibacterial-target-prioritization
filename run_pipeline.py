@@ -36,6 +36,7 @@ ANALYSIS_STEPS = [
     'pipeline/calibrate_uncertainty_v2.py',
     'pipeline/build_validation_plan_v2.py',
     'pipeline/v2_figures.py',
+    'pipeline/figures_suite.py',
     'pipeline/summarize_v2.py',
 ]
 

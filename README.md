@@ -122,6 +122,41 @@ The benchmark currently supports close-analogue and scaffold diagnostics. The sc
 
 CARD-derived annotations describe resistance determinants and mutations associated with target families. They are not treated as evidence that a private compound binds a target. RCSB PDB metadata identify structure candidates and whether non-solvent co-crystallized ligands are present. Co-crystallized ligands are used to identify a defensible future docking site; PDBQT preparation, docking, and molecular dynamics remain downstream user-controlled steps.
 
+## Visualization suite
+
+`pipeline/figures_suite.py` renders the compound-facing view of a completed run into
+`results/figures_suite/`, using the shared visual language defined in
+`pipeline/figure_style.py`. It runs as part of `run_pipeline.py`, or on its own against an
+existing `results/` directory:
+
+```bash
+python pipeline/figures_suite.py
+```
+
+Like every other pipeline module it reads its configuration from `config.yaml`, or from the
+path in the `OATP_CONFIG` environment variable when one is set.
+
+| Panel | Question it answers | Source table |
+| --- | --- | --- |
+| `compound_target_priority` | Which organism–target pairs does each private compound favour? | `v2_open_target_predictions_by_organism.csv` |
+| `organism_target_atlas` | Which target classes carry the study overall? | `v2_open_target_predictions_by_organism.csv` |
+| `evidence_decomposition` | Which evidence layer drives each compound's best hypothesis? | `v2_open_target_predictions_by_organism.csv` |
+| `confidence_profile` | How is confidence distributed by compound and organism? | `v2_open_target_predictions_by_organism.csv` |
+| `fusion_contribution` | What does each fusion component contribute to the v3 score? | `open_target_predictions_by_organism_v3.csv` |
+| `rank_shift_disagreements` | Where does 3D fusion disagree with 2D-only ranking? | `chemical_evidence_disagreements_v3.csv` |
+| `ranking_stability` | How far does the ranking move under weight perturbation? | `final_ranking_sensitivity_v3.csv` |
+| `uncertainty_landscape` | Which hypotheses are both stable and decoy-separated? | `v2_uncertainty_private.csv` |
+| `benchmark_enrichment` | How much better than random is retrieval? | `benchmark_v2_summary.csv` |
+| `chemical_space` | Do the private compounds sit near known benchmark drugs? | private SDF plus `data/benchmark/eskape_benchmark_drugs.csv` |
+
+Every panel is drawn only from a completed run table. A panel with no source file, no
+evaluable rows, or an unavailable optional dependency writes no image and instead records
+the reason in `results/figure_suite_status.csv` as `unavailable_source_missing`,
+`unavailable_no_evaluable_rows`, or `unavailable_dependency_unavailable`. A missing figure
+must always be explainable from that table; empty or placeholder panels are never emitted.
+`chemical_space` needs RDKit and UMAP, whose compiled extensions are unavailable on some
+hosts, so it degrades to a dependency status rather than failing the run.
+
 ## Limitations
 
 Reference-ligand assays are heterogeneous, target-family coverage is uneven, and whole-cell antibacterial activity depends on permeability, efflux, expression, metabolism, and target accessibility. UniProt mapping is also strain-dependent; unresolved mapping is uncertainty, not evidence of target absence. CARD record counts reflect curation and database density rather than resistance prevalence in a user’s isolates. Anti-target fields are early alerts rather than toxicity predictions.
@@ -141,7 +176,8 @@ The strongest next validation is a staged experiment: purified target or target-
 
 ## Reproducibility
 
-The main v2.1 modules are `pipeline/open_target_discovery_v2.py`, `pipeline/benchmark_v2.py`, `pipeline/fetch_chembl_reference_subtypes_v21.py`, `pipeline/calibrate_uncertainty_v2.py`, `pipeline/fetch_species_targets.py`, `pipeline/sequence_compatibility.py`, `pipeline/build_reference_quality.py`, `pipeline/build_card_resistance_annotations.py`, `pipeline/parse_card_snps_v2.py`, `pipeline/fetch_structure_catalog_v2.py`, `pipeline/v2_figures.py`, including `v21_chemical_vs_clinical_translation.png` and `v21_clinical_translation_heatmap.png`, `pipeline/build_validation_plan_v2.py`, and `pipeline/summarize_v2.py`.
+The main v2.1 modules are `pipeline/open_target_discovery_v2.py`, `pipeline/benchmark_v2.py`, `pipeline/fetch_chembl_reference_subtypes_v21.py`, `pipeline/calibrate_uncertainty_v2.py`, `pipeline/fetch_species_targets.py`, `pipeline/sequence_compatibility.py`, `pipeline/build_reference_quality.py`, `pipeline/build_card_resistance_annotations.py`, `pipeline/parse_card_snps_v2.py`, `pipeline/fetch_structure_catalog_v2.py`, `pipeline/v2_figures.py`, including `v21_chemical_vs_clinical_translation.png` and `v21_clinical_translation_heatmap.png`, `pipeline/build_validation_plan_v2.py`, `pipeline/figures_suite.py` with
+`pipeline/figure_style.py`, and `pipeline/summarize_v2.py`.
 
 All unpublished inputs and compound-specific outputs remain local until the compounds are published and the author explicitly approves a new repository release. The frozen
 legacy v2 snapshot records CARD 4.0.2; the original ChEMBL release, UniProt release/query
