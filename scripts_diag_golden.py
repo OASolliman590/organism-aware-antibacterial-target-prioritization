@@ -43,9 +43,12 @@ def main() -> None:
         print(f"{column:38s} {rounded[column].to_csv(index=False)[:0] or ''}"
               f"{digest(rounded[column].to_csv(index=False))}")
 
-    print("\n--- first 3 rows ---")
-    with pd.option_context("display.max_columns", None, "display.width", 300):
-        print(rounded.head(3).to_string())
+    print("\n--- best_reference_molecule, full precision neighbours ---")
+    for row in frame.itertuples():
+        print(
+            f"BRM|{row.query_id}|{row.target_class}|{row.best_reference_molecule}"
+            f"|{row.ecfp4_max!r}"
+        )
 
 
 if __name__ == "__main__":
