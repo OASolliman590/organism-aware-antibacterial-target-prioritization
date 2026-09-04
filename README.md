@@ -162,11 +162,19 @@ mapped onto `organisms.names` through the explicit `organisms.manifest_aliases` 
 least one misspelled genus, and a silently wrong resolution would mislabel every
 per-organism figure. A group with no alias entry is left unassigned and reported.
 
-Each per-organism suite covers **every** compound scored against that organism, with the
-compounds the manifest assigned to it marked `*` in the axis labels and named in a footnote.
-The organism-specific view therefore never hides the cross-series comparison. Panels that
-exist to compare organisms against each other (`organism_target_atlas`,
-`assignment_concordance`) are skipped there and recorded as
+Each per-organism suite covers **the compounds the manifest prepared against that organism**,
+scored against it: the `klebsiella_pneumoniae` folder is about the Klebsiella compounds, and
+a footnote on each figure names the set. Because the target axis and the colour scale are
+recomputed from only those compounds, a target that leads for them is not buried under a
+stronger compound designed for a different organism.
+
+The cross-series comparison is not lost — it lives in the overall suite, whose per-compound
+panels already show every compound against every organism. Setting `restrict_to_assigned`
+to false on the `SuiteContext`, or supplying no manifest, falls back to the whole series
+scored against one organism, with assigned compounds marked `*` in the axis labels.
+
+Panels that exist to compare organisms against each other (`organism_target_atlas`,
+`assignment_concordance`) are skipped in the per-organism suites and recorded as
 `not_applicable_for_single_organism`, since filtering to one organism would leave them
 drawing a misleading figure from the surviving rows.
 
