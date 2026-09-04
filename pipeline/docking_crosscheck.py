@@ -507,6 +507,63 @@ def run_crosscheck(
     }
 
 
+def mapped_target_classes(coverage: pd.DataFrame) -> tuple[str, ...]:
+    """Target classes the campaign actually tested, in a stable order.
+
+    Named to avoid a leading ``test``: pytest collects any such name imported
+    into a test module and would try to run this as a test case.
+    """
+
+    mapped = coverage[coverage.mapping_status == "mapped"]
+    return tuple(sorted(set(mapped.target_class.astype(str))))
+
+
+def render_tested_target_figures(
+    results_dir: Path,
+    spec: DockingSpec,
+    coverage: pd.DataFrame,
+    *,
+    manifest=None,
+    figure_dirname: str = "figures_suite",
+) -> pd.DataFrame:
+    """Render the organism's figure suite restricted to the tested targets.
+
+    This is the reporting view: the pipeline's evidence for exactly the targets
+    the campaign ran, on exactly the compounds it ran them on. Panels that
+    describe the run as a whole are skipped, because a target filter does not
+    change them and their presence in this folder would imply otherwise.
+    """
+
+    try:  # pragma: no cover - import shim for direct module execution
+        from pipeline.figures_suite import (
+            SuiteContext,
+            generate_figure_suite,
+            organism_slug,
+        )
+    except ModuleNotFoundError:  # pragma: no cover
+        from figures_suite import SuiteContext, generate_figure_suite, organism_slug
+
+    targets = mapped_target_classes(coverage)
+    if not targets:
+        raise DockingCrosscheckError(
+            "no tested target classes to render; check docking.target_aliases"
+        )
+
+    context = SuiteContext(
+        manifest=manifest,
+        organism=spec.organism,
+        restrict_to_assigned=manifest is not None,
+        restrict_to_targets=targets,
+        top_target_classes=len(targets),
+    )
+    directory = (
+        f"{figure_dirname}/by_organism/{organism_slug(spec.organism)}/tested_targets"
+    )
+    return generate_figure_suite(
+        results_dir, context=context, figure_dirname=directory
+    )
+
+
 def load_heavy_atoms(path: Path) -> dict[str, int]:
     if not Path(path).is_file():
         return {}
@@ -533,6 +590,17 @@ def main() -> None:
     print(tables["agreement"].to_string(index=False))
     print(f"\n=== pipeline top targets for {spec.organism}: docked? ===")
     print(tables["undocked_top_targets"].to_string(index=False))
+
+    try:  # pragma: no cover - import shim for direct module execution
+        from pipeline.compound_manifest import load_from_config
+    except ModuleNotFoundError:  # pragma: no cover
+        from compound_manifest import load_from_config
+
+    status = render_tested_target_figures(
+        results_dir, spec, tables["coverage"], manifest=load_from_config(config)
+    )
+    print("\n=== figures restricted to the tested targets ===")
+    print(status[["figure", "status"]].to_string(index=False))
 
 
 if __name__ == "__main__":
