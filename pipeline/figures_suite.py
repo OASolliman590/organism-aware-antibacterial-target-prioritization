@@ -60,10 +60,28 @@ class SuiteContext:
     manifest: CompoundManifest | None = None
     # Set when this suite is rendered for a single organism.
     organism: str | None = None
+    # When true, a single-organism suite covers only the compounds the manifest
+    # assigned to that organism, rather than the whole series scored against it.
+    restrict_to_assigned: bool = False
+
+    def scoped_compounds(self) -> list[str] | None:
+        """Compounds this suite is limited to, or None for no compound limit."""
+
+        if not self.restrict_to_assigned or self.organism is None:
+            return None
+        if self.manifest is None:
+            return None
+        return self.manifest.compounds_for(self.organism)
 
     def label(self, compound: str) -> str:
-        """Compound label, marked when it was prepared against this organism."""
+        """Compound label, marked when it was prepared against this organism.
 
+        The marker distinguishes assigned compounds from the rest, so it is
+        redundant once the suite is already scoped to the assigned set.
+        """
+
+        if self.scoped_compounds() is not None:
+            return compound
         if self.manifest is not None and self.manifest.is_assigned(
             compound, self.organism
         ):
@@ -73,12 +91,24 @@ class SuiteContext:
     def labels(self, compounds) -> list[str]:
         return [self.label(str(compound)) for compound in compounds]
 
+    def scope_label(self) -> str:
+        """Title suffix naming the organism a suite is filtered to, if any."""
+
+        return f" — {self.organism}" if self.organism else ""
+
     def assignment_note(self) -> str:
-        """Footnote naming the compounds prepared against this organism."""
+        """Footnote stating which compounds the figure covers, and why."""
 
         if self.manifest is None or self.organism is None:
             return ""
         assigned = self.manifest.compounds_for(self.organism)
+        if self.scoped_compounds() is not None:
+            if not assigned:
+                return "no compound in this series was prepared against this organism"
+            return (
+                "Limited to the compounds prepared against this organism: "
+                + ", ".join(assigned)
+            )
         if not assigned:
             return "* no compound in this series was prepared against this organism"
         return "* prepared against this organism: " + ", ".join(assigned)
@@ -377,6 +407,7 @@ def _evidence_decomposition(
     )
     figure.suptitle(
         "Evidence decomposition of each compound's highest-priority hypothesis"
+        + context.scope_label()
     )
     style.save_figure(figure, path)
     return STATUS_CREATED
@@ -435,7 +466,9 @@ def _confidence_profile(
     axes[0][-1].legend(
         title="Confidence", loc="upper left", bbox_to_anchor=(1.01, 1.0)
     )
-    figure.suptitle("Confidence composition of organism-aware hypotheses")
+    figure.suptitle(
+        "Confidence composition of organism-aware hypotheses" + context.scope_label()
+    )
     style.save_figure(figure, path)
     return STATUS_CREATED
 
@@ -484,7 +517,10 @@ def _fusion_contribution(
     )
     axis.set_ylabel("Mean reciprocal-rank contribution")
     axis.set_xlabel("Private compound")
-    axis.set_title("Fusion component contributions to the v3 chemical evidence score")
+    axis.set_title(
+        "Fusion component contributions to the v3 chemical evidence score"
+        + context.scope_label()
+    )
     axis.legend(ncol=2, loc="upper right")
     axis.grid(axis="x", visible=False)
     style.save_figure(figure, path)
@@ -652,8 +688,9 @@ def _uncertainty_landscape(
     axis.set_xlabel("Bootstrap rank-stability score")
     axis.set_ylabel("Empirical decoy p-value (lower is stronger)")
     axis.set_title(
-        "Hypothesis uncertainty landscape "
-        "(marker size = bootstrap top-1 probability)"
+        "Hypothesis uncertainty landscape"
+        + context.scope_label()
+        + " (marker size = bootstrap top-1 probability)"
     )
     axis.legend(
         title="Compound",
@@ -974,16 +1011,27 @@ def organism_slug(organism: str) -> str:
 def _restrict_to_organism(frame: pd.DataFrame, organism: str) -> pd.DataFrame:
     """Keep only rows belonging to ``organism``.
 
-    Tables carrying no organism column are compound-level and organism-agnostic
-    (fusion contributions, rank disagreements, bootstrap uncertainty, benchmark
-    summaries). They are passed through unchanged rather than silently emptied:
-    filtering them by organism would be inventing a distinction the pipeline did
-    not compute.
+    Tables carrying no organism column are run-level and organism-agnostic
+    (ranking stability, benchmark summaries). They are passed through unchanged
+    rather than silently emptied: filtering them by organism would be inventing
+    a distinction the pipeline did not compute.
     """
 
     if "organism" not in frame.columns:
         return frame
     return frame[frame["organism"].astype(str) == organism]
+
+
+def _restrict_to_compounds(frame: pd.DataFrame, compounds: list[str]) -> pd.DataFrame:
+    """Keep only rows for ``compounds``, matched on ``query_id``.
+
+    Tables with no ``query_id`` are run-level and pass through unchanged, for
+    the same reason as ``_restrict_to_organism``.
+    """
+
+    if "query_id" not in frame.columns:
+        return frame
+    return frame[frame["query_id"].astype(str).isin(compounds)]
 
 
 def generate_figure_suite(
@@ -1025,6 +1073,12 @@ def generate_figure_suite(
                     alias: _restrict_to_organism(frame, context.organism)
                     for alias, frame in frames.items()
                 }
+                scope = context.scoped_compounds()
+                if scope is not None:
+                    frames = {
+                        alias: _restrict_to_compounds(frame, scope)
+                        for alias, frame in frames.items()
+                    }
             if any(frame.empty for frame in frames.values()):
                 status = STATUS_NO_ROWS
             else:
@@ -1051,16 +1105,23 @@ def generate_per_organism_suites(
 ) -> pd.DataFrame:
     """Render one focused suite per organism under ``figures_suite/by_organism``.
 
-    Each suite covers every compound scored against that organism, with the
-    compounds the manifest assigned to it marked in the axis labels, so the
-    organism-specific view never hides the cross-series comparison.
+    Each suite covers the compounds the manifest prepared against that organism,
+    scored against it: the Klebsiella folder is about the Klebsiella compounds.
+    The cross-series comparison is not lost, it lives in the overall suite, whose
+    per-compound panels already show every compound against every organism.
+
+    With ``restrict_to_assigned`` false, or with no manifest, a suite falls back
+    to the whole series scored against that organism, with assigned compounds
+    marked in the axis labels.
     """
 
     from dataclasses import replace
 
     statuses = []
     for organism in organisms:
-        organism_context = replace(context, organism=organism)
+        organism_context = replace(
+            context, organism=organism, restrict_to_assigned=True
+        )
         statuses.append(
             generate_figure_suite(
                 results_dir,

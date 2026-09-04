@@ -245,13 +245,61 @@ def test_per_organism_suite_only_uses_that_organisms_rows(tmp_path: Path) -> Non
     assert status.loc["compound_target_priority", "status"] == STATUS_NO_ROWS
 
 
-def test_assigned_compounds_are_marked_in_labels() -> None:
+def test_per_organism_suite_covers_only_that_organisms_compounds(
+    tmp_path: Path,
+) -> None:
+    _write_full_run(tmp_path)
+
+    generate_per_organism_suites(
+        tmp_path,
+        context=SuiteContext(manifest=MANIFEST),
+        organisms=["Escherichia coli"],
+    )
+
+    # A-1 is the only compound prepared against E. coli, so the E. coli suite is
+    # about A-1; A-2's rows for that organism are out of scope.
+    scoped = SuiteContext(
+        manifest=MANIFEST, organism="Escherichia coli", restrict_to_assigned=True
+    )
+    assert scoped.scoped_compounds() == ["A-1"]
+
+
+def test_scoped_suites_drop_the_now_redundant_assignment_marker() -> None:
+    scoped = SuiteContext(
+        manifest=MANIFEST, organism="Escherichia coli", restrict_to_assigned=True
+    )
+
+    # Every compound in a scoped suite is assigned, so marking them all says
+    # nothing; the footnote carries the scope instead.
+    assert scoped.label("A-1") == "A-1"
+    assert "Limited to the compounds prepared against this organism" in (
+        scoped.assignment_note()
+    )
+    assert "A-1" in scoped.assignment_note()
+
+
+def test_unscoped_suites_still_mark_assigned_compounds() -> None:
     context = SuiteContext(manifest=MANIFEST, organism="Escherichia coli")
 
+    assert context.scoped_compounds() is None
     assert context.label("A-1") == "A-1*"
     assert context.label("A-2") == "A-2"
     assert context.labels(["A-1", "A-2"]) == ["A-1*", "A-2"]
     assert "A-1" in context.assignment_note()
+
+
+def test_scoping_needs_both_a_manifest_and_an_organism() -> None:
+    assert SuiteContext(restrict_to_assigned=True).scoped_compounds() is None
+    assert (
+        SuiteContext(
+            restrict_to_assigned=True, organism="Escherichia coli"
+        ).scoped_compounds()
+        is None
+    )
+    assert (
+        SuiteContext(manifest=MANIFEST, organism="Escherichia coli").scoped_compounds()
+        is None
+    )
 
 
 def test_labels_are_unmarked_without_a_manifest_or_organism() -> None:
