@@ -18,6 +18,8 @@ paths:
   inputs: inputs
   private_compounds: data/compounds/compounds_normalized.sdf
   compound_manifest: inputs/compound_manifest.csv
+  docking_summary: inputs/docking_summary.csv
+  docking_ligand_heavy_atoms: inputs/docking_ligand_heavy_atoms.csv
   results: results
   cache: .cache/oatp
   reference_ligands: data/reference_ligands
@@ -307,3 +309,29 @@ v2_scoring:
     high: {overall_min: 0.50, chemical_quality_min: 0.45, transfer_min: 0.70}
     moderate: {overall_min: 0.25, chemical_quality_min: 0.25}
     low_chemical_min: 0.20
+
+docking:
+  # Cross-check of an external docking/MD campaign against the pipeline ranking.
+  # The campaign lives outside this repository; only the mapping is public.
+  organism: Klebsiella pneumoniae
+  target_column: target_folder
+  ligand_column: ligand
+  affinity_column: docking_affinity_kcal_mol
+  # Docking receptor folders mapped onto the pipeline target_class vocabulary.
+  # Explicit, like organisms.manifest_aliases: a docking folder that maps to
+  # nothing must be reported, never guessed, or the cross-check silently
+  # compares zero rows and reports agreement it never measured.
+  target_aliases:
+    9L5X_FabI: FabI
+    8QK2_LpxH: LpxH
+    7MYL_DHFR: DHFR
+    6LL5_FtsZ: FtsZ
+    2OV5_KPC-2: Beta-lactamase_class_A
+    4ZBE_KPC-2: Beta-lactamase_class_A
+  # Receptors deliberately dropped from the comparison, with the reason kept.
+  excluded_targets:
+    EXCLUDED_5EIX: "prepared receptor was DNA only, no amino acids; poses are not enzyme binding"
+  # Ligands in the docking table that are reference/native controls, not queries.
+  control_ligand_prefixes:
+    - native_
+    - 4ZBE_ligand_

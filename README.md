@@ -189,6 +189,46 @@ must always be explainable from that table; empty or placeholder panels are neve
 `chemical_space` needs RDKit and UMAP, whose compiled extensions are unavailable on some
 hosts, so it degrades to a dependency status rather than failing the run.
 
+## Tying a docking campaign to the ranking
+
+`pipeline/docking_crosscheck.py` joins an external docking/MD campaign to the pipeline
+ranking, so a run can be reported against the targets that were actually tested:
+
+```bash
+python pipeline/docking_crosscheck.py
+```
+
+It is not part of `run_pipeline.py`, because it needs a private campaign summary that a
+public run will not have. Point `paths.docking_summary` at that table and declare the
+receptor mapping in the `docking` block of `config.yaml`.
+
+It writes three tables to `results/` and one figure:
+
+| Output | Answers |
+| --- | --- |
+| `docking_pipeline_coverage.csv` | Which docked receptors map onto a target class, which are excluded and why, and which map to nothing |
+| `docking_pipeline_crosscheck.csv` | Per compound and target: docked affinity, ligand efficiency, the native co-crystal control, and the pipeline priority, rank and confidence |
+| `docking_pipeline_agreement.csv` | Spearman rank agreement between affinity and priority, pooled and per compound |
+
+Three deliberate choices make the comparison honest rather than flattering:
+
+- **The receptor mapping is declared, never inferred.** An unmapped receptor is reported as
+  `unmapped_no_alias`, and a campaign where *nothing* maps raises instead of writing an
+  empty correlation. An empty agreement file reads as "no disagreement found", which is the
+  opposite of what it means.
+- **Repeated structures for one target class are collapsed** before correlating. Two crystal
+  forms of the same enzyme share one pipeline priority, so keeping both would pseudo-replicate
+  that value and inflate both the sample size and the coefficient.
+- **Coverage is reported next to agreement.** A correlation over five shared targets says
+  little without knowing which of the pipeline's strongest hypotheses were never docked, so
+  the undocked top targets are listed alongside it.
+
+Docking affinity and pipeline priority are different quantities — a pose in one structure
+against target-class plausibility — so only their *rank* agreement is compared, never their
+values. Because docking scores grow with molecular size, affinity is also reported per heavy
+atom against the native co-crystal ligand, which is the control that says whether an affinity
+is good for a molecule of that size.
+
 ## Limitations
 
 Reference-ligand assays are heterogeneous, target-family coverage is uneven, and whole-cell antibacterial activity depends on permeability, efflux, expression, metabolism, and target accessibility. UniProt mapping is also strain-dependent; unresolved mapping is uncertainty, not evidence of target absence. CARD record counts reflect curation and database density rather than resistance prevalence in a user’s isolates. Anti-target fields are early alerts rather than toxicity predictions.
