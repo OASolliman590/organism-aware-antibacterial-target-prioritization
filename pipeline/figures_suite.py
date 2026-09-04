@@ -36,6 +36,7 @@ STATUS_SOURCE_MISSING = "unavailable_source_missing"
 STATUS_NO_ROWS = "unavailable_no_evaluable_rows"
 STATUS_DEPENDENCY = "unavailable_dependency_unavailable"
 STATUS_NOT_APPLICABLE = "not_applicable_for_single_organism"
+STATUS_NOT_TARGET_SCOPED = "not_applicable_for_target_subset"
 
 PREDICTIONS_BY_ORGANISM = "v2_open_target_predictions_by_organism.csv"
 PREDICTIONS_V3 = "open_target_predictions_by_organism_v3.csv"
@@ -63,6 +64,9 @@ class SuiteContext:
     # When true, a single-organism suite covers only the compounds the manifest
     # assigned to that organism, rather than the whole series scored against it.
     restrict_to_assigned: bool = False
+    # When set, the suite covers only these target classes. Used to report a run
+    # against an external campaign that tested a specific subset of targets.
+    restrict_to_targets: tuple[str, ...] | None = None
 
     def scoped_compounds(self) -> list[str] | None:
         """Compounds this suite is limited to, or None for no compound limit."""
@@ -94,7 +98,10 @@ class SuiteContext:
     def scope_label(self) -> str:
         """Title suffix naming the organism a suite is filtered to, if any."""
 
-        return f" — {self.organism}" if self.organism else ""
+        label = f" — {self.organism}" if self.organism else ""
+        if self.restrict_to_targets:
+            label += f" ({len(self.restrict_to_targets)} tested targets)"
+        return label
 
     def assignment_note(self) -> str:
         """Footnote stating which compounds the figure covers, and why."""
@@ -105,10 +112,16 @@ class SuiteContext:
         if self.scoped_compounds() is not None:
             if not assigned:
                 return "no compound in this series was prepared against this organism"
-            return (
+            note = (
                 "Limited to the compounds prepared against this organism: "
                 + ", ".join(assigned)
             )
+            if self.restrict_to_targets:
+                note += (
+                    "  |  and to the targets tested experimentally: "
+                    + ", ".join(self.restrict_to_targets)
+                )
+            return note
         if not assigned:
             return "* no compound in this series was prepared against this organism"
         return "* prepared against this organism: " + ", ".join(assigned)
@@ -129,6 +142,11 @@ class PanelSpec:
     # the surviving rows. They are skipped, and recorded as skipped, in the
     # per-organism suites.
     cross_organism_only: bool = False
+    # Panels describing the run as a whole rather than any particular target
+    # (ranking stability, benchmark retrieval). They are unchanged by a target
+    # filter, so a target-scoped folder that contained them would imply they
+    # said something about those targets.
+    run_level: bool = False
 
 
 def _numeric(frame: pd.DataFrame, column: str) -> pd.Series:
@@ -200,10 +218,13 @@ def _compound_target_priority(
             )
             .reindex(index=compounds, columns=targets)
         )
+        # A small grid can carry its own numbers; a large one cannot, and
+        # annotating it would only produce unreadable clutter.
+        annotate = matrix.size <= 60
         figure, axis = plt.subplots(
             figsize=(
-                max(9.0, 0.52 * len(targets)),
-                max(4.0, 0.42 * len(compounds)) + 2.4,
+                max(8.0, (0.95 if annotate else 0.52) * len(targets)),
+                max(2.6, 0.62 * len(compounds)) + 2.6,
             )
         )
         sns.heatmap(
@@ -212,24 +233,31 @@ def _compound_target_priority(
             vmin=0.0,
             linewidths=0.3,
             linecolor="white",
+            annot=annotate,
+            fmt=".3f" if annotate else "",
+            annot_kws={"fontsize": 8} if annotate else None,
             cbar_kws={"label": "Overall priority score"},
             ax=axis,
         )
         axis.set_yticks(
-            axis.get_yticks(), context.labels(matrix.index), rotation=0, fontsize=8
+            axis.get_yticks(), context.labels(matrix.index), rotation=0, fontsize=9
         )
         axis.set_xticks(
             axis.get_xticks(),
-            style.wrap_labels(targets, width=18),
-            rotation=90,
-            fontsize=7,
+            style.wrap_labels(targets, width=14),
+            rotation=45 if annotate else 90,
+            ha="right" if annotate else "center",
+            fontsize=8,
         )
         axis.set_xlabel("Open target class")
         axis.set_ylabel("Private compound")
         axis.set_title(f"Target priority in {context.organism}")
         note = context.assignment_note()
         if note:
-            figure.text(0.01, 0.005, note, fontsize=7.5, color="#4a5058")
+            # Reserve space below the rotated ticks so the note sits under them
+            # rather than across them.
+            figure.subplots_adjust(bottom=0.34)
+            figure.text(0.01, 0.015, note, fontsize=7.5, color="#4a5058")
         style.save_figure(figure, path)
         return STATUS_CREATED
 
@@ -969,6 +997,7 @@ PANELS: tuple[PanelSpec, ...] = (
         output="ranking_stability.png",
         renderer=_ranking_stability,
         description="Kendall tau and RBO under scoring-weight perturbation.",
+        run_level=True,
     ),
     PanelSpec(
         name="uncertainty_landscape",
@@ -983,6 +1012,7 @@ PANELS: tuple[PanelSpec, ...] = (
         output="benchmark_enrichment.png",
         renderer=_benchmark_enrichment,
         description="Retrieval enrichment over random, by split and scoring mode.",
+        run_level=True,
     ),
     PanelSpec(
         name="assignment_concordance",
@@ -1034,6 +1064,16 @@ def _restrict_to_compounds(frame: pd.DataFrame, compounds: list[str]) -> pd.Data
     return frame[frame["query_id"].astype(str).isin(compounds)]
 
 
+def _restrict_to_target_classes(
+    frame: pd.DataFrame, targets: tuple[str, ...]
+) -> pd.DataFrame:
+    """Keep only rows for ``targets``, matched on ``target_class``."""
+
+    if "target_class" not in frame.columns:
+        return frame
+    return frame[frame["target_class"].astype(str).isin(targets)]
+
+
 def generate_figure_suite(
     results_dir: Path,
     *,
@@ -1050,6 +1090,18 @@ def generate_figure_suite(
     rows: list[dict[str, object]] = []
     for panel in PANELS:
         output = figure_dir / panel.output
+        if panel.run_level and context.restrict_to_targets:
+            rows.append(
+                {
+                    "organism": context.organism or "",
+                    "figure": panel.name,
+                    "status": STATUS_NOT_TARGET_SCOPED,
+                    "source": "",
+                    "output": None,
+                    "description": panel.description,
+                }
+            )
+            continue
         if panel.cross_organism_only and context.organism is not None:
             rows.append(
                 {
@@ -1079,6 +1131,13 @@ def generate_figure_suite(
                         alias: _restrict_to_compounds(frame, scope)
                         for alias, frame in frames.items()
                     }
+            if context.restrict_to_targets:
+                frames = {
+                    alias: _restrict_to_target_classes(
+                        frame, context.restrict_to_targets
+                    )
+                    for alias, frame in frames.items()
+                }
             if any(frame.empty for frame in frames.values()):
                 status = STATUS_NO_ROWS
             else:
