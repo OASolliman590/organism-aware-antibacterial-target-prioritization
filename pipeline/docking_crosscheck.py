@@ -559,9 +559,18 @@ def render_tested_target_figures(
     directory = (
         f"{figure_dirname}/by_organism/{organism_slug(spec.organism)}/tested_targets"
     )
-    return generate_figure_suite(
+    status = generate_figure_suite(
         results_dir, context=context, figure_dirname=directory
     )
+    # Write the audit trail beside the figures rather than only returning it.
+    # results/figure_suite_status.csv belongs to the main suite and is rewritten
+    # whenever that runs, so it cannot be relied on to explain a missing panel
+    # here: without this file the folder ships six figures and no record of why
+    # the other five are absent.
+    status.assign(tested_target_classes=";".join(targets)).to_csv(
+        results_dir / directory / "figure_status.csv", index=False, lineterminator="\n"
+    )
+    return status
 
 
 def load_heavy_atoms(path: Path) -> dict[str, int]:

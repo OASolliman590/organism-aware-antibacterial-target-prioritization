@@ -5,6 +5,7 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
+from pipeline.figures_suite import PANELS
 from pipeline.docking_crosscheck import (
     PREDICTIONS,
     DockingCrosscheckError,
@@ -226,3 +227,22 @@ def test_tested_target_figures_need_a_mapping(tmp_path: Path) -> None:
 
     with pytest.raises(DockingCrosscheckError, match="no tested target classes"):
         render_tested_target_figures(tmp_path, blind, coverage)
+
+
+def test_tested_target_figures_write_their_own_audit_trail(tmp_path: Path) -> None:
+    _predictions().to_csv(tmp_path / PREDICTIONS, index=False)
+    coverage = build_coverage(_docking(), SPEC, _predictions())
+
+    render_tested_target_figures(tmp_path, SPEC, coverage)
+
+    # results/figure_suite_status.csv belongs to the main suite and is rewritten
+    # whenever it runs, so the scoped folder needs its own record of why a panel
+    # is missing. Otherwise the figures ship with no explanation.
+    status_path = (
+        tmp_path / "figures_suite" / "by_organism" / "klebsiella_pneumoniae"
+        / "tested_targets" / "figure_status.csv"
+    )
+    assert status_path.is_file()
+    written = pd.read_csv(status_path)
+    assert set(written.figure) == {panel.name for panel in PANELS}
+    assert written.tested_target_classes.iloc[0] == "Beta-lactamase_class_A;FabI"
