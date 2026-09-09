@@ -11,6 +11,7 @@ from pipeline.figures_suite import (
     STATUS_DEPENDENCY,
     STATUS_NO_ROWS,
     STATUS_NOT_APPLICABLE,
+    STATUS_NOT_TARGET_SCOPED,
     STATUS_SOURCE_MISSING,
     PANELS,
     SuiteContext,
@@ -324,3 +325,73 @@ def test_panel_names_and_outputs_are_unique() -> None:
 def test_every_panel_documents_itself(panel) -> None:
     assert panel.description
     assert panel.output.endswith(".png")
+
+
+def test_target_scoped_suite_covers_only_those_target_classes(tmp_path: Path) -> None:
+    _write_full_run(tmp_path)
+
+    status = generate_figure_suite(
+        tmp_path,
+        context=SuiteContext(
+            manifest=MANIFEST,
+            organism="Escherichia coli",
+            restrict_to_assigned=True,
+            restrict_to_targets=("GyrB",),
+        ),
+        figure_dirname="scoped",
+    ).set_index("figure")
+
+    assert status.loc["compound_target_priority", "status"] == STATUS_CREATED
+
+    # A target class the run never scored leaves the organism-aware panels with
+    # nothing to draw, rather than silently widening back to every target.
+    empty = generate_figure_suite(
+        tmp_path,
+        context=SuiteContext(
+            manifest=MANIFEST,
+            organism="Escherichia coli",
+            restrict_to_assigned=True,
+            restrict_to_targets=("NotATarget",),
+        ),
+        figure_dirname="scoped_empty",
+    ).set_index("figure")
+    assert empty.loc["compound_target_priority", "status"] == STATUS_NO_ROWS
+
+
+def test_run_level_panels_are_skipped_when_scoped_to_targets(tmp_path: Path) -> None:
+    _write_full_run(tmp_path)
+    run_level = {panel.name for panel in PANELS if panel.run_level}
+    assert run_level, "expected at least one run-level panel"
+
+    status = generate_figure_suite(
+        tmp_path,
+        context=SuiteContext(organism="Escherichia coli", restrict_to_targets=("GyrB",)),
+        figure_dirname="scoped2",
+    ).set_index("figure")
+
+    for name in run_level:
+        # A target filter does not change these, so shipping them in a
+        # target-scoped folder would imply they said something about it.
+        assert status.loc[name, "status"] == STATUS_NOT_TARGET_SCOPED
+        assert pd.isna(status.loc[name, "output"])
+
+
+def test_run_level_panels_still_render_when_not_target_scoped(tmp_path: Path) -> None:
+    _write_full_run(tmp_path)
+
+    status = generate_figure_suite(
+        tmp_path, context=SuiteContext(manifest=MANIFEST), figure_dirname="unscoped"
+    ).set_index("figure")
+
+    for panel in PANELS:
+        if panel.run_level:
+            assert status.loc[panel.name, "status"] == STATUS_CREATED
+
+
+def test_scope_label_names_organism_and_target_count() -> None:
+    context = SuiteContext(
+        organism="Klebsiella pneumoniae", restrict_to_targets=("FabI", "LpxH")
+    )
+
+    assert "Klebsiella pneumoniae" in context.scope_label()
+    assert "2 tested targets" in context.scope_label()

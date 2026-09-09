@@ -5,6 +5,7 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
+from pipeline.figures_suite import PANELS
 from pipeline.docking_crosscheck import (
     PREDICTIONS,
     DockingCrosscheckError,
@@ -13,7 +14,9 @@ from pipeline.docking_crosscheck import (
     build_coverage,
     build_crosscheck,
     collapse_to_target_class,
+    render_tested_target_figures,
     run_crosscheck,
+    mapped_target_classes,
     undocked_top_targets,
 )
 
@@ -196,3 +199,50 @@ def test_unknown_organism_is_an_error(tmp_path: Path) -> None:
 
     with pytest.raises(DockingCrosscheckError, match="no prediction rows"):
         run_crosscheck(tmp_path, tmp_path / "dock.csv", spec)
+
+
+def test_mapped_target_classes_lists_only_mapped_receptors() -> None:
+    coverage = build_coverage(_docking(), SPEC, _predictions())
+
+    assert mapped_target_classes(coverage) == ("Beta-lactamase_class_A", "FabI")
+
+
+def test_tested_target_figures_land_in_their_own_folder(tmp_path: Path) -> None:
+    _predictions().to_csv(tmp_path / PREDICTIONS, index=False)
+    coverage = build_coverage(_docking(), SPEC, _predictions())
+
+    status = render_tested_target_figures(tmp_path, SPEC, coverage).set_index("figure")
+
+    folder = tmp_path / "figures_suite" / "by_organism" / "klebsiella_pneumoniae" / "tested_targets"
+    assert folder.is_dir()
+    assert status.loc["compound_target_priority", "status"] == "created"
+    # Run-level panels say nothing about a target subset and must be skipped.
+    assert status.loc["ranking_stability", "status"] == "not_applicable_for_target_subset"
+
+
+def test_tested_target_figures_need_a_mapping(tmp_path: Path) -> None:
+    _predictions().to_csv(tmp_path / PREDICTIONS, index=False)
+    blind = DockingSpec(organism=ORGANISM, target_aliases={}, excluded_targets={})
+    coverage = build_coverage(_docking(), blind, _predictions())
+
+    with pytest.raises(DockingCrosscheckError, match="no tested target classes"):
+        render_tested_target_figures(tmp_path, blind, coverage)
+
+
+def test_tested_target_figures_write_their_own_audit_trail(tmp_path: Path) -> None:
+    _predictions().to_csv(tmp_path / PREDICTIONS, index=False)
+    coverage = build_coverage(_docking(), SPEC, _predictions())
+
+    render_tested_target_figures(tmp_path, SPEC, coverage)
+
+    # results/figure_suite_status.csv belongs to the main suite and is rewritten
+    # whenever it runs, so the scoped folder needs its own record of why a panel
+    # is missing. Otherwise the figures ship with no explanation.
+    status_path = (
+        tmp_path / "figures_suite" / "by_organism" / "klebsiella_pneumoniae"
+        / "tested_targets" / "figure_status.csv"
+    )
+    assert status_path.is_file()
+    written = pd.read_csv(status_path)
+    assert set(written.figure) == {panel.name for panel in PANELS}
+    assert written.tested_target_classes.iloc[0] == "Beta-lactamase_class_A;FabI"
