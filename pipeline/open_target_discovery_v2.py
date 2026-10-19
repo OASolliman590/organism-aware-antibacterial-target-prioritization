@@ -396,7 +396,10 @@ def apply_biology(
             if c.empty and parent != r.target_class and not compat.empty:
                 c=compat[(compat.organism==org)&(compat.target_class==parent)]
                 transfer_source=parent
-            transfer=float(c.iloc[0].species_transfer_score) if len(c) and pd.notna(c.iloc[0].species_transfer_score) else 0.0
+            if len(c) and pd.notna(c.iloc[0].species_transfer_score):
+                transfer=float(c.iloc[0].species_transfer_score); transfer_present=True
+            else:
+                transfer=float("nan"); transfer_present=False
             mapping_status=c.iloc[0].sequence_status if len(c) else 'no_mapping_record'
             scope=scope_score(a.organism_scope,org,r.target_class)
             clinical=clinical_value(a.clinical_status); essential=ordinal(a.essentiality_level); access=access_value(a.cellular_localization); resistance=ordinal(a.resistance_relevance)
@@ -460,9 +463,11 @@ def apply_biology(
                     0,1))
             anti,anti_note,anti_status=anti_target_annotation(r.target_class)
             factors = V2_SCORING["overall_factors"]
+            if transfer_present: transfer_factor=float(factors["transfer"]["base"])+float(factors["transfer"]["weight"])*transfer
+            else: transfer_factor=float(factors["transfer"].get("missing_factor",factors["transfer"]["base"]))
             overall=float(
                 chemical_quality
-                *(float(factors["transfer"]["base"])+float(factors["transfer"]["weight"])*transfer)
+                *transfer_factor
                 *(float(factors["pocket"]["base"])+float(factors["pocket"]["weight"])*pocket)
                 *(float(factors["biology"]["base"])+float(factors["biology"]["weight"])*biological)
                 *(1-float(factors["anti_target_penalty"])*anti)
@@ -470,7 +475,7 @@ def apply_biology(
             reasons=[]
             if r.reference_quality_grade in {'low','insufficient'}: reasons.append('reference coverage limited')
             reason_thresholds = V2_SCORING["uncertainty_reasons"]
-            if mapping_status!='mapped' or transfer<float(reason_thresholds["weak_transfer_below"]): reasons.append('species sequence mapping unresolved or weak')
+            if not transfer_present or mapping_status!='mapped' or transfer<float(reason_thresholds["weak_transfer_below"]): reasons.append('species sequence mapping unresolved or weak')
             if r.target_specificity_score<float(reason_thresholds["weak_specificity_below"]): reasons.append('similarity is not target-specific versus cross-target decoys')
             if anti>=float(reason_thresholds["anti_target_at_least"]): reasons.append('human-homologue or mitochondrial selectivity risk is annotation-only')
             if pocket==0: reasons.append('no RCSB co-crystal/pocket evidence in bounded public catalog')
@@ -482,7 +487,7 @@ def apply_biology(
                     and chemical_quality>=float(confidence["moderate"]["chemical_quality_min"])): conf='Moderate'
             elif chemical_evidence>=float(confidence["low_chemical_min"]): conf='Low'
             else: conf='Insufficient'
-            rr=r.to_dict(); rr.update({'organism':org,'parent_target_class':parent,'target_subtype':a.get('target_subtype',r.target_class),'binding_site_or_mechanism':a.get('binding_site_or_mechanism',a.get('mechanism_granularity','')),'organism_transfer_source':transfer_source,'species_transfer_score':transfer,'sequence_mapping_status':mapping_status,
+            rr=r.to_dict(); rr.update({'organism':org,'parent_target_class':parent,'target_subtype':a.get('target_subtype',r.target_class),'binding_site_or_mechanism':a.get('binding_site_or_mechanism',a.get('mechanism_granularity','')),'organism_transfer_source':transfer_source,'species_transfer_score':transfer,'species_mapping_present':bool(transfer_present),'sequence_mapping_status':mapping_status,
                 'organism_scope_score':scope,'clinical_priority_score':clinical,'essentiality_score':essential,'cellular_access_score':access,
                 'resistance_relevance_score':resistance,'card_resistance_context_score':card_context,'resistance_burden_score':resistance_burden,'card_model_count':card_models,'card_snp_row_count':snp_rows,'organism_specific_snp_row_count':org_snp_rows,
                 'rcsb_structure_candidate_count':struct_candidates,'rcsb_co_crystal_ligand_count':co_crystal,'pocket_evidence_score':pocket,'biological_priority_score':biological,'clinical_translation_score':clinical_translation,'chemical_hypothesis_score':chemical_quality,'anti_target_risk_score':anti,
@@ -608,6 +613,7 @@ def emit_v3_outputs(
                 group_columns=["organism", "query_id"],
                 score_column="overall_priority_score",
                 top_n=10,
+                additional_priority_columns=["species_mapping_present"],
             ).to_csv(path, index=False)
             written.append(path)
             path = result_dir / "validation_priority_candidates_v3.csv"
@@ -704,7 +710,7 @@ def main():
     if private_scores:
         raw=pd.concat(private_scores,ignore_index=True); raw.to_csv(RES/'v2_open_target_scores_private.csv',index=False)
         ranked=apply_biology(raw,ontology,compat,card_summary,snp_summary,snp_org,struct_summary); ranked.to_csv(RES/'v2_open_target_predictions_by_organism.csv',index=False)
-        ranked.sort_values(['organism','query_id','overall_priority_score'],ascending=[True,True,False]).groupby(['organism','query_id']).head(10).to_csv(RES/'v2_open_target_shortlist_by_organism.csv',index=False)
+        ranked.sort_values(['organism','query_id','species_mapping_present','overall_priority_score'],ascending=[True,True,False,False],kind='mergesort').groupby(['organism','query_id']).head(10).to_csv(RES/'v2_open_target_shortlist_by_organism.csv',index=False)
         ranked[ranked.chemical_hypothesis_score>0].sort_values(['organism','query_id','clinical_translation_score'],ascending=[True,True,False]).groupby(['organism','query_id']).head(10).to_csv(RES/'v21_clinical_translation_shortlist_by_organism.csv',index=False)
         ranked[ranked.confidence_class.isin(['High','Moderate'])].sort_values('overall_priority_score',ascending=False).to_csv(RES/'v2_validation_priority_candidates.csv',index=False)
         print('private queries',len(private),'raw rows',len(raw),'ranked rows',len(ranked))

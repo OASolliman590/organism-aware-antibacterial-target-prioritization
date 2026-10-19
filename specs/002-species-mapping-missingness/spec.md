@@ -40,7 +40,10 @@ without introducing arbitrary new score magnitudes:
   `base + weight*0`. The audit trail shows which factor was applied.
 - **C.** Unmapped rows are **ordered after mapped rows** in organism shortlists, mirroring
   the existing applicability-domain `ordering_only_no_score_rescaling` convention
-  (`pipeline/applicability_domain.py`). No score is rescaled.
+  (`pipeline/applicability_domain.py`). No score is rescaled. Applicability-domain
+  eligibility remains the **primary** ordering key (it gates the reliability of the core
+  chemical signal); species-mapping presence is a **secondary** tiebreaker applied within the
+  same AD-eligibility tier.
 - **D.** Every prediction row carries a boolean `species_mapping_present` flag and the
   existing `uncertainty_reasons` text continues to name the gap.
 
@@ -71,8 +74,8 @@ Let a prediction row be produced by `apply_biology` for an `(organism, target_cl
 | Case | `species_transfer_score` (stored) | `species_mapping_present` | transfer factor used in `overall` | shortlist ordering |
 |---|---|---|---|---|
 | Mapped, finite transfer `t` | `t` (incl. `0.0`) | `True` | `base + weight*t` | with eligible rows |
-| No mapping record | `NaN` | `False` | `missing_factor` | after eligible rows |
-| Mapping record, non-finite transfer | `NaN` | `False` | `missing_factor` | after eligible rows |
+| No mapping record | `NaN` | `False` | `missing_factor` | after mapped rows in same AD tier |
+| Mapping record, non-finite transfer | `NaN` | `False` | `missing_factor` | after mapped rows in same AD tier |
 
 Additional invariants:
 

@@ -41,6 +41,14 @@ Every result also receives a confidence class:
 - **Low:** sparse reference set, weak similarity, unresolved orthologue mapping, or strong cellular-access concern.
 - **Insufficient:** no appropriate reference universe or mechanism-specific evidence.
 
+## Species-mapping missingness
+
+`species_transfer_score` is `NaN` when no finite species mapping exists for an organism and target class (no mapping record, or a non-finite transfer). It is never `0.0` for a missing mapping; a mapped real transfer of `0.0` is stored as `0.0`. The boolean `species_mapping_present` records which case applies (`True` for a finite mapped transfer, `False` otherwise).
+
+In the overall priority, a missing mapping uses the explicit factor `V2_SCORING.overall_factors.transfer.missing_factor` (default `0.65`, equal to the mapped real-zero factor `base + weight*0`), so the default score magnitude is unchanged. Missing mappings are never scored as zero transfer, and the confidence thresholds are unchanged, so an unmapped row cannot be `High`.
+
+Organism shortlists keep applicability-domain eligibility as the primary ordering key, then order mapped rows before unmapped rows (`species_mapping_present`) within the same AD tier, then by score. This is ordering only: no score is rescaled.
+
 ## Benchmark requirements
 
 Benchmark evaluation must exclude the query and close analogues, report scaffold and target-family splits, retain negative controls, and compare against random, prevalence, ECFP4-only, and MACCS-only baselines. Results must be reported with confidence intervals when the sample size permits them.

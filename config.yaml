@@ -301,7 +301,7 @@ v2_scoring:
     pocket: 0.10
     resistance_or_card: 0.10
   overall_factors:
-    transfer: {base: 0.65, weight: 0.35}
+    transfer: {base: 0.65, weight: 0.35, missing_factor: 0.65}
     pocket: {base: 0.75, weight: 0.25}
     biology: {base: 0.50, weight: 0.50}
     anti_target_penalty: 0.20
