@@ -74,6 +74,7 @@ def shortlist_with_applicability_domain(
     group_columns: Sequence[str],
     score_column: str,
     top_n: int,
+    additional_priority_columns: Sequence[str] = (),
 ) -> pd.DataFrame:
     """Rank AD-eligible rows first while preserving the original numeric score."""
 
@@ -81,9 +82,11 @@ def shortlist_with_applicability_domain(
     missing = sorted(required - set(predictions.columns))
     if missing:
         raise ValueError(f"AD shortlist is missing fields: {missing}")
+    priority = ["ad_shortlist_eligible", *additional_priority_columns]
+    present = [col for col in priority if col in predictions.columns]
     ordered = predictions.sort_values(
-        [*group_columns, "ad_shortlist_eligible", score_column],
-        ascending=[*[True] * len(group_columns), False, False],
+        [*group_columns, *present, score_column],
+        ascending=[*[True] * len(group_columns), *[False] * len(present), False],
         kind="mergesort",
     )
     return ordered.groupby(list(group_columns), sort=False).head(top_n)
