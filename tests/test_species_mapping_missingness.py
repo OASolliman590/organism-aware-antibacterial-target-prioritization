@@ -83,10 +83,20 @@ def test_missing_mapping_is_nan_not_zero_and_ordered_after_mapped() -> None:
     assert pd.isna(nonfinite.species_transfer_score)
     assert nonfinite.species_mapping_present == False  # noqa: E712
     assert nonfinite.confidence_class != "High"
-    # Default config: missing_factor equals the mapped real-zero factor, so the score is unchanged.
+    # The unmapped score is the mapped real-zero score scaled by missing_factor / base,
+    # derived from config so this invariant holds at any tuned missing_factor.
+    transfer_factors = v2.V2_SCORING["overall_factors"]["transfer"]
+    missing_factor = float(transfer_factors["missing_factor"])
+    zero_transfer_factor = float(transfer_factors["base"])
     assert np.isclose(
-        unmapped.overall_priority_score, mapped.overall_priority_score, rtol=0, atol=1e-9
+        unmapped.overall_priority_score,
+        mapped.overall_priority_score * (missing_factor / zero_transfer_factor),
+        rtol=0,
+        atol=1e-9,
     )
+    # A missing mapping discounted below a confirmed-zero transfer ranks strictly lower.
+    if missing_factor < zero_transfer_factor:
+        assert unmapped.overall_priority_score < mapped.overall_priority_score
 
     # 6. in a two-row group, the mapped row precedes the unmapped row
     group = ranked[ranked.organism.isin([MAPPED_ORG, UNMAPPED_ORG])].copy()

@@ -45,7 +45,7 @@ Every result also receives a confidence class:
 
 `species_transfer_score` is `NaN` when no finite species mapping exists for an organism and target class (no mapping record, or a non-finite transfer). It is never `0.0` for a missing mapping; a mapped real transfer of `0.0` is stored as `0.0`. The boolean `species_mapping_present` records which case applies (`True` for a finite mapped transfer, `False` otherwise).
 
-In the overall priority, a missing mapping uses the explicit factor `V2_SCORING.overall_factors.transfer.missing_factor` (default `0.65`, equal to the mapped real-zero factor `base + weight*0`), so the default score magnitude is unchanged. Missing mappings are never scored as zero transfer, and the confidence thresholds are unchanged, so an unmapped row cannot be `High`.
+In the overall priority, a missing mapping uses the explicit factor `V2_SCORING.overall_factors.transfer.missing_factor` (`0.50`). This sits below the mapped real-zero transfer factor (`base + weight*0 = 0.65`): an organism for which the target protein could not be confirmed or sequence-mapped at all is discounted more than one that was mapped and found to have zero transferability, so unmapped hypotheses are demoted without being removed. Missing mappings are never scored as zero transfer, and the confidence thresholds are unchanged, so an unmapped row cannot be `High`.
 
 Organism shortlists keep applicability-domain eligibility as the primary ordering key, then order mapped rows before unmapped rows (`species_mapping_present`) within the same AD tier, then by score. This is ordering only: no score is rescaled.
 
